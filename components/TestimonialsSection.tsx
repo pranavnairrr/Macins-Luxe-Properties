@@ -131,6 +131,18 @@ export default function TestimonialsSection() {
                 borderRadius: 'var(--radius-lg)',
                 padding: 24,
                 scrollSnapAlign: 'start',
+                transition: 'transform 0.30s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.30s ease',
+                cursor: 'default',
+              }}
+              onMouseEnter={e => {
+                const el = e.currentTarget as HTMLElement;
+                el.style.transform = 'translateY(-5px) scale(1.015)';
+                el.style.boxShadow = '0 14px 36px rgba(27,48,121,0.13)';
+              }}
+              onMouseLeave={e => {
+                const el = e.currentTarget as HTMLElement;
+                el.style.transform = 'translateY(0) scale(1)';
+                el.style.boxShadow = 'none';
               }}
             >
               {/* Name + Google icon */}

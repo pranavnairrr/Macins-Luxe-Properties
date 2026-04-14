@@ -70,17 +70,17 @@ export default function Nav() {
                 <Link
                   key={link.label}
                   href={link.href}
+                  className="nav-link-item"
                   style={{
                     fontFamily: 'var(--font)',
                     fontSize: '0.9375rem',
                     fontWeight: 500,
                     color: 'var(--heading)',
                     letterSpacing: 0,
-                    transition: 'color var(--transition)',
                     whiteSpace: 'nowrap',
+                    position: 'relative',
+                    paddingBottom: 2,
                   }}
-                  onMouseEnter={e => (e.currentTarget.style.color = 'var(--navy)')}
-                  onMouseLeave={e => (e.currentTarget.style.color = 'var(--heading)')}
                 >
                   {link.label}
                 </Link>
@@ -214,6 +214,24 @@ export default function Nav() {
           .nav-desktop { display: none !important; }
           .nav-mobile  { display: flex !important; }
         }
+
+        /* ── Nav link underline reveal ── */
+        .nav-link-item {
+          transition: color 0.22s ease;
+        }
+        .nav-link-item::after {
+          content: '';
+          position: absolute;
+          bottom: -2px;
+          left: 0;
+          width: 0;
+          height: 2px;
+          background: var(--navy);
+          border-radius: 2px;
+          transition: width 0.28s cubic-bezier(0.4,0,0.2,1);
+        }
+        .nav-link-item:hover { color: var(--navy) !important; }
+        .nav-link-item:hover::after { width: 100%; }
       `}</style>
     </>
   );

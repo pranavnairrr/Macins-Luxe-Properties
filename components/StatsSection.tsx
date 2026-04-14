@@ -23,7 +23,7 @@ export default function StatsSection() {
           Most Followed Real Estate Brand in the UAE
         </h2>
 
-        <div style={{
+        <div className="stats-grid" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(4, 1fr)',
           gap: 'var(--gap)',
@@ -31,12 +31,27 @@ export default function StatsSection() {
           {stats.map(s => (
             <div
               key={s.label}
+              className="stat-card"
               style={{
                 background: 'var(--white)',
                 border: '1px solid var(--border)',
                 borderRadius: 'var(--radius-md)',
                 padding: 28,
                 boxShadow: '0 1px 4px rgba(27,48,121,0.06)',
+                transition: 'transform 0.30s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.30s ease, border-color 0.25s ease',
+                cursor: 'default',
+              }}
+              onMouseEnter={e => {
+                const el = e.currentTarget as HTMLElement;
+                el.style.transform = 'translateY(-6px)';
+                el.style.boxShadow = '0 12px 32px rgba(27,48,121,0.14)';
+                el.style.borderColor = 'var(--navy-light)';
+              }}
+              onMouseLeave={e => {
+                const el = e.currentTarget as HTMLElement;
+                el.style.transform = 'translateY(0)';
+                el.style.boxShadow = '0 1px 4px rgba(27,48,121,0.06)';
+                el.style.borderColor = 'var(--border)';
               }}
             >
               <div style={{
@@ -73,9 +88,9 @@ export default function StatsSection() {
       </div>
 
       <style jsx>{`
-        @media (max-width: 1024px) {
-          div[style*="repeat(4, 1fr)"] { grid-template-columns: repeat(2, 1fr) !important; }
-        }
+        @media (max-width: 1024px) { .stats-grid { grid-template-columns: repeat(2, 1fr) !important; } }
+        @media (max-width: 480px)  { .stats-grid { grid-template-columns: 1fr !important; } }
+        @media (max-width: 640px)  { .stat-card  { padding: 13px !important; } }
       `}</style>
     </section>
   );

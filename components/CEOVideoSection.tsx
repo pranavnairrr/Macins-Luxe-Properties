@@ -15,7 +15,7 @@ export default function CEOVideoSection() {
   return (
     <section className="section">
       <div className="container">
-        <div style={{
+        <div className="ceo-grid" style={{
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
           gap: 64,
@@ -47,19 +47,36 @@ export default function CEOVideoSection() {
               curated to bring you closer to the lifestyle you deserve.
             </p>
 
-            <ul style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 36 }}>
+            <ul style={{ display: 'flex', flexDirection: 'column', gap: 0, marginBottom: 36 }}>
               {[
-                { label: 'Property Tours',      desc: 'Walk through some of the most stunning residences.' },
-                { label: 'Lifestyle Insights',  desc: 'Discover what makes each community truly unique.' },
-                { label: 'Expert Guidance',     desc: 'Get tips, advice, and market updates directly from our team.' },
+                { label: 'Property Tours',     desc: 'Walk through some of the most stunning residences.' },
+                { label: 'Lifestyle Insights', desc: 'Discover what makes each community truly unique.' },
+                { label: 'Expert Guidance',    desc: 'Get tips, advice, and market updates directly from our team.' },
               ].map(item => (
-                <li key={item.label} style={{ display: 'flex', gap: 8 }}>
-                  <span style={{ fontWeight: 600, color: 'var(--heading)', whiteSpace: 'nowrap' }}>
-                    {item.label}
-                  </span>
-                  <span style={{ color: 'var(--body)', fontSize: '0.9375rem' }}>
-                    — {item.desc}
-                  </span>
+                <li
+                  key={item.label}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: 14,
+                    padding: '14px 0',
+                    borderBottom: '1px solid var(--border)',
+                  }}
+                >
+                  {/* Accent dash */}
+                  <div style={{
+                    width: 18,
+                    height: 2,
+                    background: 'var(--navy)',
+                    borderRadius: 1,
+                    marginTop: 10,
+                    flexShrink: 0,
+                  }} />
+                  {/* Label + desc in one block so wrapping is natural */}
+                  <p style={{ fontSize: '0.9375rem', lineHeight: 1.65, color: 'var(--body)', margin: 0 }}>
+                    <strong style={{ color: 'var(--heading)', fontWeight: 600 }}>{item.label}</strong>
+                    {' — '}{item.desc}
+                  </p>
                 </li>
               ))}
             </ul>
@@ -172,7 +189,7 @@ export default function CEOVideoSection() {
 
       <style jsx>{`
         @media (max-width: 768px) {
-          div[style*="grid-template-columns: 1fr 1fr"] {
+          .ceo-grid {
             grid-template-columns: 1fr !important;
             gap: 32px !important;
           }

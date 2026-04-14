@@ -84,13 +84,19 @@ export default function BlogsSection() {
         </div>
 
         {/* 3-column grid */}
-        <div style={{
+        <div className="blogs-grid" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(3, 1fr)',
           gap: 'var(--gap)',
         }}>
           {blogs.map(blog => (
-            <article key={blog.title}>
+            <article
+              key={blog.title}
+              className="blog-card"
+              style={{ transition: 'transform 0.28s ease' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-4px)'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; }}
+            >
               {/* Image */}
               <div style={{
                 position: 'relative',
@@ -111,13 +117,14 @@ export default function BlogsSection() {
               </div>
 
               {/* Body */}
-              <h3 style={{
+              <h3 className="blog-title" style={{
                 fontFamily: 'var(--font)',
                 fontSize: '1.0625rem',
                 fontWeight: 600,
                 lineHeight: 1.45,
                 color: 'var(--heading)',
                 marginBottom: 10,
+                transition: 'color 0.22s ease',
               }}>
                 {blog.title}
               </h3>
@@ -154,12 +161,9 @@ export default function BlogsSection() {
       </div>
 
       <style jsx>{`
-        @media (max-width: 1024px) {
-          div[style*="repeat(3, 1fr)"] { grid-template-columns: repeat(2, 1fr) !important; }
-        }
-        @media (max-width: 640px) {
-          div[style*="repeat(3, 1fr)"] { grid-template-columns: 1fr !important; }
-        }
+        @media (max-width: 1024px) { .blogs-grid { grid-template-columns: repeat(2, 1fr) !important; } }
+        @media (max-width: 640px)  { .blogs-grid { grid-template-columns: 1fr !important; } }
+        .blog-card:hover .blog-title { color: var(--navy) !important; }
       `}</style>
     </section>
   );

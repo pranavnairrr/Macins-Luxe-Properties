@@ -84,10 +84,16 @@ export default function LocationsSection() {
       </div>
 
       <style jsx>{`
+        /* ── Location card hover ── */
+        .loc-card:hover .loc-img { transform: scale(1.06) !important; }
+        .loc-card:hover .loc-overlay { background: linear-gradient(to top, rgba(10,18,40,0.82) 0%, rgba(10,18,40,0.20) 60%, transparent 100%) !important; }
+        .loc-card:hover .loc-name { transform: translateY(-3px); letter-spacing: 0.03em; }
+
         @media (max-width: 768px) {
           .loc-grid {
             grid-template-columns: 1fr 1fr !important;
-            grid-template-rows: 200px 200px 200px !important;
+            grid-template-rows: 150px 150px 150px !important;
+            gap: 8px !important;
           }
           .loc-card--tall { grid-row: auto !important; }
         }
@@ -96,8 +102,8 @@ export default function LocationsSection() {
             grid-template-columns: 1fr !important;
             grid-template-rows: none !important;
           }
-          .loc-card { height: 220px; }
-          .loc-card--tall { grid-row: auto !important; height: 220px; }
+          .loc-card { height: 150px; }
+          .loc-card--tall { grid-row: auto !important; height: 150px; }
         }
       `}</style>
     </section>
@@ -121,36 +127,36 @@ function LocationCard({ name, image, spanRows }: { name: string; image: string; 
         alt={name}
         fill
         sizes="(max-width: 768px) 50vw, 33vw"
-        style={{ objectFit: 'cover', transition: 'transform 500ms cubic-bezier(0.4,0,0.2,1)' }}
-        onMouseEnter={e => ((e.target as HTMLElement).style.transform = 'scale(1.04)')}
-        onMouseLeave={e => ((e.target as HTMLElement).style.transform = 'scale(1)')}
+        className="loc-img"
+        style={{ objectFit: 'cover', transition: 'transform 600ms cubic-bezier(0.4,0,0.2,1)' }}
       />
+      {/* Gradient overlay — darkens on hover via CSS */}
+      <div className="loc-overlay" style={{
+        position: 'absolute',
+        inset: 0,
+        background: 'linear-gradient(to top, rgba(10,18,40,0.65) 0%, transparent 55%)',
+        transition: 'background 0.35s ease',
+      }} />
       {/* Bottom-left label */}
       <div style={{
         position: 'absolute',
-        bottom: 16,
-        left: 16,
-        right: 16,
+        bottom: 18,
+        left: 18,
+        right: 18,
+        zIndex: 1,
       }}>
-        <span style={{
+        <span className="loc-name" style={{
           fontFamily: 'var(--font)',
-          fontSize: '0.9375rem',
+          fontSize: '1rem',
           fontWeight: 600,
           color: '#fff',
-          textShadow: '0 1px 4px rgba(0,0,0,0.5)',
+          textShadow: '0 1px 6px rgba(0,0,0,0.5)',
+          display: 'inline-block',
+          transition: 'transform 0.30s cubic-bezier(0.34,1.56,0.64,1), letter-spacing 0.25s ease',
         }}>
           {name}
         </span>
       </div>
-      {/* Gradient overlay for text legibility */}
-      <div style={{
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        height: 80,
-        background: 'linear-gradient(to top, rgba(10,18,40,0.65) 0%, transparent 100%)',
-      }} />
     </div>
   );
 }

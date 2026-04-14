@@ -41,11 +41,21 @@ export default function DeveloperLogos() {
                 background: 'var(--white)',
                 padding: '20px 32px',
                 height: 80,
-                transition: 'border-color var(--transition)',
+                transition: 'border-color 0.25s ease, transform 0.28s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.28s ease',
                 cursor: 'default',
               }}
-              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.borderColor = 'var(--heading)')}
-              onMouseLeave={e => ((e.currentTarget as HTMLElement).style.borderColor = 'var(--border)')}
+              onMouseEnter={e => {
+                const el = e.currentTarget as HTMLElement;
+                el.style.borderColor = 'var(--heading)';
+                el.style.transform = 'translateY(-4px) scale(1.03)';
+                el.style.boxShadow = '0 8px 24px rgba(27,48,121,0.10)';
+              }}
+              onMouseLeave={e => {
+                const el = e.currentTarget as HTMLElement;
+                el.style.borderColor = 'var(--border)';
+                el.style.transform = 'translateY(0) scale(1)';
+                el.style.boxShadow = 'none';
+              }}
             >
               <span style={{
                 fontFamily: 'var(--font)',

@@ -119,11 +119,11 @@ export default function PropertyCardsSection({ title, ctaText, cards, grey }: Pr
                 overflow: 'hidden',
                 background: 'var(--white)',
                 boxShadow: 'var(--shadow-card)',
-                transition: 'box-shadow var(--transition-slow), transform var(--transition-slow)',
+                transition: 'box-shadow 0.32s ease, transform 0.32s cubic-bezier(0.34,1.56,0.64,1)',
               }}
               onMouseEnter={e => {
-                (e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-card-hover)';
-                (e.currentTarget as HTMLElement).style.transform = 'translateY(-3px)';
+                (e.currentTarget as HTMLElement).style.boxShadow = '0 16px 40px rgba(27,48,121,0.18)';
+                (e.currentTarget as HTMLElement).style.transform = 'translateY(-6px)';
               }}
               onMouseLeave={e => {
                 (e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-card)';
@@ -266,13 +266,16 @@ export default function PropertyCardsSection({ title, ctaText, cards, grey }: Pr
             overflow-x: auto;
             scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch;
-            gap: 16px !important;
-            padding-bottom: 12px;
+            gap: 12px !important;
+            padding-bottom: 10px;
           }
           .cards-grid > article {
-            flex: 0 0 calc(85vw - 48px);
+            flex: 0 0 calc(78vw - 28px);
             min-width: 0;
             scroll-snap-align: start;
+          }
+          .cards-grid > article [style*="padding: 20px"] {
+            padding: 14px 14px 0 !important;
           }
         }
         .cards-grid::-webkit-scrollbar { display: none; }

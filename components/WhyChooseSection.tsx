@@ -108,7 +108,29 @@ export default function WhyChooseSection() {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
               {points.map(p => (
-                <div key={p.num}>
+                <div
+                  key={p.num}
+                  className="why-point"
+                  style={{
+                    padding: '16px 20px',
+                    borderRadius: 'var(--radius-md)',
+                    border: '1px solid transparent',
+                    transition: 'border-color 0.25s ease, background 0.25s ease, transform 0.28s cubic-bezier(0.34,1.56,0.64,1)',
+                    cursor: 'default',
+                  }}
+                  onMouseEnter={e => {
+                    const el = e.currentTarget as HTMLElement;
+                    el.style.borderColor = 'var(--border)';
+                    el.style.background = 'var(--white-section)';
+                    el.style.transform = 'translateX(6px)';
+                  }}
+                  onMouseLeave={e => {
+                    const el = e.currentTarget as HTMLElement;
+                    el.style.borderColor = 'transparent';
+                    el.style.background = 'transparent';
+                    el.style.transform = 'translateX(0)';
+                  }}
+                >
                   <div style={{
                     fontFamily: 'var(--font)',
                     fontSize: '1.125rem',

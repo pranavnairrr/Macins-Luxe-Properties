@@ -57,7 +57,7 @@ export default function Footer() {
       <div className="container">
 
         {/* ── Top bar: logo + phone/email ── */}
-        <div style={{
+        <div className="footer-topbar" style={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
@@ -99,7 +99,7 @@ export default function Footer() {
         </div>
 
         {/* ── 5-column link grid ── */}
-        <div style={{
+        <div className="footer-grid" style={{
           display: 'grid',
           gridTemplateColumns: '1.5fr 1fr 1fr 1.5fr 1fr',
           gap: 40,
@@ -213,18 +213,21 @@ export default function Footer() {
       </div>
 
       <style jsx>{`
-        @media (max-width: 1024px) {
-          div[style*="1.5fr 1fr 1fr 1.5fr 1fr"] {
-            grid-template-columns: repeat(3, 1fr) !important;
-          }
-        }
+        @media (max-width: 1024px) { .footer-grid { grid-template-columns: repeat(3, 1fr) !important; } }
         @media (max-width: 640px) {
-          div[style*="1.5fr 1fr 1fr 1.5fr 1fr"] {
+          .footer-grid {
             grid-template-columns: repeat(2, 1fr) !important;
+            gap: 20px !important;
+            margin-bottom: 24px !important;
           }
-          div[style*="justify-content: space-between"][style*="paddingBottom: 32"] {
-            flex-direction: column !important;
-            align-items: flex-start !important;
+          .footer-topbar {
+            padding-bottom: 16px !important;
+            margin-bottom: 20px !important;
+            gap: 12px !important;
+          }
+          footer {
+            padding-top: 28px !important;
+            padding-bottom: 16px !important;
           }
         }
       `}</style>

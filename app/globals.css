@@ -85,6 +85,7 @@ html {
   font-size: 16px;
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+  overflow-x: hidden;
 }
 
 body {
@@ -96,6 +97,7 @@ body {
   background-color: var(--white);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
 img, video {
@@ -135,7 +137,31 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @media (max-width: 640px) {
-  .container { padding-inline: var(--gutter); }
+  /*
+   * 30 % scale-down: set the root font-size to 70 % of 16 px = 11.2 px.
+   * Every rem-based value (fonts, padding, radii, gaps) automatically shrinks
+   * by 30 % with no other changes needed for rem units.
+   */
+  html { font-size: 70%; }
+
+  .container { padding-inline: 16px; }
+
+  /* px-based spacing tokens — also scaled to 70 % */
+  :root {
+    --section:     30px;
+    --section-sm:  20px;
+    --section-lg:  40px;
+    --gap:         10px;
+    --gap-lg:      13px;
+    --card-pad:    10px;
+    --card-pad-lg: 13px;
+  }
+
+  .section-header { margin-bottom: 18px !important; gap: 8px !important; }
+}
+
+@media (max-width: 400px) {
+  .container { padding-inline: 12px; }
 }
 
 .section        { padding-block: var(--section); }
@@ -150,6 +176,14 @@ h1, h2, h3, h4, h5, h6 {
   justify-content: space-between;
   margin-bottom: 40px;
   gap: 16px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+  .section-header {
+    margin-bottom: 24px;
+    gap: 12px;
+  }
 }
 
 /* ─────────────────────────────────────────────────────────────

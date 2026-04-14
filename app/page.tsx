@@ -10,6 +10,7 @@ import LocationsSection from '@/components/LocationsSection';
 import AwardsSection from '@/components/AwardsSection';
 import TestimonialsSection from '@/components/TestimonialsSection';
 import BlogsSection from '@/components/BlogsSection';
+import MapSection from '@/components/MapSection';
 import Footer from '@/components/Footer';
 import type { PropertyCard } from '@/components/PropertyCardsSection';
 
@@ -107,14 +108,14 @@ export default function Home() {
         grey
       />
 
-      {/* 6. DEVELOPER LOGOS STRIP */}
+      {/* 6. MAP — Dubai property locations */}
+      <MapSection />
+
+      {/* 7. DEVELOPER LOGOS STRIP */}
       <DeveloperLogos />
 
-      {/* 7. EXPLORE PRIME LOCATIONS */}
+      {/* 8. EXPLORE PRIME LOCATIONS */}
       <LocationsSection />
-
-      {/* 8. CEO VIDEO */}
-      <CEOVideoSection />
 
       {/* 9. STATS ROW */}
       <StatsSection />
@@ -131,7 +132,10 @@ export default function Home() {
       {/* 13. LATEST BLOGS */}
       <BlogsSection />
 
-      {/* 14. FOOTER */}
+      {/* 14. CEO VIDEO — last before footer */}
+      <CEOVideoSection />
+
+      {/* 15. FOOTER */}
       <Footer />
     </>
   );
