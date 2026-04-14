@@ -106,7 +106,7 @@ export default function PropertyCardsSection({ title, ctaText, cards, grey }: Pr
         </div>
 
         {/* ── Cards grid ── */}
-        <div style={{
+        <div className="cards-grid" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(3, 1fr)',
           gap: 'var(--gap)',
@@ -258,11 +258,25 @@ export default function PropertyCardsSection({ title, ctaText, cards, grey }: Pr
 
       <style jsx>{`
         @media (max-width: 1024px) {
-          div[style*="repeat(3, 1fr)"] { grid-template-columns: repeat(2, 1fr) !important; }
+          .cards-grid { grid-template-columns: repeat(2, 1fr) !important; }
         }
         @media (max-width: 640px) {
-          div[style*="repeat(3, 1fr)"] { grid-template-columns: 1fr !important; }
+          .cards-grid {
+            display: flex !important;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            gap: 16px !important;
+            padding-bottom: 12px;
+          }
+          .cards-grid > article {
+            flex: 0 0 calc(85vw - 48px);
+            min-width: 0;
+            scroll-snap-align: start;
+          }
         }
+        .cards-grid::-webkit-scrollbar { display: none; }
+        .cards-grid { scrollbar-width: none; }
       `}</style>
     </section>
   );

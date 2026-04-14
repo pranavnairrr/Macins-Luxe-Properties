@@ -16,66 +16,66 @@ import type { PropertyCard } from '@/components/PropertyCardsSection';
 /* ── Property card data ── */
 const premiumCards: PropertyCard[] = [
   {
-    image: '/images/hero/hero-4.jpg',
+    image: '/images/properties/Binghatti-Hills-at-Dubai-HIlls.jpeg',
     badge: 'Handover: Q3 2030',
-    developerLogoText: 'EMAAR',
-    title: 'Golf Vale',
-    developer: 'Emaar Properties',
+    developerLogoText: 'BINGHATTI',
+    title: 'Binghatti Hills',
+    developer: 'Binghatti Properties',
     price: 'AED 1.10M',
-    location: 'Dubai South',
+    location: 'Dubai Hills',
     beds: '1, 2, 3',
   },
   {
-    image: '/images/hero/hero-2.jpg',
+    image: '/images/properties/gulfnews_2025-12-12_kjm4wss9_Bugatti-Residences-by-Binghatti.avif',
     badge: 'Handover: Q2 2027',
-    developerLogoText: 'EMAAR',
-    title: 'Mareva at The Oasis',
-    developer: 'Emaar Properties',
+    developerLogoText: 'BINGHATTI',
+    title: 'Bugatti Residences',
+    developer: 'Binghatti Properties',
     price: 'AED 13.47M',
-    location: 'The Oasis',
-    beds: '4, 5, 6',
+    location: 'Business Bay',
+    beds: '3, 4, 5',
   },
   {
-    image: '/images/hero/hero-3.jpg',
+    image: '/images/properties/binghatti-luxuria-hero-banner.avif',
     badge: 'Handover: Q4 2026',
-    developerLogoText: 'EMAAR',
-    title: 'Avelia at The Valley',
-    developer: 'Emaar Properties',
+    developerLogoText: 'BINGHATTI',
+    title: 'Binghatti Luxuria',
+    developer: 'Binghatti Properties',
     price: 'AED 7.25M',
-    location: 'The Valley',
-    beds: '3, 4',
+    location: 'JVC',
+    beds: '1, 2, 3',
   },
 ];
 
 const offplanCards: PropertyCard[] = [
   {
-    image: '/images/hero/hero-3.jpg',
+    image: '/images/properties/Binghatti-Hillside-at-Dubai-Science-Park.webp',
     badge: 'Handover: Q4 2029',
-    developerLogoText: 'DANUBE',
-    title: 'Greenz by Danube',
-    developer: 'Danube Properties',
+    developerLogoText: 'BINGHATTI',
+    title: 'Binghatti Hillside',
+    developer: 'Binghatti Properties',
     price: 'AED 3.5M',
-    location: 'Majan',
-    beds: '3, 4, 5',
+    location: 'Dubai Science Park',
+    beds: '1, 2, 3',
   },
   {
-    image: '/images/hero/hero-1.webp',
+    image: '/images/properties/Binghatti-Falre-JVT-Towers.jpg',
     badge: 'Handover: Q4 2027',
     developerLogoText: 'BINGHATTI',
-    title: 'Binghatti Skyflame',
+    title: 'Binghatti Flare',
     developer: 'Binghatti Properties',
     price: 'AED 585K',
-    location: 'Majan',
+    location: 'JVT',
     beds: '1, 2, Studio',
   },
   {
-    image: '/images/hero/hero-4.jpg',
-    badge: 'Handover: Q3 2030',
-    developerLogoText: 'EMAAR',
-    title: 'Golf Vale',
-    developer: 'Emaar Properties',
+    image: '/images/properties/binghatti-hillcrest-hero-banner.avif',
+    badge: 'Handover: Q3 2026',
+    developerLogoText: 'BINGHATTI',
+    title: 'Binghatti Hillcrest',
+    developer: 'Binghatti Properties',
     price: 'AED 1.10M',
-    location: 'Qulba South',
+    location: 'Dubai Hills',
     beds: '1, 2, Studio',
   },
 ];
@@ -89,26 +89,17 @@ export default function Home() {
       {/* 2. HERO SLIDER */}
       <HeroSection />
 
-      {/* 3. CEO VIDEO */}
-      <CEOVideoSection />
-
-      {/* 4. STATS ROW */}
-      <StatsSection />
-
-      {/* 5. WHY CHOOSE */}
-      <WhyChooseSection />
-
-      {/* 6. PREMIUM LUXURY DEVELOPMENTS */}
+      {/* 3. PREMIUM LUXURY DEVELOPMENTS */}
       <PropertyCardsSection
         title="Premium Luxury Developments"
         ctaText="More Off-plan Projects"
         cards={premiumCards}
       />
 
-      {/* 7. CTA BANNER */}
+      {/* 4. CTA BANNER */}
       <CTABanner />
 
-      {/* 8. LATEST OFFPLAN LAUNCHES */}
+      {/* 5. LATEST OFFPLAN LAUNCHES */}
       <PropertyCardsSection
         title="Latest Offplan Launches"
         ctaText="More Off-plan Projects"
@@ -116,11 +107,20 @@ export default function Home() {
         grey
       />
 
-      {/* 9. DEVELOPER LOGOS STRIP */}
+      {/* 6. DEVELOPER LOGOS STRIP */}
       <DeveloperLogos />
 
-      {/* 10. EXPLORE PRIME LOCATIONS */}
+      {/* 7. EXPLORE PRIME LOCATIONS */}
       <LocationsSection />
+
+      {/* 8. CEO VIDEO */}
+      <CEOVideoSection />
+
+      {/* 9. STATS ROW */}
+      <StatsSection />
+
+      {/* 10. WHY CHOOSE */}
+      <WhyChooseSection />
 
       {/* 11. RECOGNITIONS & ACHIEVEMENTS */}
       <AwardsSection />

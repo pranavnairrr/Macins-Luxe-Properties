@@ -4,19 +4,19 @@ import Image from 'next/image';
 
 const blogs = [
   {
-    image: '/images/hero/hero-3.jpg',
+    image: '/images/properties/binghatti-hillcrest-hero-banner.avif',
     title: 'RERA Forms in Dubai for Property Buyers, Sellers, and Tenants: What You Need to Know',
     date: 'January 30, 2026',
     readTime: '58 min read',
   },
   {
-    image: '/images/hero/hero-1.webp',
+    image: '/images/properties/binghatti-luxuria-hero-banner.avif',
     title: 'Dubai Real Estate Market Q1 2026 Report by Macins Luxe',
     date: 'April 3, 2026',
     readTime: '08 min read',
   },
   {
-    image: '/images/hero/hero-2.jpg',
+    image: '/images/properties/Binghatti-Hills-at-Dubai-HIlls.jpeg',
     title: 'The Citadel Tower, Business Bay: A Comprehensive Guide',
     date: 'April 1, 2026',
     readTime: '09 min read',

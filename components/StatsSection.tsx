@@ -76,9 +76,6 @@ export default function StatsSection() {
         @media (max-width: 1024px) {
           div[style*="repeat(4, 1fr)"] { grid-template-columns: repeat(2, 1fr) !important; }
         }
-        @media (max-width: 480px) {
-          div[style*="repeat(4, 1fr)"] { grid-template-columns: 1fr !important; }
-        }
       `}</style>
     </section>
   );

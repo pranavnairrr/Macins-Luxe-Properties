@@ -24,7 +24,7 @@ export default function WhyChooseSection() {
   return (
     <section className="section">
       <div className="container">
-        <div style={{
+        <div className="why-grid" style={{
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
           gap: 64,
@@ -32,50 +32,50 @@ export default function WhyChooseSection() {
         }}>
 
           {/* ── Left: photo grid ── */}
-          <div style={{
+          <div className="why-photos" style={{
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
             gridTemplateRows: '240px 200px',
             gap: 12,
           }}>
             {/* Large top-left image spans 2 columns */}
-            <div style={{
+            <div className="why-photo-main" style={{
               gridColumn: '1 / 3',
               borderRadius: 'var(--radius-md)',
               overflow: 'hidden',
               position: 'relative',
             }}>
               <Image
-                src="/images/hero/hero-2.jpg"
-                alt="Office space"
+                src="/images/properties/sc2XBvXuMy7kd2utsgdQJGRdJ95XNwYBnPlqEL9P.png"
+                alt="Luxury property"
                 fill
                 sizes="50vw"
                 style={{ objectFit: 'cover' }}
               />
             </div>
             {/* Bottom left */}
-            <div style={{
+            <div className="why-photo-sm" style={{
               borderRadius: 'var(--radius-md)',
               overflow: 'hidden',
               position: 'relative',
             }}>
               <Image
-                src="/images/hero/hero-3.jpg"
-                alt="Team meeting"
+                src="/images/properties/DhwUVQqZWV.webp"
+                alt="Luxury interior"
                 fill
                 sizes="25vw"
                 style={{ objectFit: 'cover' }}
               />
             </div>
             {/* Bottom right */}
-            <div style={{
+            <div className="why-photo-sm" style={{
               borderRadius: 'var(--radius-md)',
               overflow: 'hidden',
               position: 'relative',
             }}>
               <Image
-                src="/images/hero/hero-4.jpg"
-                alt="Luxury property"
+                src="/images/properties/Grove.avif"
+                alt="Premium development"
                 fill
                 sizes="25vw"
                 style={{ objectFit: 'cover' }}
@@ -84,7 +84,7 @@ export default function WhyChooseSection() {
           </div>
 
           {/* ── Right: text ── */}
-          <div>
+          <div className="why-text">
             <h2 style={{
               fontFamily: 'var(--font)',
               fontSize: 'clamp(1.375rem, 2vw, 1.875rem)',
@@ -137,10 +137,18 @@ export default function WhyChooseSection() {
 
       <style jsx>{`
         @media (max-width: 768px) {
-          div[style*="grid-template-columns: 1fr 1fr"][style*="gap: 64"] {
-            grid-template-columns: 1fr !important;
-            gap: 40px !important;
+          .why-grid {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 32px !important;
           }
+          .why-text { order: 1; }
+          .why-photos {
+            order: 2;
+            grid-template-rows: 240px !important;
+          }
+          .why-photo-main { grid-column: auto !important; }
+          .why-photo-sm { display: none !important; }
         }
       `}</style>
     </section>

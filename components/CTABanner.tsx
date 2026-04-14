@@ -7,7 +7,7 @@ export default function CTABanner() {
     <section style={{ position: 'relative', overflow: 'hidden', minHeight: 280, display: 'flex', alignItems: 'center' }}>
       {/* Background image */}
       <Image
-        src="/images/hero/hero-1.webp"
+        src="/images/properties/gulfnews_2025-12-12_kjm4wss9_Bugatti-Residences-by-Binghatti.avif"
         alt=""
         fill
         sizes="100vw"

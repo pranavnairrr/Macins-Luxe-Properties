@@ -47,7 +47,7 @@ export default function LocationsSection() {
             [Palm Jebel Ali (tall)] [Business Bay] [Downtown Dubai (tall)]
             [Palm Jebel Ali (tall)] [Dubai Marina] [Downtown Dubai (tall)]
         */}
-        <div style={{
+        <div className="loc-grid" style={{
           display: 'grid',
           gridTemplateColumns: '1fr 1fr 1fr',
           gridTemplateRows: '260px 260px',
@@ -57,21 +57,21 @@ export default function LocationsSection() {
           {/* Palm Jebel Ali — spans both rows */}
           <LocationCard
             name="Palm Jebel Ali"
-            image="/images/hero/hero-1.webp"
-            style={{ gridRow: '1 / 3' }}
+            image="/images/properties/616795878.jpg"
+            spanRows
           />
 
           {/* Business Bay */}
           <LocationCard
             name="Business Bay"
-            image="/images/hero/hero-2.jpg"
+            image="/images/properties/Binghatti_Flare_in_JVT_Dubai_by_Binghatti_Developers_f712d33e54.webp"
           />
 
           {/* Downtown Dubai — spans both rows */}
           <LocationCard
             name="Downtown Dubai"
             image="/images/hero/hero-4.jpg"
-            style={{ gridRow: '1 / 3' }}
+            spanRows
           />
 
           {/* Dubai Marina */}
@@ -85,31 +85,35 @@ export default function LocationsSection() {
 
       <style jsx>{`
         @media (max-width: 768px) {
-          div[style*="grid-template-columns: 1fr 1fr 1fr"] {
+          .loc-grid {
             grid-template-columns: 1fr 1fr !important;
             grid-template-rows: 200px 200px 200px !important;
           }
+          .loc-card--tall { grid-row: auto !important; }
         }
         @media (max-width: 480px) {
-          div[style*="grid-template-columns: 1fr 1fr 1fr"] {
+          .loc-grid {
             grid-template-columns: 1fr !important;
-            grid-template-rows: auto !important;
+            grid-template-rows: none !important;
           }
+          .loc-card { height: 220px; }
+          .loc-card--tall { grid-row: auto !important; height: 220px; }
         }
       `}</style>
     </section>
   );
 }
 
-function LocationCard({ name, image, style: extraStyle }: { name: string; image: string; style?: React.CSSProperties }) {
+function LocationCard({ name, image, spanRows }: { name: string; image: string; spanRows?: boolean }) {
   return (
     <div
+      className={spanRows ? 'loc-card loc-card--tall' : 'loc-card'}
       style={{
         position: 'relative',
         borderRadius: 'var(--radius-md)',
         overflow: 'hidden',
         cursor: 'pointer',
-        ...extraStyle,
+        ...(spanRows ? { gridRow: '1 / 3' } : {}),
       }}
     >
       <Image

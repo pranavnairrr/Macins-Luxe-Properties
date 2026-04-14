@@ -4,9 +4,9 @@ import Image from 'next/image';
 import { useState } from 'react';
 
 const videos = [
-  { thumb: '/images/hero/hero-1.webp', label: 'AED 35,000,000' },
-  { thumb: '/images/hero/hero-2.jpg',  label: 'AED 12,500,000' },
-  { thumb: '/images/hero/hero-3.jpg',  label: 'AED 8,750,000' },
+  { thumb: '/images/properties/7c21bee256ef0219ac3bb7297ba9b8f26edb599f1f48d4ab5e0f6eb71cd56ee0.avif', label: 'AED 35,000,000' },
+  { thumb: '/images/properties/0363bcd81373d842e3736d5901a18e1cc8d1ca44aa7575ff44201a8f2f086424.avif', label: 'AED 12,500,000' },
+  { thumb: '/images/properties/3(1)_1771865424.avif', label: 'AED 8,750,000' },
 ];
 
 export default function CEOVideoSection() {
@@ -174,7 +174,7 @@ export default function CEOVideoSection() {
         @media (max-width: 768px) {
           div[style*="grid-template-columns: 1fr 1fr"] {
             grid-template-columns: 1fr !important;
-            gap: 40px !important;
+            gap: 32px !important;
           }
         }
       `}</style>

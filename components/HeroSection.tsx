@@ -136,6 +136,7 @@ export default function HeroSection() {
 
       {/* ── Hero content — left-aligned, vertically centred above search bar ── */}
       <div
+        className="hero-content-wrap"
         style={{
           position: 'absolute',
           /* Start content roughly 18% from top, give space for the search bar at bottom */
@@ -325,6 +326,7 @@ export default function HeroSection() {
 
       {/* ── Search bar — glassmorphic, floats on the image ── */}
       <div
+        className="hero-search-wrap"
         style={{
           position: 'absolute',
           bottom: 0,
@@ -412,8 +414,16 @@ export default function HeroSection() {
       <style jsx>{`
         input::placeholder { color: rgba(255,255,255,0.55); }
         @media (max-width: 640px) {
-          section > div[style*="padding: 0 var(--gutter-lg) 20px"] {
+          .hero-content-wrap {
             padding-inline: var(--gutter) !important;
+            max-width: 100% !important;
+          }
+          .hero-content-wrap h1 {
+            font-size: clamp(1.6rem, 7vw, 2.5rem) !important;
+          }
+          .hero-search-wrap {
+            padding-inline: var(--gutter) !important;
+            padding-bottom: 16px !important;
           }
         }
       `}</style>

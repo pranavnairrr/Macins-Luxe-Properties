@@ -24,7 +24,7 @@ export default function DeveloperLogos() {
           Developers We Work With
         </h2>
 
-        <div style={{
+        <div className="dev-grid" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(5, 1fr)',
           gap: 'var(--gap)',
@@ -67,11 +67,24 @@ export default function DeveloperLogos() {
 
       <style jsx>{`
         @media (max-width: 1024px) {
-          div[style*="repeat(5, 1fr)"] { grid-template-columns: repeat(3, 1fr) !important; }
+          .dev-grid { grid-template-columns: repeat(3, 1fr) !important; }
         }
         @media (max-width: 640px) {
-          div[style*="repeat(5, 1fr)"] { grid-template-columns: repeat(2, 1fr) !important; }
+          .dev-grid {
+            display: flex !important;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            gap: 12px !important;
+            padding-bottom: 8px;
+          }
+          .dev-grid > div {
+            flex: 0 0 140px;
+            scroll-snap-align: start;
+          }
         }
+        .dev-grid::-webkit-scrollbar { display: none; }
+        .dev-grid { scrollbar-width: none; }
       `}</style>
     </section>
   );
