@@ -1,0 +1,255 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   MACINS LUXE — Global CSS
+   Source: springfieldproperties.ae — 15 homepage screenshots
+   Rule: Zero external memory. Only what is visible in screenshots.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+/* ─────────────────────────────────────────────────────────────
+   CSS CUSTOM PROPERTIES (DESIGN TOKENS)
+───────────────────────────────────────────────────────────── */
+:root {
+  --navy:             #1B3079;
+  --navy-dark:        #152567;
+  --navy-light:       #1F3A8F;
+
+  --white:            #FFFFFF;
+  --white-section:    #F5F6F8;
+  --white-card:       #EDEEF1;
+
+  --heading:          #1A2535;
+  --body:             #3D4F63;
+  --muted:            #8895A2;
+  --white-text:       #FFFFFF;
+  --white-muted:      rgba(255, 255, 255, 0.70);
+
+  --red:              #E8352B;
+
+  --cta-bg:           #2B3D52;
+  --cta-bg-hover:     #1E2D3D;
+  --cta-text:         #FFFFFF;
+
+  --border:           #DDE1E9;
+  --border-card:      #E8EBF0;
+  --border-on-dark:   rgba(255, 255, 255, 0.15);
+
+  --badge-bg:         rgba(0, 0, 0, 0.48);
+  --star:             #F5A11E;
+
+  --shadow-card:        0 2px 12px rgba(27, 48, 121, 0.08);
+  --shadow-card-hover:  0 8px 28px rgba(27, 48, 121, 0.16);
+  --shadow-nav:         0 2px 12px rgba(27, 48, 121, 0.10);
+  --shadow-stat:        0 1px 4px  rgba(27, 48, 121, 0.06);
+
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:   12px;
+  --radius-btn:  6px;
+  --radius-pill: 9999px;
+
+  --font: 'Poppins', sans-serif;
+
+  --section:         80px;
+  --section-sm:      56px;
+  --section-lg:      108px;
+  --gutter:          24px;
+  --gutter-md:       40px;
+  --gutter-lg:       64px;
+  --card-pad:        24px;
+  --card-pad-lg:     32px;
+  --gap:             24px;
+  --gap-lg:          32px;
+
+  --ease:            cubic-bezier(0.4, 0, 0.2, 1);
+  --transition:      200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 380ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   RESET & BASE
+───────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.75;
+  color: var(--body);
+  background-color: var(--white);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img, video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+a { color: inherit; text-decoration: none; }
+
+button {
+  font-family: var(--font);
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+ul, ol { list-style: none; }
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font);
+  color: var(--heading);
+  line-height: 1.2;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   LAYOUT UTILITIES
+───────────────────────────────────────────────────────────── */
+.container {
+  max-width: 1380px;
+  margin-inline: auto;
+  padding-inline: var(--gutter-lg);
+}
+
+@media (max-width: 1024px) {
+  .container { padding-inline: var(--gutter-md); }
+}
+
+@media (max-width: 640px) {
+  .container { padding-inline: var(--gutter); }
+}
+
+.section        { padding-block: var(--section); }
+.section--sm    { padding-block: var(--section-sm); }
+.section--lg    { padding-block: var(--section-lg); }
+.section--grey  { background-color: var(--white-section); }
+.section--navy  { background-color: var(--navy); color: var(--white-text); }
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 40px;
+  gap: 16px;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   TYPOGRAPHY CLASSES
+───────────────────────────────────────────────────────────── */
+.text-hero {
+  font-size: clamp(2rem, 3.75vw, 3.25rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--white-text);
+}
+
+.text-h1 {
+  font-size: clamp(1.75rem, 2.75vw, 2.375rem);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--heading);
+}
+
+.text-h2 {
+  font-size: clamp(1.375rem, 2vw, 1.875rem);
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+  color: var(--heading);
+}
+
+.text-h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  color: var(--heading);
+}
+
+.text-stat {
+  font-size: clamp(1.75rem, 2.5vw, 2.25rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--heading);
+}
+
+.text-stat-label {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--heading);
+  margin-top: 4px;
+}
+
+.text-body {
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.75;
+  color: var(--body);
+}
+
+.text-sm {
+  font-size: 0.9375rem;
+  font-weight: 400;
+  line-height: 1.65;
+  color: var(--body);
+}
+
+.text-meta {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.text-footer-h {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--white-text);
+  margin-bottom: 20px;
+}
+
+.text-footer-link {
+  font-size: 0.9375rem;
+  font-weight: 400;
+  color: var(--white-muted);
+  line-height: 2;
+  transition: color var(--transition);
+  display: block;
+}
+.text-footer-link:hover { color: var(--white-text); }
+
+/* ─────────────────────────────────────────────────────────────
+   SCROLL REVEAL
+───────────────────────────────────────────────────────────── */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.55s var(--ease), transform 0.55s var(--ease);
+}
+[data-reveal].revealed {
+  opacity: 1;
+  transform: translateY(0);
+}

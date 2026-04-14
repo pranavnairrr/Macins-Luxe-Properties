@@ -1,0 +1,1346 @@
+/* ============================================================
+   SPRINGFIELD PROPERTIES — Global CSS
+   Source: springfieldproperties.ae — 15 homepage screenshots
+   Rule: Zero external memory. Only what is visible in screenshots.
+   ============================================================ */
+
+/* ─────────────────────────────────────────────────────────────
+   1. GOOGLE FONTS IMPORT
+   Visual analysis: single geometric sans-serif family, Poppins
+───────────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+
+/* ─────────────────────────────────────────────────────────────
+   2. CSS CUSTOM PROPERTIES (DESIGN TOKENS)
+   All values from screenshots only.
+───────────────────────────────────────────────────────────── */
+:root {
+
+  /* — Colors — */
+
+  /* Primary navy — footer bg, hero overlay, nav CTA */
+  /* Source: Image 1 (footer), Image 14/15 (hero) */
+  --navy:             #1B3079;
+  --navy-dark:        #152567;
+  --navy-light:       #1F3A8F;
+
+  /* Page surfaces */
+  /* Source: all white-section screenshots */
+  --white:            #FFFFFF;
+  --white-section:    #F5F6F8;   /* stats row, testimonials section bg — Image 7, 3 */
+  --white-card:       #EDEEF1;   /* testimonial card fill — Image 3 */
+
+  /* Text */
+  /* Source: section headings Image 6, 7, 11; body paragraphs Image 6, 8 */
+  --heading:          #1A2535;
+  --body:             #3D4F63;
+  --muted:            #8895A2;   /* dates, meta labels — Image 2, 3, 11 */
+  --white-text:       #FFFFFF;
+  --white-muted:      rgba(255, 255, 255, 0.70);
+
+  /* Red accent — ONLY logo pin and YouTube badge */
+  /* Source: Image 1 (logo pin), Image 8 (YouTube button) */
+  --red:              #E8352B;
+
+  /* CTA button — Enquire Now, dark charcoal (NOT the same as --navy) */
+  /* Source: Images 10, 11, 12, 13 */
+  --cta-bg:           #2B3D52;
+  --cta-bg-hover:     #1E2D3D;
+  --cta-text:         #FFFFFF;
+
+  /* Borders & dividers */
+  /* Source: footer rule Image 1, developer logo boxes Image 10 */
+  --border:           #DDE1E9;
+  --border-card:      #E8EBF0;
+  --border-on-dark:   rgba(255, 255, 255, 0.15);
+
+  /* Property card overlays */
+  /* Source: Handover badge, Images 11, 12, 13 */
+  --badge-bg:         rgba(0, 0, 0, 0.48);
+
+  /* Google review stars — Image 3 */
+  --star:             #F5A11E;
+
+  /* — Shadows — */
+  --shadow-card:        0 2px 12px rgba(27, 48, 121, 0.08);
+  --shadow-card-hover:  0 8px 28px rgba(27, 48, 121, 0.16);
+  --shadow-nav:         0 2px 12px rgba(27, 48, 121, 0.10);
+  --shadow-stat:        0 1px 4px  rgba(27, 48, 121, 0.06);
+
+  /* — Border Radius — */
+  /* Source: card rounding Images 3, 11, 13; button edges Image 10 */
+  --radius-sm:   4px;
+  --radius-md:   8px;    /* cards, logo boxes, property cards */
+  --radius-lg:   12px;   /* testimonial cards */
+  --radius-btn:  6px;    /* Enquire Now, View Details */
+  --radius-pill: 9999px;
+
+  /* — Typography — */
+  --font: 'Poppins', sans-serif;
+
+  /* — Spacing — */
+  --section:         80px;
+  --section-sm:      56px;
+  --section-lg:      108px;
+  --gutter:          24px;
+  --gutter-md:       40px;
+  --gutter-lg:       64px;
+  --card-pad:        24px;
+  --card-pad-lg:     32px;
+  --gap:             24px;
+  --gap-lg:          32px;
+
+  /* — Transitions — */
+  --ease:            cubic-bezier(0.4, 0, 0.2, 1);
+  --transition:      200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 380ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+
+/* ─────────────────────────────────────────────────────────────
+   3. RESET & BASE
+───────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.75;
+  color: var(--body);
+  background-color: var(--white);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img,
+video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: var(--font);
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font);
+  color: var(--heading);
+  line-height: 1.2;
+}
+
+
+/* ─────────────────────────────────────────────────────────────
+   4. LAYOUT UTILITIES
+───────────────────────────────────────────────────────────── */
+
+/* Container */
+.container {
+  max-width: 1380px;
+  margin-inline: auto;
+  padding-inline: var(--gutter-lg);
+}
+
+@media (max-width: 1024px) {
+  .container {
+    padding-inline: var(--gutter-md);
+  }
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding-inline: var(--gutter);
+  }
+}
+
+/* Section spacing */
+.section {
+  padding-block: var(--section);
+}
+.section--sm {
+  padding-block: var(--section-sm);
+}
+.section--lg {
+  padding-block: var(--section-lg);
+}
+
+/* Section with off-white background */
+/* Source: stats row Image 7, testimonials section Image 3 */
+.section--grey {
+  background-color: var(--white-section);
+}
+
+/* Section with navy background */
+/* Source: footer Image 1 */
+.section--navy {
+  background-color: var(--navy);
+  color: var(--white-text);
+}
+
+/* Section header row — title left, "View All" / arrows right */
+/* Source: Images 2, 11, 13 */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 40px;
+  gap: 16px;
+}
+
+/* Grid layouts */
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--gap);
+}
+
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--gap);
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--gap-lg);
+}
+
+/* Why Choose split — photo left, text right */
+/* Source: Image 6 */
+.grid-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+
+/* Locations asymmetric grid */
+/* Source: Image 9 — large left + 2 stacked right */
+.grid-locations {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-rows: 260px 260px;
+  gap: 12px;
+}
+.grid-locations__primary {
+  grid-row: 1 / 3;
+}
+
+@media (max-width: 1024px) {
+  .grid-3  { grid-template-columns: repeat(2, 1fr); }
+  .grid-4  { grid-template-columns: repeat(2, 1fr); }
+  .grid-split { grid-template-columns: 1fr; gap: 40px; }
+  .grid-locations {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+  }
+  .grid-locations__primary { grid-row: auto; }
+}
+
+@media (max-width: 640px) {
+  .grid-3  { grid-template-columns: 1fr; }
+  .grid-4  { grid-template-columns: repeat(2, 1fr); }
+  .grid-2  { grid-template-columns: 1fr; }
+  .grid-locations { grid-template-columns: 1fr; }
+}
+
+
+/* ─────────────────────────────────────────────────────────────
+   5. TYPOGRAPHY CLASSES
+───────────────────────────────────────────────────────────── */
+
+/* Hero headline — "Binghatti Skyflame In Majan" Image 14 */
+.text-hero {
+  font-size: clamp(2rem, 3.75vw, 3.25rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--white-text);
+}
+
+/* Section title — "Latest Offplan Launches", "Most Followed..." Images 7, 11 */
+.text-h1 {
+  font-size: clamp(1.75rem, 2.75vw, 2.375rem);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--heading);
+}
+
+/* Sub-section title — "Why Choose Springfield..." Image 6 */
+.text-h2 {
+  font-size: clamp(1.375rem, 2vw, 1.875rem);
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+  color: var(--heading);
+}
+
+/* Card / numbered titles — "1. Market Expertise", "Golf Vale" Images 6, 11 */
+.text-h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  color: var(--heading);
+}
+
+/* Stat number — "AED 3B+", "200+", "17+ YEARS" Image 7 */
+.text-stat {
+  font-size: clamp(1.75rem, 2.5vw, 2.25rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--heading);
+}
+
+/* Stat label — "Properties Sold", "Professionals" Image 7 */
+.text-stat-label {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--heading);
+  margin-top: 4px;
+}
+
+/* Stat description — "We sell over AED 3 Billion..." Image 7 */
+.text-stat-desc {
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--body);
+  margin-top: 8px;
+}
+
+/* Body paragraph — "With years of experience..." Image 6, 8 */
+.text-body {
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.75;
+  color: var(--body);
+}
+
+/* Small body — card descriptions, secondary paragraphs */
+.text-sm {
+  font-size: 0.9375rem;
+  font-weight: 400;
+  line-height: 1.65;
+  color: var(--body);
+}
+
+/* Meta / label — dates, "08 min read", "Starting Price" Images 2, 11 */
+.text-meta {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* Price label — "Starting Price" in muted, small */
+.text-price-label {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+/* Price value — "AED 3.5M" bold, dark Image 11 */
+.text-price {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--heading);
+}
+
+/* Footer column heading — "Quick Links", "Company" Image 1 */
+.text-footer-h {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--white-text);
+  margin-bottom: 20px;
+}
+
+/* Footer links — "Home", "Projects" Image 1 */
+.text-footer-link {
+  font-size: 0.9375rem;
+  font-weight: 400;
+  color: var(--white-muted);
+  line-height: 2;
+  transition: color var(--transition);
+  display: block;
+}
+.text-footer-link:hover {
+  color: var(--white-text);
+}
+
+/* Phone number in footer — Image 1 */
+.text-footer-phone {
+  font-size: 1.375rem;
+  font-weight: 600;
+  color: var(--white-text);
+  letter-spacing: -0.01em;
+}
+
+/* Email in footer — Image 1 */
+.text-footer-email {
+  font-size: 0.9375rem;
+  color: var(--white-muted);
+  margin-top: 4px;
+}
+
+/* Copyright — "Copyright © 2025. Springfield Properties" Image 1 */
+.text-copyright {
+  font-size: 0.8125rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+
+/* ─────────────────────────────────────────────────────────────
+   6. NAVIGATION
+   Source: Images 14, 15 — top nav bar
+───────────────────────────────────────────────────────────── */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: var(--white);
+  border-bottom: 1px solid transparent;
+  transition:
+    box-shadow var(--transition-slow),
+    border-color var(--transition-slow),
+    background var(--transition-slow);
+}
+
+.nav--scrolled {
+  box-shadow: var(--shadow-nav);
+  border-bottom-color: var(--border);
+}
+
+.nav__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 72px;
+}
+
+.nav__logo img {
+  height: 40px;
+  width: auto;
+}
+
+.nav__links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.nav__link {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--heading);
+  transition: color var(--transition);
+}
+.nav__link:hover {
+  color: var(--navy);
+}
+
+/* "Springfield AI" style button — light grey pill, NOT the navy CTA */
+/* Source: Images 14, 15 top-right */
+.nav__cta {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--heading);
+  background: var(--white-section);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-btn);
+  padding: 9px 20px;
+  transition: background var(--transition), border-color var(--transition);
+}
+.nav__cta:hover {
+  background: var(--border);
+}
+
+
+/* ─────────────────────────────────────────────────────────────
+   7. HERO SLIDER
+   Source: Images 14, 15
+───────────────────────────────────────────────────────────── */
+.hero {
+  position: relative;
+  height: 100vh;
+  min-height: 600px;
+  overflow: hidden;
+}
+
+.hero__slide {
+  position: absolute;
+  inset: 0;
+}
+
+.hero__bg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Left-heavy dark overlay — Image 14/15 */
+.hero__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(21, 37, 103, 0.82) 0%,
+    rgba(21, 37, 103, 0.50) 55%,
+    rgba(21, 37, 103, 0.15) 100%
+  );
+}
+
+.hero__content {
+  position: absolute;
+  bottom: 30%;
+  left: 0;
+  padding-inline: var(--gutter-lg);
+  max-width: 640px;
+}
+
+/* "New Launch" badge — Image 14 */
+.hero__badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--white-text);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: var(--radius-pill);
+  padding: 5px 14px;
+  margin-bottom: 16px;
+}
+
+.hero__title {
+  font-size: clamp(2rem, 3.75vw, 3.25rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--white-text);
+  margin-bottom: 16px;
+}
+
+.hero__sub {
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 28px;
+}
+
+/* "View Details" — outlined white button on hero */
+.hero__btn {
+  display: inline-block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--white-text);
+  border: 2px solid var(--white-text);
+  border-radius: var(--radius-btn);
+  padding: 12px 28px;
+  transition: background var(--transition), color var(--transition);
+}
+.hero__btn:hover {
+  background: var(--white-text);
+  color: var(--heading);
+}
+
+/* Slide indicators — dots Image 14 */
+.hero__dots {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 2;
+}
+.hero__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.40);
+  border: none;
+  cursor: pointer;
+  transition: background var(--transition), width var(--transition);
+}
+.hero__dot--active {
+  background: var(--white-text);
+  width: 24px;
+}
+
+/* Search bar below hero fold — Image 14 */
+.hero__search {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--white);
+  padding: 20px var(--gutter-lg);
+  z-index: 2;
+}
+.hero__search-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--heading);
+  margin-bottom: 10px;
+}
+.hero__search-bar {
+  display: flex;
+  align-items: center;
+  background: var(--white-section);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-btn);
+  overflow: hidden;
+}
+.hero__search-input {
+  flex: 1;
+  font-family: var(--font);
+  font-size: 0.9375rem;
+  color: var(--heading);
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 14px 20px;
+}
+.hero__search-input::placeholder {
+  color: var(--muted);
+}
+.hero__search-btn {
+  font-family: var(--font);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--white-text);
+  background: var(--navy);
+  border: none;
+  padding: 14px 28px;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.hero__search-btn:hover {
+  background: var(--navy-dark);
+}
+
+@media (max-width: 640px) {
+  .hero__content {
+    padding-inline: var(--gutter);
+    bottom: 35%;
+  }
+  .hero__search {
+    padding-inline: var(--gutter);
+  }
+}
+
+
+/* ─────────────────────────────────────────────────────────────
+   8. STAT CARDS
+   Source: Image 7 — "AED 3B+", "200+", "17+ YEARS", "5,000+"
+───────────────────────────────────────────────────────────── */
+.stat-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 28px;
+  box-shadow: var(--shadow-stat);
+}
+
+
+/* ─────────────────────────────────────────────────────────────
+   9. PROPERTY CARDS
+   Source: Images 11, 12, 13
+───────────────────────────────────────────────────────────── */
+.property-card {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--white);
+  box-shadow: var(--shadow-card);
+  transition:
+    box-shadow var(--transition-slow),
+    transform var(--transition-slow);
+}
+.property-card:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-3px);
+}
+
+.property-card__image-wrap {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+}
+.property-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 500ms var(--ease);
+}
+.property-card:hover .property-card__image {
+  transform: scale(1.04);
+}
+
+/* "Handover: Q4 2027" chip — top left */
+.property-card__handover {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: var(--badge-bg);
+  color: var(--white-text);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Developer logo chip — top right */
+.property-card__developer {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: var(--white);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  max-height: 30px;
+  display: flex;
+  align-items: center;
+}
+.property-card__developer img {
+  max-height: 20px;
+  object-fit: contain;
+}
+
+.property-card__body {
+  padding: 20px 20px 0;
+}
+.property-card__title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  color: var(--heading);
+}
+.property-card__by {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--body);
+  margin-top: 4px;
+}
+.property-card__by strong {
+  font-weight: 600;
+}
+.property-card__price-row {
+  margin-top: 12px;
+}
+.property-card__price-label {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--muted);
+}
+.property-card__price {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--heading);
+  margin-top: 2px;
+}
+.property-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 0.8125rem;
+  color: var(--muted);
+  margin-top: 10px;
+  padding-bottom: 20px;
+}
+
+/* "Enquire Now" — full-width, flush to card bottom, dark charcoal */
+.property-card__cta {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  background: var(--cta-bg);
+  color: var(--cta-text);
+  font-family: var(--font);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-align: center;
+  border: none;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.property-card__cta:hover {
+  background: var(--cta-bg-hover);
+}
+
+
+/* ─────────────────────────────────────────────────────────────
+   10. DEVELOPER LOGO STRIP
+   Source: Image 10 — Sobha, Wasl, Danube, Omniyat, Meraas
+───────────────────────────────────────────────────────────── */
+.developer-logo-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--gap);
+}
+.developer-logo-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-md);
+  padding: 20px 32px;
+  height: 80px;
+}
+.developer-logo-box img {
+  max-height: 36px;
+  object-fit: contain;
+}
+
+@media (max-width: 768px) {
+  .developer-logo-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+
+/* ─────────────────────────────────────────────────────────────
+   11. LOCATION CARDS
+   Source: Image 9 — Palm Jebel Ali, Business Bay, Dubai Marina, Downtown Dubai
+───────────────────────────────────────────────────────────── */
+.location-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+.location-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 600ms var(--ease);
+}
+.location-card:hover .location-card__image {
+  transform: scale(1.04);
+}
+.location-card__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(15, 25, 60, 0.65) 0%,
+    transparent 60%
+  );
+}
+.location-card__name {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--white-text);
+}
+
+
+/* ─────────────────────────────────────────────────────────────
+   12. TESTIMONIAL / REVIEW CARDS
+   Source: Image 3 — Google reviews
+───────────────────────────────────────────────────────────── */
+.review-card {
+  background: var(--white-card);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+}
+.review-card__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.review-card__name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--heading);
+}
+.review-card__date {
+  font-size: 0.8125rem;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.review-card__stars {
+  color: var(--star);
+  font-size: 0.875rem;
+  letter-spacing: 0.05em;
+  margin-top: 10px;
+}
+.review-card__body {
+  font-size: 0.9375rem;
+  font-weight: 400;
+  color: var(--body);
+  line-height: 1.65;
+  margin-top: 12px;
+}
+.review-card__read-more {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--muted);
+  margin-top: 8px;
+  cursor: pointer;
+}
+
+
+/* ─────────────────────────────────────────────────────────────
+   13. BLOG CARDS
+   Source: Image 2
+───────────────────────────────────────────────────────────── */
+.blog-card {
+  display: flex;
+  flex-direction: column;
+}
+.blog-card__image {
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+}
+.blog-card__body {
+  padding-top: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.blog-card__title {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--heading);
+}
+.blog-card__meta {
+  font-size: 0.8125rem;
+  color: var(--muted);
+  margin-top: 8px;
+}
+/* "Read More →" — Image 2 */
+.blog-card__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--heading);
+  margin-top: auto;
+  padding-top: 20px;
+  transition: gap var(--transition);
+}
+.blog-card__cta:hover {
+  gap: 10px;
+}
+
+
+/* ─────────────────────────────────────────────────────────────
+   14. CTA BANNER (FULL WIDTH)
+   Source: Image 12 — "Access the Latest Dubai Real Estate Insights"
+───────────────────────────────────────────────────────────── */
+.cta-banner {
+  position: relative;
+  overflow: hidden;
+  min-height: 280px;
+  display: flex;
+  align-items: center;
+}
+.cta-banner__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.cta-banner__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(10, 18, 50, 0.88) 45%,
+    rgba(10, 18, 50, 0.55) 100%
+  );
+}
+.cta-banner__content {
+  position: relative;
+  z-index: 1;
+  padding: 60px var(--gutter-lg);
+  max-width: 680px;
+}
+.cta-banner__title {
+  font-size: clamp(1.5rem, 2.5vw, 2.25rem);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: var(--white-text);
+}
+.cta-banner__sub {
+  font-size: 1rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.80);
+  margin-top: 12px;
+  line-height: 1.65;
+}
+/* "Download Reports" — white bg, dark text button */
+.cta-banner__btn {
+  display: inline-block;
+  margin-top: 28px;
+  padding: 12px 28px;
+  background: var(--white);
+  color: var(--heading);
+  font-family: var(--font);
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: var(--radius-btn);
+  transition: background var(--transition), color var(--transition);
+}
+.cta-banner__btn:hover {
+  background: var(--white-section);
+}
+
+
+/* ─────────────────────────────────────────────────────────────
+   15. AWARDS / RECOGNITIONS
+   Source: Images 4, 5
+───────────────────────────────────────────────────────────── */
+/* Featured award with trophy image — Image 4 */
+.award-featured {
+  background: var(--white-section);
+  border-radius: var(--radius-md);
+  padding: 48px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+.award-featured__name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--heading);
+}
+.award-featured__year {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--heading);
+}
+.award-featured__image {
+  max-height: 200px;
+  object-fit: contain;
+}
+
+/* Award list rows — Image 5 */
+.award-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+}
+.award-row:first-of-type {
+  border-top: 1px solid var(--border);
+}
+.award-row__name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--heading);
+}
+.award-row__year {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--heading);
+}
+
+
+/* ─────────────────────────────────────────────────────────────
+   16. FOOTER
+   Source: Image 1
+───────────────────────────────────────────────────────────── */
+.footer {
+  background: var(--navy);
+  padding-top: 56px;
+  padding-bottom: 32px;
+}
+
+/* Logo + phone/email top bar */
+.footer__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--border-on-dark);
+  margin-bottom: 40px;
+}
+.footer__logo img {
+  height: 44px;
+  width: auto;
+}
+.footer__contact {
+  text-align: right;
+}
+
+/* 5-column link grid */
+.footer__grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1.6fr 1fr;
+  gap: 40px;
+  margin-bottom: 40px;
+}
+
+/* Bottom copyright bar */
+.footer__bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 24px;
+  border-top: 1px solid var(--border-on-dark);
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* "Privacy Policy | Terms" links in footer bottom */
+.footer__legal-link {
+  font-size: 0.8125rem;
+  color: rgba(255, 255, 255, 0.55);
+  transition: color var(--transition);
+}
+.footer__legal-link:hover {
+  color: var(--white-text);
+}
+
+/* Social media row — Facebook, Instagram, TikTok, LinkedIn, YouTube */
+.footer__social {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.footer__social-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9375rem;
+  color: var(--white-muted);
+  transition: color var(--transition);
+}
+.footer__social-link:hover {
+  color: var(--white-text);
+}
+
+@media (max-width: 1024px) {
+  .footer__grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (max-width: 640px) {
+  .footer__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .footer__top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+  .footer__contact {
+    text-align: left;
+  }
+}
+
+
+/* ─────────────────────────────────────────────────────────────
+   17. BUTTONS (SHARED)
+───────────────────────────────────────────────────────────── */
+
+/* Primary — "Enquire Now" dark charcoal */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  border-radius: var(--radius-btn);
+  padding: 12px 24px;
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.btn--primary {
+  background: var(--cta-bg);
+  color: var(--cta-text);
+  border-color: var(--cta-bg);
+}
+.btn--primary:hover {
+  background: var(--cta-bg-hover);
+  border-color: var(--cta-bg-hover);
+}
+
+/* Outline on white — "View All Blogs", "View More Areas" — Image 2, 9 */
+.btn--outline {
+  background: transparent;
+  color: var(--heading);
+  border-color: var(--border);
+}
+.btn--outline:hover {
+  background: var(--white-section);
+  border-color: var(--border-card);
+}
+
+/* Outline on dark — "View Details" hero button Image 14 */
+.btn--outline-white {
+  background: transparent;
+  color: var(--white-text);
+  border-color: var(--white-text);
+}
+.btn--outline-white:hover {
+  background: var(--white-text);
+  color: var(--heading);
+}
+
+/* Arrow nav buttons — carousel prev/next Images 2, 11, 13 */
+.btn--arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+  background: var(--white);
+  color: var(--heading);
+  transition: background var(--transition), border-color var(--transition);
+}
+.btn--arrow:hover {
+  background: var(--white-section);
+  border-color: var(--border-card);
+}
+
+
+/* ─────────────────────────────────────────────────────────────
+   18. SCROLL REVEAL ANIMATIONS
+───────────────────────────────────────────────────────────── */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fade-up    { animation: fadeUp   0.55s var(--ease) both; }
+.animate-fade-in    { animation: fadeIn   0.45s var(--ease) both; }
+.animate-slide-left { animation: slideLeft 0.60s var(--ease) both; }
+
+/* Stagger delays — card grids */
+.stagger-1 { animation-delay: 0ms;   }
+.stagger-2 { animation-delay: 80ms;  }
+.stagger-3 { animation-delay: 160ms; }
+.stagger-4 { animation-delay: 240ms; }
+
+/* Scroll reveal — add [data-reveal] to any element */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity  0.55s var(--ease),
+    transform 0.55s var(--ease);
+}
+[data-reveal].revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+/* ─────────────────────────────────────────────────────────────
+   19. GLASSMORPHISM UTILITY
+   Source: Hero search bar area — subtle frosted panel
+───────────────────────────────────────────────────────────── */
+.glass {
+  background: rgba(255, 255, 255, 0.10);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.glass-dark {
+  background: rgba(21, 37, 103, 0.70);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+
+/* ─────────────────────────────────────────────────────────────
+   20. INTERSECTION OBSERVER — Scroll Reveal Script
+   Paste inside <body> before </body> or in your layout file
+───────────────────────────────────────────────────────────── */
+/*
+<script>
+  (function () {
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('[data-reveal]').forEach(function (el) {
+      observer.observe(el);
+    });
+  })();
+</script>
+*/
