@@ -105,13 +105,14 @@ const IMAGES = [
 /* Each slide = image + cycling text content */
 const slides = IMAGES.map((image, i) => ({ image, ...TEXTS[i % TEXTS.length] }));
 
-/* Ken Burns GSAP end-states — 4 directional variants */
+/* Ken Burns GSAP end-states — desktop (scale + pan) */
 const KB_VARIANTS = [
   { scale: 1.10, x: '-1.5%', y: '-1%'  },   // zoom-in drift up-left
   { scale: 1.09, x:  '2%',   y:  '0.5%' },  // pan right
   { scale: 1.09, x: '-2%',   y: '-0.5%' },  // pan left
   { scale: 1.07, x:  '1%',   y:  '1%'  },   // subtle zoom drift down-right
 ];
+
 
 const AUTO_MS  = 5000;   // ms per slide
 const FADE_MS  = 1400;   // cross-dissolve duration
@@ -140,8 +141,10 @@ export default function HeroSection() {
       .fromTo(btnRef.current,   { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.55 }, '-=0.5');
   }, []);
 
-  /* ── GSAP: Ken Burns drift on active slide ── */
+  /* ── GSAP: Ken Burns drift on active slide (desktop only) ── */
   const animateKenBurns = useCallback((idx: number) => {
+    /* Skip on mobile — zoom upscales the pixel grid causing visible blur */
+    if (typeof window !== 'undefined' && window.innerWidth <= 640) return;
     const el = slideRefs.current[idx];
     if (!el) return;
     const kb = KB_VARIANTS[idx % KB_VARIANTS.length];
@@ -219,6 +222,7 @@ export default function HeroSection() {
           key={s.image}
           ref={el => { slideRefs.current[i] = el; }}
           aria-hidden={i !== active}
+          className="hero-slide"
           style={{
             position: 'absolute',
             inset: 0,
@@ -235,6 +239,7 @@ export default function HeroSection() {
             priority={i < 3}
             quality={90}
             sizes="(max-width: 640px) 100vw, 100vw"
+            className="hero-img"
             style={{ objectFit: 'cover', objectPosition: 'center' }}
           />
         </div>
@@ -415,11 +420,10 @@ export default function HeroSection() {
           box-shadow: 0 8px 24px rgba(0,0,0,0.18);
         }
 
-        /* ── Nav arrows ── */
+        /* ── Nav arrows — sit above the search bar in the clear bottom space ── */
         .hero-arrow {
           position: absolute;
-          top: 50%;
-          transform: translateY(-50%);
+          bottom: 116px;   /* above search bar (96px) + gap */
           z-index: 4;
           width: 46px; height: 46px;
           border-radius: 50%;
@@ -430,17 +434,16 @@ export default function HeroSection() {
           backdrop-filter: blur(8px);
           transition: background 0.25s ease, transform 0.25s cubic-bezier(0.34,1.56,0.64,1), border-color 0.25s ease;
         }
-        .hero-arrow--prev { left: 20px; }
+        .hero-arrow--prev { right: 72px; }
         .hero-arrow--next { right: 20px; }
         .hero-arrow:hover {
           background: rgba(255,255,255,0.26);
           border-color: rgba(255,255,255,0.50);
-          transform: translateY(-50%) scale(1.10);
+          transform: scale(1.10);
         }
 
         /* ── Mobile ── */
         @media (max-width: 640px) {
-          /* Shorter section so landscape images show their full width */
           .hero-section {
             height: 52vh !important;
             min-height: 300px !important;

@@ -230,6 +230,8 @@ export default function PropertyCardsSection({ title, ctaText, cards, grey }: Pr
 
               {/* Enquire Now CTA */}
               <button
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                onClick={() => { (window as any).__openEnquireModal?.(); }}
                 style={{
                   display: 'block',
                   width: '100%',

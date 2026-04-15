@@ -167,10 +167,18 @@ export default function WhyChooseSection() {
           .why-text { order: 1; }
           .why-photos {
             order: 2;
-            grid-template-rows: 240px !important;
+            grid-template-columns: 1fr !important;
+            grid-template-rows: 240px 180px !important;
           }
-          .why-photo-main { grid-column: auto !important; }
-          .why-photo-sm { display: none !important; }
+          .why-photo-main {
+            grid-column: 1 !important;
+            grid-row: 1 !important;
+          }
+          .why-photo-sm:first-of-type {
+            grid-column: 1 !important;
+            grid-row: 2 !important;
+          }
+          .why-photo-sm:last-of-type { display: none !important; }
         }
       `}</style>
     </section>

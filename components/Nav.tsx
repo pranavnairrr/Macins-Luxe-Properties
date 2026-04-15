@@ -54,7 +54,7 @@ export default function Nav() {
           height: 72,
           /* White opaque at top, footer-colour glassy when scrolled */
           background: scrolled
-            ? 'rgba(29,49,89,0.82)'
+            ? 'rgba(21,33,64,0.88)'
             : 'var(--white)',
           backdropFilter: scrolled ? 'blur(18px)' : 'none',
           WebkitBackdropFilter: scrolled ? 'blur(18px)' : 'none',
@@ -189,7 +189,7 @@ export default function Nav() {
           position: 'fixed',
           inset: '72px 0 0 0',
           zIndex: 49,
-          background: 'rgba(29,49,89,0.96)',
+          background: 'rgba(21,33,64,0.97)',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
           transform: menuOpen ? 'translateX(0)' : 'translateX(100%)',

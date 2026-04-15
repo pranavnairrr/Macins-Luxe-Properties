@@ -14,6 +14,7 @@ export default function CEOVideoSection() {
   const textRef  = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLDivElement>(null);
 
+  /* Scroll reveal */
   useEffect(() => {
     const els = [textRef.current, videoRef.current].filter(Boolean) as Element[];
     const observer = new IntersectionObserver(
@@ -22,6 +23,12 @@ export default function CEOVideoSection() {
     );
     els.forEach(el => observer.observe(el));
     return () => observer.disconnect();
+  }, []);
+
+  /* Auto-advance videos every 4 s */
+  useEffect(() => {
+    const t = setInterval(() => setActive(a => (a + 1) % videos.length), 4000);
+    return () => clearInterval(t);
   }, []);
 
   return (

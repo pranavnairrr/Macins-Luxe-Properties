@@ -84,7 +84,7 @@ function markerHTML(p: (typeof PROPERTIES)[number]) {
         <div class="mlx-details">
           <div class="mlx-name">${p.name}</div>
           <div class="mlx-loc">${p.location}&nbsp;·&nbsp;${p.beds}</div>
-          <a href="#" class="mlx-btn" onclick="return false;">Enquire Now</a>
+          <a href="#" class="mlx-btn" onclick="window.__openEnquireModal&&window.__openEnquireModal();return false;">Enquire Now</a>
         </div>
         <div class="mlx-row">
           <div class="mlx-thumb"><img src="${p.image}" alt="${p.name}" /></div>

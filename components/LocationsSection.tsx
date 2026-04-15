@@ -70,14 +70,14 @@ export default function LocationsSection() {
           {/* Downtown Dubai — spans both rows */}
           <LocationCard
             name="Downtown Dubai"
-            image="/images/hero/hero-4.jpg"
+            image="/images/hero/img227.jpg"
             spanRows
           />
 
           {/* Dubai Marina */}
           <LocationCard
             name="Dubai Marina"
-            image="/images/hero/hero-3.jpg"
+            image="/images/hero/img302.jpg"
           />
 
         </div>

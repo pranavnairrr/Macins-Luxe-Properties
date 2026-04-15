@@ -49,7 +49,7 @@ function SocialIcon({ icon }: { icon: string }) {
 export default function Footer() {
   return (
     <footer style={{
-      background: '#1D3159',
+      background: '#152140',
       color: '#fff',
       paddingTop: 56,
       paddingBottom: 32,

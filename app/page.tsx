@@ -1,5 +1,6 @@
 import Nav from '@/components/Nav';
 import HeroSection from '@/components/HeroSection';
+import EnquireModal from '@/components/EnquireModal';
 import CEOVideoSection from '@/components/CEOVideoSection';
 import StatsSection from '@/components/StatsSection';
 import WhyChooseSection from '@/components/WhyChooseSection';
@@ -137,6 +138,9 @@ export default function Home() {
 
       {/* 15. FOOTER */}
       <Footer />
+
+      {/* Global enquire modal */}
+      <EnquireModal />
     </>
   );
 }
