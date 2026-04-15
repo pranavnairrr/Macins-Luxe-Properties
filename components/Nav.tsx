@@ -15,13 +15,19 @@ const navLinks = [
   { label: 'Contact Us', href: '#' },
 ];
 
+/* ─────────────────────────────────────────────────────────
+   Nav states
+   · top   — transparent glass over hero image
+   · scrolled — footer-colour (#1D3159) glass
+───────────────────────────────────────────────────────── */
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const navRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
+    const onScroll = () => setScrolled(window.scrollY > 60);
+    onScroll(); // init
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
@@ -31,32 +37,47 @@ export default function Nav() {
     return () => { document.body.style.overflow = ''; };
   }, [menuOpen]);
 
+  /* ── Derived style values ── */
+  const linkColor = scrolled ? 'rgba(255,255,255,0.88)' : 'var(--heading)';
+  const barColor  = scrolled ? 'rgba(255,255,255,0.90)' : 'var(--heading)';
+
   return (
     <>
       <header
         ref={navRef}
         style={{
-          position: 'sticky',
+          position: 'fixed',
           top: 0,
+          left: 0,
+          right: 0,
           zIndex: 50,
-          background: scrolled ? 'var(--white)' : 'var(--white)',
-          borderBottom: '1px solid var(--border)',
-          boxShadow: scrolled ? 'var(--shadow-nav)' : 'none',
-          transition: 'box-shadow var(--transition-slow)',
+          height: 72,
+          /* White opaque at top, footer-colour glassy when scrolled */
+          background: scrolled
+            ? 'rgba(29,49,89,0.82)'
+            : 'var(--white)',
+          backdropFilter: scrolled ? 'blur(18px)' : 'none',
+          WebkitBackdropFilter: scrolled ? 'blur(18px)' : 'none',
+          borderBottom: scrolled
+            ? '1px solid rgba(213,186,140,0.15)'
+            : '1px solid var(--border)',
+          transition: 'background 0.45s ease, border-color 0.45s ease, box-shadow 0.45s ease',
+          boxShadow: scrolled ? '0 4px 24px rgba(0,0,0,0.25)' : 'none',
         }}
       >
-        <div className="container">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 72 }}>
+        <div className="container" style={{ height: '100%' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '100%' }}>
 
-            {/* ── Logo ── */}
+            {/* ── Logo — black at top, gold when scrolled ── */}
             <Link href="/" style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
               <Image
-                src="/images/logo-black.png"
+                src={scrolled ? '/images/logo-gold-luxe.svg' : '/images/logo-black.png'}
                 alt="Macins Luxe"
                 height={40}
                 width={140}
-                style={{ height: 40, width: 'auto', objectFit: 'contain' }}
+                style={{ height: 40, width: 'auto', objectFit: 'contain', transition: 'opacity 0.35s ease' }}
                 priority
+                unoptimized={scrolled} /* SVG bypass */
               />
             </Link>
 
@@ -70,16 +91,17 @@ export default function Nav() {
                 <Link
                   key={link.label}
                   href={link.href}
-                  className="nav-link-item"
+                  className={`nav-link-item${scrolled ? ' nav-link-scrolled' : ''}`}
                   style={{
                     fontFamily: 'var(--font)',
                     fontSize: '0.9375rem',
                     fontWeight: 500,
-                    color: 'var(--heading)',
+                    color: linkColor,
                     letterSpacing: 0,
                     whiteSpace: 'nowrap',
                     position: 'relative',
                     paddingBottom: 2,
+                    transition: 'color 0.25s ease',
                   }}
                 >
                   {link.label}
@@ -89,22 +111,30 @@ export default function Nav() {
 
             {/* ── Desktop CTA ── */}
             <button
-              className="nav-desktop"
+              className="nav-desktop nav-cta"
               style={{
                 fontFamily: 'var(--font)',
                 fontSize: '0.875rem',
                 fontWeight: 600,
-                color: 'var(--heading)',
-                background: 'var(--white-section)',
-                border: '1px solid var(--border)',
+                color: scrolled ? '#D5BA8C' : 'var(--heading)',
+                background: scrolled ? 'rgba(213,186,140,0.10)' : 'var(--white-section)',
+                border: scrolled
+                  ? '1px solid rgba(213,186,140,0.45)'
+                  : '1px solid var(--border)',
                 borderRadius: 'var(--radius-btn)',
                 padding: '9px 20px',
                 cursor: 'pointer',
                 flexShrink: 0,
-                transition: 'background var(--transition)',
+                transition: 'background 0.25s ease, color 0.25s ease, border-color 0.25s ease',
               }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'var(--border)')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'var(--white-section)')}
+              onMouseEnter={e => {
+                const el = e.currentTarget;
+                el.style.background = scrolled ? 'rgba(213,186,140,0.22)' : 'var(--border)';
+              }}
+              onMouseLeave={e => {
+                const el = e.currentTarget;
+                el.style.background = scrolled ? 'rgba(213,186,140,0.10)' : 'var(--white-section)';
+              }}
             >
               Macins AI
             </button>
@@ -128,24 +158,24 @@ export default function Nav() {
                 cursor: 'pointer',
               }}
             >
-              <span style={{
-                display: 'block', height: 2, borderRadius: 2,
-                background: 'var(--heading)',
-                transform: menuOpen ? 'translateY(7px) rotate(45deg)' : 'none',
-                transition: 'transform 0.25s var(--ease)',
-              }} />
-              <span style={{
-                display: 'block', height: 2, borderRadius: 2,
-                background: 'var(--heading)',
-                opacity: menuOpen ? 0 : 1,
-                transition: 'opacity 0.2s',
-              }} />
-              <span style={{
-                display: 'block', height: 2, borderRadius: 2,
-                background: 'var(--heading)',
-                transform: menuOpen ? 'translateY(-7px) rotate(-45deg)' : 'none',
-                transition: 'transform 0.25s var(--ease)',
-              }} />
+              {[
+                menuOpen ? 'translateY(7px) rotate(45deg)' : 'none',
+                'none', /* middle bar — fades out */
+                menuOpen ? 'translateY(-7px) rotate(-45deg)' : 'none',
+              ].map((transform, idx) => (
+                <span
+                  key={idx}
+                  style={{
+                    display: 'block',
+                    height: 2,
+                    borderRadius: 2,
+                    background: barColor,
+                    transform,
+                    opacity: idx === 1 ? (menuOpen ? 0 : 1) : 1,
+                    transition: idx === 1 ? 'opacity 0.2s' : 'transform 0.25s var(--ease)',
+                  }}
+                />
+              ))}
             </button>
 
           </div>
@@ -159,7 +189,9 @@ export default function Nav() {
           position: 'fixed',
           inset: '72px 0 0 0',
           zIndex: 49,
-          background: 'var(--white)',
+          background: 'rgba(29,49,89,0.96)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
           transform: menuOpen ? 'translateX(0)' : 'translateX(100%)',
           transition: 'transform 0.32s var(--ease)',
           overflowY: 'auto',
@@ -178,11 +210,14 @@ export default function Nav() {
               fontFamily: 'var(--font)',
               fontSize: '1.0625rem',
               fontWeight: 500,
-              color: 'var(--heading)',
+              color: 'rgba(255,255,255,0.88)',
               padding: '14px 0',
-              borderBottom: i < navLinks.length - 1 ? '1px solid var(--border)' : 'none',
+              borderBottom: i < navLinks.length - 1 ? '1px solid rgba(255,255,255,0.10)' : 'none',
               display: 'block',
+              transition: 'color 0.2s ease',
             }}
+            onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = '#D5BA8C')}
+            onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.88)')}
           >
             {link.label}
           </Link>
@@ -194,9 +229,9 @@ export default function Nav() {
             fontFamily: 'var(--font)',
             fontSize: '0.9375rem',
             fontWeight: 600,
-            color: 'var(--white-text)',
-            background: 'var(--cta-bg)',
-            border: 'none',
+            color: '#D5BA8C',
+            background: 'rgba(213,186,140,0.10)',
+            border: '1px solid rgba(213,186,140,0.40)',
             borderRadius: 'var(--radius-btn)',
             padding: '14px',
             cursor: 'pointer',
@@ -230,7 +265,10 @@ export default function Nav() {
           border-radius: 2px;
           transition: width 0.28s cubic-bezier(0.4,0,0.2,1);
         }
-        .nav-link-item:hover { color: var(--navy) !important; }
+        /* Gold underline + colour when scrolled */
+        .nav-link-scrolled::after { background: #D5BA8C; }
+        .nav-link-item:hover       { color: var(--navy) !important; }
+        .nav-link-scrolled:hover   { color: #D5BA8C !important; }
         .nav-link-item:hover::after { width: 100%; }
       `}</style>
     </>

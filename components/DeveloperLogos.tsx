@@ -1,12 +1,20 @@
 'use client';
 
-const developers = [
-  { name: 'SOBHA',    label: 'SOBHA\nREALTY',    big: false },
-  { name: 'wasl',     label: 'wasl',              big: true  },
-  { name: 'DANUBE',   label: 'DANUBE\nPROPERTIES',big: false },
-  { name: 'OMNIYAT',  label: 'OMNIYAT',           big: false },
-  { name: 'MERAAS',   label: '⊞ MERAAS',          big: false },
+import Image from 'next/image';
+
+const logos = [
+  { src: '/images/logos/sobha-logo.svg',            alt: 'Sobha Realty',       h: 34 },
+  { src: '/images/logos/binghatti-logo.svg',         alt: 'Binghatti',          h: 30 },
+  { src: '/images/logos/damac-logo.png',             alt: 'DAMAC',              h: 34 },
+  { src: '/images/logos/danube-logo.png',            alt: 'Danube Properties',  h: 36 },
+  { src: '/images/logos/omniyat-logo.svg',           alt: 'Omniyat',            h: 28 },
+  { src: '/images/logos/wasl-logo.webp',             alt: 'Wasl',               h: 32 },
+  { src: '/images/logos/atp-logo.webp',              alt: 'ATP',                h: 38 },
+  { src: '/images/logos/developer-extra-logo.png',   alt: 'Developer',          h: 34 },
 ];
+
+/* Duplicate for seamless infinite loop */
+const track = [...logos, ...logos];
 
 export default function DeveloperLogos() {
   return (
@@ -23,78 +31,71 @@ export default function DeveloperLogos() {
         }}>
           Developers We Work With
         </h2>
+      </div>
 
-        <div className="dev-grid" style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(5, 1fr)',
-          gap: 'var(--gap)',
-        }}>
-          {developers.map(dev => (
-            <div
-              key={dev.name}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                border: '1px solid var(--border)',
-                borderRadius: 'var(--radius-md)',
-                background: 'var(--white)',
-                padding: '20px 32px',
-                height: 80,
-                transition: 'border-color 0.25s ease, transform 0.28s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.28s ease',
-                cursor: 'default',
-              }}
-              onMouseEnter={e => {
-                const el = e.currentTarget as HTMLElement;
-                el.style.borderColor = 'var(--heading)';
-                el.style.transform = 'translateY(-4px) scale(1.03)';
-                el.style.boxShadow = '0 8px 24px rgba(27,48,121,0.10)';
-              }}
-              onMouseLeave={e => {
-                const el = e.currentTarget as HTMLElement;
-                el.style.borderColor = 'var(--border)';
-                el.style.transform = 'translateY(0) scale(1)';
-                el.style.boxShadow = 'none';
-              }}
-            >
-              <span style={{
-                fontFamily: 'var(--font)',
-                fontSize: dev.big ? '1.5rem' : '0.875rem',
-                fontWeight: 700,
-                color: 'var(--heading)',
-                letterSpacing: dev.big ? '-0.03em' : '0.06em',
-                textAlign: 'center',
-                whiteSpace: 'pre-line',
-                lineHeight: 1.2,
-                textTransform: dev.big ? 'lowercase' : 'uppercase',
-              }}>
-                {dev.label}
-              </span>
+      {/* ── Marquee strip — full-width, no container clipping ── */}
+      <div className="marquee-outer">
+        <div className="marquee-track">
+          {track.map((logo, i) => (
+            <div key={i} className="marquee-item">
+              <Image
+                src={logo.src}
+                alt={logo.alt}
+                height={logo.h}
+                width={160}
+                style={{ height: logo.h, width: 'auto', maxWidth: 160, objectFit: 'contain' }}
+                unoptimized={logo.src.endsWith('.svg')}
+              />
             </div>
           ))}
         </div>
       </div>
 
       <style jsx>{`
-        @media (max-width: 1024px) {
-          .dev-grid { grid-template-columns: repeat(3, 1fr) !important; }
+        .marquee-outer {
+          overflow: hidden;
+          padding: 12px 0 4px;
+          /* mask fades at edges */
+          -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+          mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
         }
+
+        .marquee-track {
+          display: flex;
+          align-items: center;
+          gap: 72px;
+          width: max-content;
+          animation: marquee-scroll 28s linear infinite;
+        }
+
+        .marquee-outer:hover .marquee-track {
+          animation-play-state: paused;
+        }
+
+        .marquee-item {
+          flex-shrink: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          filter: grayscale(1);
+          opacity: 0.55;
+          transition: filter 0.3s ease, opacity 0.3s ease;
+          cursor: default;
+        }
+
+        .marquee-item:hover {
+          filter: grayscale(0);
+          opacity: 1;
+        }
+
+        @keyframes marquee-scroll {
+          from { transform: translateX(0); }
+          to   { transform: translateX(-50%); }
+        }
+
         @media (max-width: 640px) {
-          .dev-grid {
-            display: flex !important;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch;
-            gap: 12px !important;
-            padding-bottom: 8px;
-          }
-          .dev-grid > div {
-            flex: 0 0 140px;
-            scroll-snap-align: start;
-          }
+          .marquee-track { gap: 48px; animation-duration: 20s; }
         }
-        .dev-grid::-webkit-scrollbar { display: none; }
-        .dev-grid { scrollbar-width: none; }
       `}</style>
     </section>
   );

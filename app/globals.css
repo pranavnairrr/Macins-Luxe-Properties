@@ -273,7 +273,7 @@ h1, h2, h3, h4, h5, h6 {
   transition: color var(--transition);
   display: block;
 }
-.text-footer-link:hover { color: var(--white-text); }
+.text-footer-link:hover { color: #D5BA8C; }
 
 /* ─────────────────────────────────────────────────────────────
    SCROLL REVEAL

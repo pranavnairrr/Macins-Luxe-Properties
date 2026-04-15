@@ -49,7 +49,7 @@ function SocialIcon({ icon }: { icon: string }) {
 export default function Footer() {
   return (
     <footer style={{
-      background: 'var(--navy)',
+      background: '#1D3159',
       color: '#fff',
       paddingTop: 56,
       paddingBottom: 32,
@@ -69,11 +69,12 @@ export default function Footer() {
         }}>
           {/* Logo */}
           <Image
-            src="/images/logo-white.png"
+            src="/images/logo-gold-luxe.svg"
             alt="Macins Luxe"
             width={160}
             height={48}
             style={{ height: 48, width: 'auto', objectFit: 'contain' }}
+            unoptimized
           />
 
           {/* Contact */}
@@ -82,7 +83,7 @@ export default function Footer() {
               fontFamily: 'var(--font)',
               fontSize: '1.375rem',
               fontWeight: 600,
-              color: '#fff',
+              color: '#D5BA8C',
               letterSpacing: '-0.01em',
             }}>
               +971 4 4542588
@@ -90,7 +91,7 @@ export default function Footer() {
             <div style={{
               fontFamily: 'var(--font)',
               fontSize: '0.9375rem',
-              color: 'rgba(255,255,255,0.70)',
+              color: 'rgba(213,186,140,0.80)',
               marginTop: 4,
             }}>
               info@macinsluxe.com
@@ -108,7 +109,7 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <div style={{ fontFamily: 'var(--font)', fontSize: '0.9375rem', fontWeight: 600, color: '#fff', marginBottom: 20 }}>
+            <div style={{ fontFamily: 'var(--font)', fontSize: '0.9375rem', fontWeight: 600, color: '#D5BA8C', marginBottom: 20 }}>
               Quick Links
             </div>
             {quickLinks.map(link => (
@@ -118,7 +119,7 @@ export default function Footer() {
 
           {/* Company */}
           <div>
-            <div style={{ fontFamily: 'var(--font)', fontSize: '0.9375rem', fontWeight: 600, color: '#fff', marginBottom: 20 }}>
+            <div style={{ fontFamily: 'var(--font)', fontSize: '0.9375rem', fontWeight: 600, color: '#D5BA8C', marginBottom: 20 }}>
               Company
             </div>
             {companyLinks.map(link => (
@@ -128,7 +129,7 @@ export default function Footer() {
 
           {/* Buy from */}
           <div>
-            <div style={{ fontFamily: 'var(--font)', fontSize: '0.9375rem', fontWeight: 600, color: '#fff', marginBottom: 20 }}>
+            <div style={{ fontFamily: 'var(--font)', fontSize: '0.9375rem', fontWeight: 600, color: '#D5BA8C', marginBottom: 20 }}>
               Buy from
             </div>
             {buyFrom.map(link => (
@@ -138,7 +139,7 @@ export default function Footer() {
 
           {/* Our Offices */}
           <div>
-            <div style={{ fontFamily: 'var(--font)', fontSize: '0.9375rem', fontWeight: 600, color: '#fff', marginBottom: 20 }}>
+            <div style={{ fontFamily: 'var(--font)', fontSize: '0.9375rem', fontWeight: 600, color: '#D5BA8C', marginBottom: 20 }}>
               Our Offices
             </div>
             <p style={{ fontFamily: 'var(--font)', fontSize: '0.9375rem', color: 'rgba(255,255,255,0.70)', lineHeight: 1.7, marginBottom: 16 }}>
@@ -151,7 +152,7 @@ export default function Footer() {
 
           {/* Follow Us */}
           <div>
-            <div style={{ fontFamily: 'var(--font)', fontSize: '0.9375rem', fontWeight: 600, color: '#fff', marginBottom: 20 }}>
+            <div style={{ fontFamily: 'var(--font)', fontSize: '0.9375rem', fontWeight: 600, color: '#D5BA8C', marginBottom: 20 }}>
               Follow Us
             </div>
             {socialLinks.map(s => (
@@ -169,7 +170,7 @@ export default function Footer() {
                   lineHeight: 2,
                   transition: 'color var(--transition)',
                 }}
-                onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = '#fff')}
+                onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = '#D5BA8C')}
                 onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.75)')}
               >
                 <span style={{ width: 18, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

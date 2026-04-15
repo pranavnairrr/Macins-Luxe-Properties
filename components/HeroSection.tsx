@@ -62,29 +62,44 @@ const TEXTS = [
   },
 ];
 
-/* ── All property + hero images ── */
+/* ── Hero images — high-quality set ── */
 const IMAGES = [
-  '/images/properties/stunning-real-estate-of-a-modern-home-striking-architectural-details-free-photo.jpg',
-  '/images/properties/de1f5af128319b892e1da1d82d85deefd2bf8e02271170047e2743971120aaeb.avif',
-  '/images/properties/809786214-800x600.jpeg',
-  '/images/properties/gulfnews_2025-12-12_kjm4wss9_Bugatti-Residences-by-Binghatti.avif',
-  '/images/properties/Binghatti-Hills-at-Dubai-HIlls.jpeg',
-  '/images/properties/binghatti-luxuria-hero-banner.avif',
-  '/images/properties/Binghatti-Hillside-at-Dubai-Science-Park.webp',
-  '/images/properties/Binghatti-Falre-JVT-Towers.jpg',
-  '/images/properties/binghatti-hillcrest-hero-banner.avif',
-  '/images/properties/sc2XBvXuMy7kd2utsgdQJGRdJ95XNwYBnPlqEL9P.png',
-  '/images/properties/DhwUVQqZWV.webp',
-  '/images/properties/Grove.avif',
-  '/images/properties/7c21bee256ef0219ac3bb7297ba9b8f26edb599f1f48d4ab5e0f6eb71cd56ee0.avif',
-  '/images/properties/0363bcd81373d842e3736d5901a18e1cc8d1ca44aa7575ff44201a8f2f086424.avif',
-  '/images/properties/3(1)_1771865424.avif',
-  '/images/properties/616795878.jpg',
-  '/images/properties/Binghatti_Flare_in_JVT_Dubai_by_Binghatti_Developers_f712d33e54.webp',
-  '/images/hero/hero-1.webp',
-  '/images/hero/hero-2.jpg',
-  '/images/hero/hero-3.jpg',
-  '/images/hero/hero-4.jpg',
+  '/images/hero/img102.jpg',
+  '/images/hero/img106.jpg',
+  '/images/hero/img110.jpg',
+  '/images/hero/img114.jpg',
+  '/images/hero/img121.jpg',
+  '/images/hero/img123.jpg',
+  '/images/hero/img129.jpg',
+  '/images/hero/img137.jpg',
+  '/images/hero/img138.jpg',
+  '/images/hero/img14.jpg',
+  '/images/hero/img143.jpg',
+  '/images/hero/img146.jpg',
+  '/images/hero/img185.jpg',
+  '/images/hero/img20.jpg',
+  '/images/hero/img201.jpg',
+  '/images/hero/img227.jpg',
+  '/images/hero/img302.jpg',
+  '/images/hero/img306.jpg',
+  '/images/hero/img328.jpg',
+  '/images/hero/img333.jpg',
+  '/images/hero/img358.jpg',
+  '/images/hero/img508.jpg',
+  '/images/hero/img512.jpg',
+  '/images/hero/img565.jpg',
+  '/images/hero/img619.jpg',
+  '/images/hero/img64.jpg',
+  '/images/hero/img692.jpg',
+  '/images/hero/img697.jpg',
+  '/images/hero/img708.jpg',
+  '/images/hero/img737.jpg',
+  '/images/hero/img767.jpg',
+  '/images/hero/img79.jpg',
+  '/images/hero/img803.jpg',
+  '/images/hero/img807.jpg',
+  '/images/hero/img862.jpg',
+  '/images/hero/img90.jpg',
 ];
 
 /* Each slide = image + cycling text content */
@@ -103,9 +118,12 @@ const FADE_MS  = 1400;   // cross-dissolve duration
 const SEARCH_H = 96;     // px — glass search bar height at bottom
 
 export default function HeroSection() {
-  const [active, setActive] = useState(0);
-  const timerRef    = useRef<ReturnType<typeof setInterval> | null>(null);
-  const slideRefs   = useRef<(HTMLDivElement | null)[]>([]);
+  const [active, setActive]   = useState(0);
+  const [outgoing, setOutgoing] = useState<number | null>(null);
+  const timerRef      = useRef<ReturnType<typeof setInterval> | null>(null);
+  const slideRefs     = useRef<(HTMLDivElement | null)[]>([]);
+  const prevActiveRef = useRef(0);
+  const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   /* GSAP refs — text elements */
   const badgeRef = useRef<HTMLSpanElement>(null);
@@ -151,9 +169,35 @@ export default function HeroSection() {
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [resetTimer]);
 
+  /* ── Track outgoing slide, reset its transform after fade ──
+     Fixes mobile flickering caused by:
+     1. will-change:transform,opacity on all 21 slides simultaneously (GPU overload)
+     2. Stale GSAP transform on slides re-entering the cycle
+  ── */
   useEffect(() => {
+    const prev = prevActiveRef.current;
+    if (prev !== active) {
+      setOutgoing(prev);
+      prevActiveRef.current = active;
+
+      /* After cross-dissolve finishes, clear the outgoing slide's
+         GSAP transform so it starts clean next time it's shown.     */
+      if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
+      resetTimerRef.current = setTimeout(() => {
+        const el = slideRefs.current[prev];
+        if (el) {
+          gsap.killTweensOf(el);
+          gsap.set(el, { scale: 1, x: 0, y: 0 });
+        }
+        setOutgoing(null);
+      }, FADE_MS + 100);
+    }
     animateText();
     animateKenBurns(active);
+
+    return () => {
+      if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
+    };
   }, [active, animateText, animateKenBurns]);
 
   const slide = slides[active];
@@ -163,7 +207,7 @@ export default function HeroSection() {
       aria-label="Hero slider — LuxeDrift"
       style={{
         position: 'relative',
-        height: 'calc(100vh - 72px)',
+        height: '100vh',
         minHeight: 560,
         overflow: 'hidden',
       }}
@@ -180,7 +224,7 @@ export default function HeroSection() {
             opacity: i === active ? 1 : 0,
             transition: `opacity ${FADE_MS}ms cubic-bezier(0.4,0,0.2,1)`,
             zIndex: i === active ? 1 : 0,
-            willChange: 'transform, opacity',
+            willChange: (i === active || i === outgoing) ? 'transform, opacity' : 'auto',
           }}
         >
           <Image
