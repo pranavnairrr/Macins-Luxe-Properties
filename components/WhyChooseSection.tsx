@@ -174,11 +174,11 @@ export default function WhyChooseSection() {
             grid-column: 1 !important;
             grid-row: 1 !important;
           }
-          .why-photo-sm:first-of-type {
+          .why-photo-sm:nth-child(2) {
             grid-column: 1 !important;
             grid-row: 2 !important;
           }
-          .why-photo-sm:last-of-type { display: none !important; }
+          .why-photo-sm:nth-child(3) { display: none !important; }
         }
       `}</style>
     </section>

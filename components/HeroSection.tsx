@@ -281,6 +281,7 @@ export default function HeroSection() {
 
       {/* ── Slide counter  01 / 21 ── */}
       <div
+        className="hero-counter"
         style={{
           position: 'absolute',
           bottom: SEARCH_H + 28,
@@ -445,8 +446,8 @@ export default function HeroSection() {
         /* ── Mobile ── */
         @media (max-width: 640px) {
           .hero-section {
-            height: 52vh !important;
-            min-height: 300px !important;
+            height: 42vh !important;
+            min-height: 260px !important;
           }
           .hero-content-wrap {
             padding-inline: 16px !important;
@@ -457,7 +458,8 @@ export default function HeroSection() {
           .hero-title { font-size: clamp(1.45rem, 6.5vw, 2.2rem) !important; white-space: normal !important; }
           .hero-sub { font-size: 0.8125rem !important; margin-bottom: 12px !important; line-height: 1.6 !important; }
           .hero-search-wrap { padding-inline: 16px !important; padding-bottom: 12px !important; }
-          .hero-arrow { width: 28px !important; height: 28px !important; }
+          .hero-arrow { width: 28px !important; height: 28px !important; bottom: 68px !important; }
+          .hero-counter { display: none !important; }
         }
       `}</style>
     </section>

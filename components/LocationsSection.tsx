@@ -92,7 +92,7 @@ export default function LocationsSection() {
         @media (max-width: 768px) {
           .loc-grid {
             grid-template-columns: 1fr 1fr !important;
-            grid-template-rows: 150px 150px 150px !important;
+            grid-template-rows: 150px 150px !important;
             gap: 8px !important;
           }
           .loc-card--tall { grid-row: auto !important; }
