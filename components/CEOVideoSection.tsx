@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const videos = [
   { thumb: '/images/properties/7c21bee256ef0219ac3bb7297ba9b8f26edb599f1f48d4ab5e0f6eb71cd56ee0.avif', label: 'AED 35,000,000' },
@@ -11,6 +11,18 @@ const videos = [
 
 export default function CEOVideoSection() {
   const [active, setActive] = useState(0);
+  const textRef  = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const els = [textRef.current, videoRef.current].filter(Boolean) as Element[];
+    const observer = new IntersectionObserver(
+      entries => entries.forEach(e => { if (e.isIntersecting) { (e.target as HTMLElement).classList.add('ceo-revealed'); observer.unobserve(e.target); } }),
+      { threshold: 0.15 },
+    );
+    els.forEach(el => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <section className="section">
@@ -23,7 +35,7 @@ export default function CEOVideoSection() {
         }}>
 
           {/* ── Left: text ── */}
-          <div>
+          <div ref={textRef} className="ceo-reveal ceo-reveal--left">
             <h2 style={{
               fontFamily: 'var(--font)',
               fontSize: 'clamp(1.375rem, 2vw, 1.875rem)',
@@ -111,7 +123,7 @@ export default function CEOVideoSection() {
           </div>
 
           {/* ── Right: video carousel ── */}
-          <div>
+          <div ref={videoRef} className="ceo-reveal ceo-reveal--right">
             <div style={{
               position: 'relative',
               borderRadius: 'var(--radius-lg)',
@@ -188,11 +200,22 @@ export default function CEOVideoSection() {
       </div>
 
       <style jsx>{`
+        /* ── Scroll reveal ── */
+        .ceo-reveal {
+          opacity: 0;
+          transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+        .ceo-reveal--left  { transform: translateX(-32px); }
+        .ceo-reveal--right { transform: translateX(32px); transition-delay: 0.15s; }
+        .ceo-reveal.ceo-revealed {
+          opacity: 1;
+          transform: translateX(0);
+        }
+
         @media (max-width: 768px) {
-          .ceo-grid {
-            grid-template-columns: 1fr !important;
-            gap: 32px !important;
-          }
+          .ceo-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+          .ceo-reveal--left,
+          .ceo-reveal--right { transform: translateY(24px); }
         }
       `}</style>
     </section>

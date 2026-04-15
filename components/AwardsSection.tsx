@@ -9,17 +9,6 @@ const awards = [
   { name: 'Emaar Broker Award Q1',          year: '2025' },
 ];
 
-function TrophyIcon() {
-  return (
-    <svg width="56" height="68" viewBox="0 0 64 76" fill="none" aria-hidden="true" className="award-trophy-svg">
-      <rect x="20" y="60" width="24" height="6" rx="2" fill="currentColor"/>
-      <rect x="16" y="66" width="32" height="6" rx="2" fill="currentColor"/>
-      <path d="M12 4h40v24c0 11.046-8.954 20-20 20S12 39.046 12 28V4z" stroke="currentColor" strokeWidth="2" fill="none"/>
-      <path d="M12 10H4a4 4 0 0 0 0 8l8 4M52 10h8a4 4 0 0 1 0 8l-8 4" stroke="currentColor" strokeWidth="2"/>
-      <circle cx="32" cy="24" r="6" stroke="currentColor" strokeWidth="1.5" fill="none"/>
-    </svg>
-  );
-}
 
 export default function AwardsSection() {
   const featured = awards.find(a => a.featured)!;
@@ -33,12 +22,9 @@ export default function AwardsSection() {
           Our Recognitions &amp; Achievements
         </h2>
 
-        {/* Featured award — trophy reveals on hover */}
+        {/* Featured award */}
         <div className="award-featured">
           <span className="award-label">{featured.name}</span>
-          <div className="award-trophy-wrap">
-            <TrophyIcon />
-          </div>
           <span className="award-label">{featured.year}</span>
         </div>
 
@@ -99,20 +85,6 @@ export default function AwardsSection() {
           color: #fff;
         }
 
-        /* Trophy — centred absolutely, scales + brightens on hover */
-        .award-trophy-wrap {
-          position: absolute;
-          left: 50%;
-          top: 50%;
-          transform: translate(-50%, -50%);
-          color: var(--muted);
-          transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), color 0.4s ease;
-          z-index: 1;
-        }
-        .award-featured:hover .award-trophy-wrap {
-          transform: translate(-50%, -50%) scale(1.25);
-          color: rgba(255,255,255,0.80);
-        }
 
         /* ── Award rows list ── */
         .awards-list {

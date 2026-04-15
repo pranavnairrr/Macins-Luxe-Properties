@@ -205,6 +205,7 @@ export default function HeroSection() {
   return (
     <section
       aria-label="Hero slider — LuxeDrift"
+      className="hero-section"
       style={{
         position: 'relative',
         height: '100vh',
@@ -231,8 +232,9 @@ export default function HeroSection() {
             src={s.image}
             alt=""
             fill
-            priority={i === 0}
-            sizes="100vw"
+            priority={i < 3}
+            quality={90}
+            sizes="(max-width: 640px) 100vw, 100vw"
             style={{ objectFit: 'cover', objectPosition: 'center' }}
           />
         </div>
@@ -438,10 +440,20 @@ export default function HeroSection() {
 
         /* ── Mobile ── */
         @media (max-width: 640px) {
-          .hero-content-wrap { padding-inline: 16px !important; max-width: 100% !important; }
+          /* Shorter section so landscape images show their full width */
+          .hero-section {
+            height: 52vh !important;
+            min-height: 300px !important;
+          }
+          .hero-content-wrap {
+            padding-inline: 16px !important;
+            max-width: 100% !important;
+            top: 44% !important;
+            transform: translateY(-52%) !important;
+          }
           .hero-title { font-size: clamp(1.45rem, 6.5vw, 2.2rem) !important; white-space: normal !important; }
-          .hero-sub { font-size: 0.8125rem !important; margin-bottom: 18px !important; line-height: 1.6 !important; }
-          .hero-search-wrap { padding-inline: 16px !important; padding-bottom: 16px !important; }
+          .hero-sub { font-size: 0.8125rem !important; margin-bottom: 12px !important; line-height: 1.6 !important; }
+          .hero-search-wrap { padding-inline: 16px !important; padding-bottom: 12px !important; }
           .hero-arrow { width: 28px !important; height: 28px !important; }
         }
       `}</style>

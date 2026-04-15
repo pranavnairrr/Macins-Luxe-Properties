@@ -6,11 +6,11 @@ const quickLinks  = ['Home', 'Projects', 'Areas', 'Blog', 'Developers'];
 const companyLinks = ['About Us', 'Our Team', 'Reports', 'Careers', 'Contact Us'];
 const buyFrom     = ['Emaar', 'Binghatti', 'Damac', 'Shoba Realty', 'Nakheel'];
 const socialLinks = [
-  { label: 'Facebook',  icon: 'f', href: '#' },
-  { label: 'Instagram', icon: 'ig', href: '#' },
+  { label: 'Facebook',  icon: 'f',  href: 'https://www.facebook.com/profile.php?id=61564082631890' },
+  { label: 'Instagram', icon: 'ig', href: 'https://www.instagram.com/macins_luxe_properties/' },
   { label: 'TikTok',    icon: 'tt', href: '#' },
-  { label: 'LinkedIn',  icon: 'in', href: '#' },
-  { label: 'YouTube',   icon: 'yt', href: '#' },
+  { label: 'LinkedIn',  icon: 'in', href: 'https://www.linkedin.com/company/macins-luxe-properties/posts/' },
+  { label: 'YouTube',   icon: 'yt', href: 'https://www.youtube.com/@macinsluxeproperties-y1s' },
 ];
 
 function SocialIcon({ icon }: { icon: string }) {
@@ -159,6 +159,8 @@ export default function Footer() {
               <a
                 key={s.label}
                 href={s.href}
+                target={s.href !== '#' ? '_blank' : undefined}
+                rel={s.href !== '#' ? 'noopener noreferrer' : undefined}
                 style={{
                   display: 'flex',
                   alignItems: 'center',

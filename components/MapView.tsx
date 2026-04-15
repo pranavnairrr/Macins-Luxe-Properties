@@ -129,14 +129,14 @@ export default function MapView() {
         zoomControl: true,
       });
 
+      /* CartoDB Voyager — clean street map, closest to Google Maps default */
       L.tileLayer(
-        'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-        { attribution: '&copy; Esri', maxZoom: 19 },
-      ).addTo(mapInstance);
-
-      L.tileLayer(
-        'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
-        { maxZoom: 19, opacity: 0.9 },
+        'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+        {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
+          subdomains: 'abcd',
+          maxZoom: 19,
+        },
       ).addTo(mapInstance);
 
       PROPERTIES.forEach(p => {
