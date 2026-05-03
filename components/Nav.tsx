@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { KeyRound, UserCircle } from 'lucide-react';
 
 const navLinks = [
   { label: 'Projects',   href: '#' },
@@ -219,8 +220,7 @@ export default function Nav() {
                     background: scrolled ? 'rgba(213,186,140,0.15)' : 'var(--white-section)',
                     border: scrolled ? '1px solid rgba(213,186,140,0.25)' : '1px solid var(--border)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 15,
-                  }}>🔑</span>
+                  }}><KeyRound size={15} strokeWidth={1.6} color={scrolled ? '#D5BA8C' : 'var(--heading)'} /></span>
                   <div>
                     <div style={{ fontSize: '0.875rem', fontWeight: 600, lineHeight: 1.2 }}>Staff Access</div>
                     <div style={{ fontSize: '0.75rem', color: scrolled ? 'rgba(255,255,255,0.45)' : 'var(--muted)', marginTop: 2 }}>Internal portal</div>
@@ -239,8 +239,7 @@ export default function Nav() {
                     background: scrolled ? 'rgba(255,255,255,0.06)' : 'var(--white-section)',
                     border: scrolled ? '1px solid rgba(255,255,255,0.10)' : '1px solid var(--border)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 15,
-                  }}>👤</span>
+                  }}><UserCircle size={15} strokeWidth={1.6} color={scrolled ? 'rgba(255,255,255,0.55)' : 'var(--muted)'} /></span>
                   <div>
                     <div style={{
                       fontSize: '0.875rem', fontWeight: 600, lineHeight: 1.2,
@@ -396,7 +395,7 @@ export default function Nav() {
               textDecoration: 'none', marginBottom: 8,
             }}
           >
-            <span style={{ fontSize: 18 }}>🔑</span>
+            <KeyRound size={18} strokeWidth={1.6} color="#D5BA8C" />
             <div>
               <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#fff', fontFamily: 'var(--font)' }}>Staff Access</div>
               <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.45)', fontFamily: 'var(--font)' }}>Internal portal</div>
@@ -410,7 +409,7 @@ export default function Nav() {
             border: '1px solid rgba(255,255,255,0.08)',
             opacity: 0.45, cursor: 'not-allowed',
           }}>
-            <span style={{ fontSize: 18 }}>👤</span>
+            <UserCircle size={18} strokeWidth={1.6} color="rgba(255,255,255,0.55)" />
             <div>
               <div style={{
                 fontSize: '0.9rem', fontWeight: 600,

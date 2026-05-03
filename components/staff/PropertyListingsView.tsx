@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { ExternalLink, Building2 } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import PropertyListingForm, { type ListingRecord } from './PropertyListingForm'
 
@@ -141,7 +142,9 @@ export default function PropertyListingsView() {
           background: '#fff', border: '1px solid var(--border)',
           borderRadius: 12, padding: '56px 48px', textAlign: 'center',
         }}>
-          <div style={{ fontSize: '2.5rem', marginBottom: 12 }}>🏠</div>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12, color: 'var(--muted)' }}>
+            <Building2 size={40} strokeWidth={1.2} />
+          </div>
           <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--heading)', marginBottom: 6, fontFamily: 'var(--font)' }}>
             No listings yet
           </h3>
@@ -206,8 +209,8 @@ function ListingCard({
           <div style={{
             width: '100%', height: '100%', display: 'flex',
             alignItems: 'center', justifyContent: 'center',
-            color: 'var(--muted)', fontSize: '2.5rem',
-          }}>🏠</div>
+            color: 'var(--muted)',
+          }}><Building2 size={32} strokeWidth={1.2} /></div>
         )}
         <span style={{
           position: 'absolute', top: 10, right: 10,
@@ -251,9 +254,29 @@ function ListingCard({
 
       {/* Actions */}
       <div style={{ display: 'flex', borderTop: '1px solid var(--border)' }}>
-        <ActionBtn onClick={onEdit}         label="Edit"                           color="var(--heading)" />
+        <ActionBtn onClick={onEdit}         label="Edit"                                color="var(--heading)" />
         <ActionBtn onClick={onToggleStatus} label={isPublished ? 'Unpublish' : 'Publish'} color={isPublished ? '#B45309' : '#15803D'} />
-        <ActionBtn onClick={onDelete}       label="Delete"                         color="var(--red)" />
+        {isPublished ? (
+          <a
+            href={`/properties/${listing.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              flex: 1, fontFamily: 'var(--font)', fontSize: '0.8125rem', fontWeight: 600,
+              color: '#1B3079', background: 'transparent', border: 'none',
+              padding: '10px 0', cursor: 'pointer', transition: 'background 0.15s',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
+              textDecoration: 'none',
+            }}
+            onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'var(--white-section)')}
+            onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
+          >
+            View <ExternalLink size={11} strokeWidth={2} />
+          </a>
+        ) : (
+          <ActionBtn onClick={onDelete} label="Delete" color="var(--red)" />
+        )}
+        {isPublished && <ActionBtn onClick={onDelete} label="Delete" color="var(--red)" />}
       </div>
     </div>
   )

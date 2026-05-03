@@ -85,10 +85,17 @@ function Hdr({ name, logo }: { name: string; logo?: string }) {
   )
 }
 
-function Ftr({ pg, total }: { pg: number; total: number }) {
+function mkContact(ci?: CompanyContact) {
+  const e = ci?.email   ?? 'info@macinsluxe.com'
+  const p = ci?.phone   ?? '+971 4 454 2588'
+  const w = ci?.website ?? 'www.macinsluxe.com'
+  return { line: `${e}  ·  ${p}  ·  ${w}`, block: `${e}\n${p}\n${w}` }
+}
+
+function Ftr({ pg, total, contact }: { pg: number; total: number; contact?: string }) {
   return (
     <View style={st.ftr}>
-      <Text style={st.ftrTxt}>Macins Luxe Properties  ·  info@macinsluxe.com  ·  +971 4 454 2588  ·  www.macinsluxe.com</Text>
+      <Text style={st.ftrTxt}>Macins Luxe Properties  ·  {contact ?? 'info@macinsluxe.com  ·  +971 4 454 2588  ·  www.macinsluxe.com'}</Text>
       <Text style={st.ftrPage}>{pg} / {total}</Text>
     </View>
   )
@@ -103,10 +110,17 @@ function GoldBarBot() {
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
+export interface CompanyContact {
+  phone?: string
+  email?: string
+  website?: string
+}
+
 export interface Props {
-  listing: ListingRecord
-  agent:   AgentRecord | null
-  logoSrc?: string
+  listing:     ListingRecord
+  agent:       AgentRecord | null
+  logoSrc?:    string
+  companyInfo?: CompanyContact
 }
 
 function totalPages(l: ListingRecord, a: AgentRecord | null) {
@@ -122,7 +136,7 @@ function totalPages(l: ListingRecord, a: AgentRecord | null) {
 // PAGE 1 — COVER
 // ══════════════════════════════════════════════════════════════════════════════
 
-function Cover({ listing: l, agent: a, logoSrc, total }: Props & { total: number }) {
+function Cover({ listing: l, agent: a, logoSrc, companyInfo, total }: Props & { total: number }) {
   const img = (l.images ?? [])[0]
   return (
     <Page size="A4" orientation="landscape" style={st.pageDark}>
@@ -210,14 +224,14 @@ function Cover({ listing: l, agent: a, logoSrc, total }: Props & { total: number
               : <Text style={{ fontFamily: 'Helvetica-Bold', color: GOLD, fontSize: 11, marginBottom: 10 }}>MACINS LUXE</Text>
             }
             <Text style={{ color: 'rgba(255,255,255,0.60)', fontSize: 8.5, lineHeight: 1.65 }}>
-              {'info@macinsluxe.com\n+971 4 454 2588\nwww.macinsluxe.com'}
+              {mkContact(companyInfo).block}
             </Text>
           </>
         )}
       </View>
 
       <GoldBarBot />
-      <Ftr pg={1} total={total} />
+      <Ftr pg={1} total={total} contact={mkContact(companyInfo).line} />
     </Page>
   )
 }
@@ -226,7 +240,7 @@ function Cover({ listing: l, agent: a, logoSrc, total }: Props & { total: number
 // PAGE 2 — OVERVIEW
 // ══════════════════════════════════════════════════════════════════════════════
 
-function Overview({ listing: l, logoSrc, pg, total }: Props & { pg: number; total: number }) {
+function Overview({ listing: l, logoSrc, companyInfo, pg, total }: Props & { pg: number; total: number }) {
   const img    = (l.images ?? [])[0]
   const IMG_W  = PW * 0.40
   const CONT_W = PW - IMG_W
@@ -291,7 +305,7 @@ function Overview({ listing: l, logoSrc, pg, total }: Props & { pg: number; tota
         ) : null}
       </View>
 
-      <Ftr pg={pg} total={total} />
+      <Ftr pg={pg} total={total} contact={mkContact(companyInfo).line} />
     </Page>
   )
 }
@@ -300,7 +314,7 @@ function Overview({ listing: l, logoSrc, pg, total }: Props & { pg: number; tota
 // PAGE 3 — AMENITIES
 // ══════════════════════════════════════════════════════════════════════════════
 
-function Amenities({ listing: l, logoSrc, pg, total }: Props & { pg: number; total: number }) {
+function Amenities({ listing: l, logoSrc, companyInfo, pg, total }: Props & { pg: number; total: number }) {
   const img    = (l.images ?? [])[1] ?? (l.images ?? [])[0]
   const LEFT_W = PW * 0.55
   const IMG_W  = PW - LEFT_W
@@ -343,7 +357,7 @@ function Amenities({ listing: l, logoSrc, pg, total }: Props & { pg: number; tot
         </View>
       </View>
 
-      <Ftr pg={pg} total={total} />
+      <Ftr pg={pg} total={total} contact={mkContact(companyInfo).line} />
     </Page>
   )
 }
@@ -352,7 +366,7 @@ function Amenities({ listing: l, logoSrc, pg, total }: Props & { pg: number; tot
 // PAGE 4 — PAYMENT PLAN
 // ══════════════════════════════════════════════════════════════════════════════
 
-function PaymentPlan({ listing: l, logoSrc, pg, total }: Props & { pg: number; total: number }) {
+function PaymentPlan({ listing: l, logoSrc, companyInfo, pg, total }: Props & { pg: number; total: number }) {
   const lines  = (l.payment_plan ?? '').split('\n').filter(ln => ln.trim())
   const LEFT_W = PW * 0.38
   const SCHED_W = PW - LEFT_W
@@ -408,7 +422,7 @@ function PaymentPlan({ listing: l, logoSrc, pg, total }: Props & { pg: number; t
         ))}
       </View>
 
-      <Ftr pg={pg} total={total} />
+      <Ftr pg={pg} total={total} contact={mkContact(companyInfo).line} />
     </Page>
   )
 }
@@ -417,7 +431,7 @@ function PaymentPlan({ listing: l, logoSrc, pg, total }: Props & { pg: number; t
 // PAGE 5 — FLOOR PLANS
 // ══════════════════════════════════════════════════════════════════════════════
 
-function FloorPlans({ listing: l, logoSrc, pg, total }: Props & { pg: number; total: number }) {
+function FloorPlans({ listing: l, logoSrc, companyInfo, pg, total }: Props & { pg: number; total: number }) {
   const plans     = l.floor_plans ?? []
   const SIDEBAR_W = 156
   const GRID_W    = PW - SIDEBAR_W
@@ -450,7 +464,7 @@ function FloorPlans({ listing: l, logoSrc, pg, total }: Props & { pg: number; to
         </View>
       </View>
 
-      <Ftr pg={pg} total={total} />
+      <Ftr pg={pg} total={total} contact={mkContact(companyInfo).line} />
     </Page>
   )
 }
@@ -459,7 +473,7 @@ function FloorPlans({ listing: l, logoSrc, pg, total }: Props & { pg: number; to
 // PAGE — AGENT CONTACT
 // ══════════════════════════════════════════════════════════════════════════════
 
-function AgentPage({ listing: l, agent: a, logoSrc, pg, total }: Props & { pg: number; total: number }) {
+function AgentPage({ listing: l, agent: a, logoSrc, companyInfo, pg, total }: Props & { pg: number; total: number }) {
   if (!a) return null
 
   const LEFT_W  = PW * 0.37
@@ -538,7 +552,7 @@ function AgentPage({ listing: l, agent: a, logoSrc, pg, total }: Props & { pg: n
       </View>
 
       <GoldBarBot />
-      <Ftr pg={pg} total={total} />
+      <Ftr pg={pg} total={total} contact={mkContact(companyInfo).line} />
     </Page>
   )
 }
@@ -547,30 +561,35 @@ function AgentPage({ listing: l, agent: a, logoSrc, pg, total }: Props & { pg: n
 // ROOT DOCUMENT
 // ══════════════════════════════════════════════════════════════════════════════
 
-export default function PropertyPDF({ listing, agent, logoSrc }: Props) {
+export default function PropertyPDF({ listing, agent, logoSrc, companyInfo }: Props) {
+  const contactEmail   = companyInfo?.email   ?? 'info@macinsluxe.com'
+  const contactPhone   = companyInfo?.phone   ?? '+971 4 454 2588'
+  const contactWebsite = companyInfo?.website ?? 'www.macinsluxe.com'
+  const contactLine    = `${contactEmail}  ·  ${contactPhone}  ·  ${contactWebsite}`
+  const contactBlock   = `${contactEmail}\n${contactPhone}\n${contactWebsite}`
   const total    = totalPages(listing, agent)
   const floorPDF = (listing.floor_plans ?? []).filter(u => /\.(jpe?g|png|gif)(\?|$)/i.test(u))
   let pg = 1
 
   return (
     <Document title={`${listing.name} — Macins Luxe`} author="Macins Luxe Properties">
-      <Cover    listing={listing} agent={agent} logoSrc={logoSrc} total={total} />
-      <Overview listing={listing} agent={agent} logoSrc={logoSrc} pg={++pg} total={total} />
+      <Cover    listing={listing} agent={agent} logoSrc={logoSrc} companyInfo={companyInfo} total={total} />
+      <Overview listing={listing} agent={agent} logoSrc={logoSrc} companyInfo={companyInfo} pg={++pg} total={total} />
 
       {(listing.amenities ?? []).length > 0 ? (
-        <Amenities listing={listing} agent={agent} logoSrc={logoSrc} pg={++pg} total={total} />
+        <Amenities listing={listing} agent={agent} logoSrc={logoSrc} companyInfo={companyInfo} pg={++pg} total={total} />
       ) : null}
 
       {listing.payment_plan ? (
-        <PaymentPlan listing={listing} agent={agent} logoSrc={logoSrc} pg={++pg} total={total} />
+        <PaymentPlan listing={listing} agent={agent} logoSrc={logoSrc} companyInfo={companyInfo} pg={++pg} total={total} />
       ) : null}
 
       {floorPDF.length > 0 ? (
-        <FloorPlans listing={{ ...listing, floor_plans: floorPDF }} agent={agent} logoSrc={logoSrc} pg={++pg} total={total} />
+        <FloorPlans listing={{ ...listing, floor_plans: floorPDF }} agent={agent} logoSrc={logoSrc} companyInfo={companyInfo} pg={++pg} total={total} />
       ) : null}
 
       {agent ? (
-        <AgentPage listing={listing} agent={agent} logoSrc={logoSrc} pg={++pg} total={total} />
+        <AgentPage listing={listing} agent={agent} logoSrc={logoSrc} companyInfo={companyInfo} pg={++pg} total={total} />
       ) : null}
     </Document>
   )

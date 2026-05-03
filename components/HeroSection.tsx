@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import Image from 'next/image';
 import { gsap } from 'gsap';
+import type { HeroSlide } from '@/utils/site-settings';
 
 /* ══════════════════════════════════════════════════════════════════
    LuxeDrift  —  Cinematic Ken Burns Hero Slider
@@ -102,8 +103,8 @@ const IMAGES = [
   '/images/hero/img90.jpg',
 ];
 
-/* Each slide = image + cycling text content */
-const slides = IMAGES.map((image, i) => ({ image, ...TEXTS[i % TEXTS.length] }));
+/* Fallback slides — image + cycling text content */
+const FALLBACK_SLIDES = IMAGES.map((image, i) => ({ image, cta_href: '#' as string, ...TEXTS[i % TEXTS.length] }));
 
 /* Ken Burns GSAP end-states — desktop (scale + pan) */
 const KB_VARIANTS = [
@@ -118,7 +119,10 @@ const AUTO_MS  = 5000;   // ms per slide
 const FADE_MS  = 1400;   // cross-dissolve duration
 const SEARCH_H = 96;     // px — glass search bar height at bottom
 
-export default function HeroSection() {
+export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide[] }) {
+  const slides = propSlides && propSlides.length > 0
+    ? propSlides.map(s => ({ image: s.image_url, badge: s.badge, title: s.title, sub: s.sub, cta: s.cta, cta_href: s.cta_href }))
+    : FALLBACK_SLIDES
   const [active, setActive]   = useState(0);
   const [outgoing, setOutgoing] = useState<number | null>(null);
   const timerRef      = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -276,7 +280,7 @@ export default function HeroSection() {
 
         <p ref={subRef} className="hero-sub">{slide.sub}</p>
 
-        <a ref={btnRef} href="#" className="hero-cta">{slide.cta}</a>
+        <a ref={btnRef} href={slide.cta_href ?? '#'} className="hero-cta">{slide.cta}</a>
       </div>
 
       {/* ── Slide counter  01 / 21 ── */}

@@ -1,12 +1,16 @@
 'use client';
 
-export default function StatsSection() {
-  const stats = [
-    { number: 'AED 3B+',  label: 'Properties Sold',  desc: 'We sell over AED 3 Billion worth of properties every year' },
-    { number: '200+',     label: 'Professionals',    desc: 'We have over 200 realtors and marketing professionals' },
-    { number: '17+ YEARS',label: 'Experience',       desc: 'We have been in the real estate business since 2008' },
-    { number: '5,000+',   label: 'Happy Clients',    desc: 'We have served over 6000 happy clients since 2007' },
-  ];
+import type { StatItem } from '@/utils/site-settings';
+
+const FALLBACK_STATS: StatItem[] = [
+  { value: 'AED 3B+',   label: 'Properties Sold',  desc: 'We sell over AED 3 Billion worth of properties every year' },
+  { value: '200+',      label: 'Professionals',    desc: 'We have over 200 realtors and marketing professionals' },
+  { value: '17+ YEARS', label: 'Experience',       desc: 'We have been in the real estate business since 2008' },
+  { value: '5,000+',    label: 'Happy Clients',    desc: 'We have served over 6000 happy clients since 2007' },
+];
+
+export default function StatsSection({ stats: propStats }: { stats?: StatItem[] }) {
+  const stats = propStats && propStats.length > 0 ? propStats : FALLBACK_STATS;
 
   return (
     <section className="section--sm section--grey">
@@ -62,7 +66,7 @@ export default function StatsSection() {
                 letterSpacing: '-0.02em',
                 color: 'var(--heading)',
               }}>
-                {s.number}
+                {s.value}
               </div>
               <div style={{
                 fontSize: '0.9375rem',

@@ -4,6 +4,12 @@ import { useState } from 'react'
 import Image from 'next/image'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
+import {
+  Waves, Dumbbell, Car, Shield, Bell, Baby, Flame, Thermometer,
+  ShoppingBag, Sparkles, Trophy, PersonStanding, Sunset, Smartphone,
+  Zap, CircleDot, PawPrint, Briefcase, Film, Sun, Monitor,
+  CheckCircle2, MapPin,
+} from 'lucide-react'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import EnquireModal from '@/components/EnquireModal'
@@ -12,32 +18,32 @@ import type { ListingRecord } from '@/components/staff/PropertyListingForm'
 
 const PropertyMap = dynamic(() => import('@/components/PropertyMap'), { ssr: false })
 
-const AMENITY_ICONS: Record<string, string> = {
-  'Swimming Pool': '🏊',
-  'Gym & Fitness': '💪',
-  'Covered Parking': '🚗',
-  '24/7 Security': '🔒',
-  'Concierge': '🛎',
-  'Kids Play Area': '🎠',
-  'BBQ Area': '🔥',
-  'Sauna & Steam': '💆',
-  'Retail Outlets': '🛍',
-  'Spa': '🧖',
-  'Tennis Court': '🎾',
-  'Running Track': '🏃',
-  'Rooftop Terrace': '🌇',
-  'Smart Home': '📱',
-  'EV Charging': '⚡',
-  'Jogging Track': '🏅',
-  'Basketball Court': '🏀',
-  'Pet-Friendly': '🐾',
-  'Business Centre': '💼',
-  'Cinema Room': '🎬',
-  'Infinity Pool': '🌊',
-  'Yoga Studio': '🧘',
-  'Co-Working Space': '💻',
-  'Valet Parking': '🤵',
-  'Private Beach': '🏖',
+const AMENITY_ICONS: Record<string, React.ElementType> = {
+  'Swimming Pool':    Waves,
+  'Gym & Fitness':    Dumbbell,
+  'Covered Parking':  Car,
+  '24/7 Security':    Shield,
+  'Concierge':        Bell,
+  'Kids Play Area':   Baby,
+  'BBQ Area':         Flame,
+  'Sauna & Steam':    Thermometer,
+  'Retail Outlets':   ShoppingBag,
+  'Spa':              Sparkles,
+  'Tennis Court':     Trophy,
+  'Running Track':    PersonStanding,
+  'Rooftop Terrace':  Sunset,
+  'Smart Home':       Smartphone,
+  'EV Charging':      Zap,
+  'Jogging Track':    PersonStanding,
+  'Basketball Court': CircleDot,
+  'Pet-Friendly':     PawPrint,
+  'Business Centre':  Briefcase,
+  'Cinema Room':      Film,
+  'Infinity Pool':    Waves,
+  'Yoga Studio':      Sun,
+  'Co-Working Space': Monitor,
+  'Valet Parking':    Car,
+  'Private Beach':    Waves,
 }
 
 interface Props {
@@ -152,7 +158,7 @@ export default function PropertyDetailPage({ listing }: Props) {
               onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = 'var(--muted)')}
             >Home</Link>
             <span>›</span>
-            <Link href="/#properties" style={{ color: 'var(--muted)', textDecoration: 'none' }}
+            <Link href="/properties" style={{ color: 'var(--muted)', textDecoration: 'none' }}
               onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = 'var(--navy)')}
               onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = 'var(--muted)')}
             >Properties</Link>
@@ -177,7 +183,7 @@ export default function PropertyDetailPage({ listing }: Props) {
                 </h1>
                 <p style={{ fontSize: '1rem', color: 'var(--muted)', fontWeight: 400 }}>
                   by <span style={{ color: 'var(--body)', fontWeight: 500 }}>{listing.developer}</span>
-                  {listing.location && <> &nbsp;·&nbsp; 📍 {listing.location}</>}
+                  {listing.location && <> &nbsp;·&nbsp; <MapPin size={13} strokeWidth={1.6} style={{ display: 'inline', verticalAlign: 'middle', marginBottom: 2 }} /> {listing.location}</>}
                 </p>
               </div>
 
@@ -248,19 +254,20 @@ export default function PropertyDetailPage({ listing }: Props) {
                   <div style={{
                     display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 10,
                   }}>
-                    {listing.amenities.map(amenity => (
-                      <div key={amenity} style={{
-                        display: 'flex', alignItems: 'center', gap: 10,
-                        background: '#fff', border: '1px solid var(--border)',
-                        borderRadius: 8, padding: '10px 14px',
-                        fontSize: '0.875rem', color: 'var(--body)', fontWeight: 500,
-                      }}>
-                        <span style={{ fontSize: 16, flexShrink: 0 }}>
-                          {AMENITY_ICONS[amenity] ?? '✦'}
-                        </span>
-                        {amenity}
-                      </div>
-                    ))}
+                    {listing.amenities.map(amenity => {
+                      const AmenityIcon = AMENITY_ICONS[amenity] ?? CheckCircle2
+                      return (
+                        <div key={amenity} style={{
+                          display: 'flex', alignItems: 'center', gap: 10,
+                          background: '#fff', border: '1px solid var(--border)',
+                          borderRadius: 8, padding: '10px 14px',
+                          fontSize: '0.875rem', color: 'var(--body)', fontWeight: 500,
+                        }}>
+                          <AmenityIcon size={16} strokeWidth={1.5} style={{ flexShrink: 0, color: '#1B3079' }} />
+                          {amenity}
+                        </div>
+                      )
+                    })}
                   </div>
                 </div>
               )}

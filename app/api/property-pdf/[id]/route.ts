@@ -8,6 +8,7 @@ import { createClient } from '@/utils/supabase/server'
 import PropertyPDF from '@/components/PropertyPDF'
 import type { ListingRecord } from '@/components/staff/PropertyListingForm'
 import type { AgentRecord } from '@/components/staff/AgentForm'
+import { getCompanyInfo } from '@/utils/site-settings'
 
 export const dynamic = 'force-dynamic'
 
@@ -61,6 +62,8 @@ export async function GET(
     agent = data as AgentRecord | null
   }
 
+  const companyInfo = await getCompanyInfo().catch(() => null)
+
   const record = listing as ListingRecord
 
   // Convert all images to base64 data URIs (most reliable for react-pdf)
@@ -92,20 +95,12 @@ export async function GET(
   // White logo PNG on navy backgrounds
   const logoSrc = toDataUri('/images/logo-white-luxe.png') ?? undefined
 
-  console.log('[PDF]', record.name, {
-    images: resolvedImages.length,
-    hasAgent: !!agent,
-    hasLogo: !!logoSrc,
-    amenities: record.amenities?.length ?? 0,
-    highlights: record.highlights?.length ?? 0,
-    hasPaymentPlan: !!record.payment_plan,
-  })
-
   const pdfBuffer = await renderToBuffer(
     createElement(PropertyPDF, {
       listing: resolvedListing,
       agent: resolvedAgent,
       logoSrc,
+      companyInfo: companyInfo ?? undefined,
     }) as ReactElement<DocumentProps>
   )
 

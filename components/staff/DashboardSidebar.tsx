@@ -2,13 +2,21 @@
 
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
+import {
+  LayoutDashboard,
+  List,
+  Users,
+  Inbox,
+  Settings,
+  LogOut,
+} from 'lucide-react'
 
 const NAV_ITEMS = [
-  { id: 'overview',  label: 'Overview',          icon: '◼' },
-  { id: 'listings',  label: 'Property Listings',  icon: '🏠' },
-  { id: 'agents',    label: 'Team & Agents',      icon: '👥' },
-  { id: 'quotation', label: 'Quotation Tools',    icon: '📋' },
-  { id: 'pdf',       label: 'PDF Tools',          icon: '📄' },
+  { id: 'overview',  label: 'Overview',            Icon: LayoutDashboard },
+  { id: 'listings',  label: 'Property Listings',    Icon: List },
+  { id: 'agents',    label: 'Team & Agents',        Icon: Users },
+  { id: 'leads',     label: 'Leads & Enquiries',    Icon: Inbox },
+  { id: 'settings',  label: 'Site Settings',        Icon: Settings },
 ] as const
 
 function SidebarNav() {
@@ -20,6 +28,7 @@ function SidebarNav() {
     <nav style={{ flex: 1, padding: '16px 0' }}>
       {NAV_ITEMS.map(item => {
         const isActive = item.id === activeTab
+        const { Icon } = item
         return (
           <button
             key={item.id}
@@ -54,9 +63,11 @@ function SidebarNav() {
               }
             }}
           >
-            <span style={{ fontSize: 15, width: 20, textAlign: 'center', flexShrink: 0 }}>
-              {item.icon}
-            </span>
+            <Icon
+              size={16}
+              strokeWidth={1.6}
+              style={{ flexShrink: 0, opacity: isActive ? 1 : 0.7 }}
+            />
             {item.label}
           </button>
         )
@@ -98,11 +109,25 @@ export default function DashboardSidebar() {
       <div style={{
         padding: '16px 24px',
         borderTop: '1px solid rgba(255,255,255,0.07)',
-        fontSize: '0.6875rem',
-        color: 'rgba(255,255,255,0.22)',
-        fontFamily: 'var(--font)',
       }}>
-        Macins Luxe · Staff v1.0
+        <a
+          href="/"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            fontSize: '0.8125rem',
+            color: 'rgba(255,255,255,0.35)',
+            textDecoration: 'none',
+            fontFamily: 'var(--font)',
+            transition: 'color 0.15s',
+          }}
+          onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.65)')}
+          onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.35)')}
+        >
+          <LogOut size={14} strokeWidth={1.6} />
+          Back to site
+        </a>
       </div>
     </aside>
   )

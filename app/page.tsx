@@ -16,6 +16,7 @@ import Footer from '@/components/Footer';
 import type { PropertyCard } from '@/components/PropertyCardsSection';
 import { createClient } from '@/utils/supabase/server';
 import type { ListingRecord } from '@/components/staff/PropertyListingForm';
+import { getHeroSlides, getStats, getCompanyInfo } from '@/utils/site-settings';
 
 function toCard(l: ListingRecord): PropertyCard {
   return {
@@ -33,11 +34,12 @@ function toCard(l: ListingRecord): PropertyCard {
 
 export default async function Home() {
   const supabase = createClient();
-  const { data } = await supabase
-    .from('listings')
-    .select('*')
-    .eq('status', 'published')
-    .order('created_at', { ascending: true });
+  const [{ data }, heroSlides, stats, companyInfo] = await Promise.all([
+    supabase.from('listings').select('*').eq('status', 'published').order('created_at', { ascending: true }),
+    getHeroSlides().catch(() => []),
+    getStats().catch(() => []),
+    getCompanyInfo().catch(() => null),
+  ]);
 
   const listings = (data as ListingRecord[]) ?? [];
   const premiumCards: PropertyCard[] = listings.filter(l => l.category === 'premium').map(toCard);
@@ -49,7 +51,7 @@ export default async function Home() {
       <Nav />
 
       {/* 2. HERO SLIDER */}
-      <HeroSection />
+      <HeroSection slides={heroSlides} />
 
       {/* 3. PREMIUM LUXURY DEVELOPMENTS */}
       {premiumCards.length > 0 && (
@@ -83,7 +85,7 @@ export default async function Home() {
       <LocationsSection />
 
       {/* 9. STATS ROW */}
-      <StatsSection />
+      <StatsSection stats={stats} />
 
       {/* 10. WHY CHOOSE */}
       <WhyChooseSection />
@@ -101,7 +103,7 @@ export default async function Home() {
       <CEOVideoSection />
 
       {/* 15. FOOTER */}
-      <Footer />
+      <Footer companyInfo={companyInfo ?? undefined} />
 
       {/* Global enquire modal */}
       <EnquireModal />

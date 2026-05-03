@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import { Eye, EyeOff } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 
 export default function LoginForm() {
@@ -90,7 +91,7 @@ export default function LoginForm() {
               required
               value={email}
               onChange={e => setEmail(e.target.value)}
-              placeholder="Admin@Macins.ae"
+              placeholder="Email address"
               style={inputStyle}
               onFocus={e => (e.currentTarget.style.borderColor = 'rgba(213,186,140,0.70)')}
               onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.18)')}
@@ -117,11 +118,12 @@ export default function LoginForm() {
                   position: 'absolute', right: 12, top: '50%',
                   transform: 'translateY(-50%)',
                   background: 'none', border: 'none',
-                  color: 'rgba(255,255,255,0.45)', cursor: 'pointer', fontSize: 14,
+                  color: 'rgba(255,255,255,0.45)', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
-                {showPassword ? '🙈' : '👁'}
+                {showPassword ? <EyeOff size={16} strokeWidth={1.6} /> : <Eye size={16} strokeWidth={1.6} />}
               </button>
             </div>
           </div>

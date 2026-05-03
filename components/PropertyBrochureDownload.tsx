@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { User, Mail, Phone, Building2, CheckCircle2 } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 
 interface Props {
@@ -96,8 +97,7 @@ export default function PropertyBrochureDownload({ listingId, listingName, broch
           background: 'linear-gradient(135deg, #1B3079, #152140)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           flexShrink: 0,
-          fontSize: 18,
-        }}>🏠</div>
+        }}><Building2 size={20} strokeWidth={1.5} color="#D5BA8C" /></div>
         <div>
           <div style={{ fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600, color: 'var(--heading)' }}>
             Macins Luxe Team
@@ -105,8 +105,10 @@ export default function PropertyBrochureDownload({ listingId, listingName, broch
           <div style={{ fontFamily: 'var(--font)', fontSize: '0.75rem', color: 'var(--muted)' }}>
             Luxury Property Specialists · Dubai &amp; Abu Dhabi
           </div>
-          <div style={{ fontFamily: 'var(--font)', fontSize: '0.75rem', color: 'var(--muted)', marginTop: 2 }}>
-            📞 +971 4 454 2588 &nbsp;·&nbsp; ✉ info@macinsluxe.com
+          <div style={{ fontFamily: 'var(--font)', fontSize: '0.75rem', color: 'var(--muted)', marginTop: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
+            <Phone size={11} strokeWidth={1.6} style={{ flexShrink: 0 }} /> +971 4 454 2588
+            <span style={{ opacity: 0.4 }}>·</span>
+            <Mail size={11} strokeWidth={1.6} style={{ flexShrink: 0 }} /> info@macinsluxe.com
           </div>
         </div>
       </div>
@@ -114,7 +116,9 @@ export default function PropertyBrochureDownload({ listingId, listingName, broch
       <div style={{ padding: '20px 24px' }}>
         {done ? (
           <div style={{ textAlign: 'center', padding: '12px 0' }}>
-            <div style={{ fontSize: '2rem', marginBottom: 8 }}>✅</div>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 8 }}>
+            <CheckCircle2 size={40} strokeWidth={1.4} color="#16a34a" />
+          </div>
             <div style={{ fontFamily: 'var(--font)', fontSize: '0.9375rem', fontWeight: 600, color: 'var(--heading)', marginBottom: 4 }}>
               Download started!
             </div>
@@ -142,14 +146,14 @@ export default function PropertyBrochureDownload({ listingId, listingName, broch
               placeholder="Your name (optional)"
               value={name}
               onChange={setName}
-              icon="👤"
+              Icon={User}
             />
             <BrochureInput
               type="email"
               placeholder="Email address *"
               value={email}
               onChange={setEmail}
-              icon="✉"
+              Icon={Mail}
               required
             />
             <BrochureInput
@@ -157,7 +161,7 @@ export default function PropertyBrochureDownload({ listingId, listingName, broch
               placeholder="Phone / WhatsApp (optional)"
               value={phone}
               onChange={setPhone}
-              icon="📞"
+              Icon={Phone}
             />
 
             {error && (
@@ -202,21 +206,24 @@ export default function PropertyBrochureDownload({ listingId, listingName, broch
 }
 
 function BrochureInput({
-  type, placeholder, value, onChange, icon, required,
+  type, placeholder, value, onChange, Icon, required,
 }: {
   type: string
   placeholder: string
   value: string
   onChange: (v: string) => void
-  icon: string
+  Icon: React.ElementType
   required?: boolean
 }) {
   return (
     <div style={{ position: 'relative' }}>
       <span style={{
         position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)',
-        fontSize: 13, pointerEvents: 'none',
-      }}>{icon}</span>
+        display: 'flex', alignItems: 'center', pointerEvents: 'none',
+        color: 'var(--muted)',
+      }}>
+        <Icon size={14} strokeWidth={1.6} />
+      </span>
       <input
         type={type}
         placeholder={placeholder}

@@ -46,7 +46,14 @@ function SocialIcon({ icon }: { icon: string }) {
   return icons[icon] ?? null;
 }
 
-export default function Footer() {
+type CompanyInfo = { phone?: string; email?: string; address_dubai?: string; address_abudhabi?: string; orn?: string }
+
+export default function Footer({ companyInfo }: { companyInfo?: CompanyInfo }) {
+  const phone    = companyInfo?.phone    ?? '+971 4 4542588'
+  const email    = companyInfo?.email    ?? 'info@macinsluxe.com'
+  const addrDubai = companyInfo?.address_dubai   ?? 'Office 102-106, Building 02\nBusiness Bay, Dubai'
+  const addrAD    = companyInfo?.address_abudhabi ?? 'Office 149 & 150\nWafra Square, Reem Island\nAbu Dhabi'
+  const orn       = companyInfo?.orn     ?? '11929'
   return (
     <footer style={{
       background: '#152140',
@@ -86,7 +93,7 @@ export default function Footer() {
               color: '#D5BA8C',
               letterSpacing: '-0.01em',
             }}>
-              +971 4 4542588
+              {phone}
             </div>
             <div style={{
               fontFamily: 'var(--font)',
@@ -94,7 +101,7 @@ export default function Footer() {
               color: 'rgba(213,186,140,0.80)',
               marginTop: 4,
             }}>
-              info@macinsluxe.com
+              {email}
             </div>
           </div>
         </div>
@@ -142,11 +149,11 @@ export default function Footer() {
             <div style={{ fontFamily: 'var(--font)', fontSize: '0.9375rem', fontWeight: 600, color: '#D5BA8C', marginBottom: 20 }}>
               Our Offices
             </div>
-            <p style={{ fontFamily: 'var(--font)', fontSize: '0.9375rem', color: 'rgba(255,255,255,0.70)', lineHeight: 1.7, marginBottom: 16 }}>
-              Office 102-106, Building 02<br />Business Bay, Dubai
+            <p style={{ fontFamily: 'var(--font)', fontSize: '0.9375rem', color: 'rgba(255,255,255,0.70)', lineHeight: 1.7, marginBottom: 16, whiteSpace: 'pre-line' }}>
+              {addrDubai}
             </p>
-            <p style={{ fontFamily: 'var(--font)', fontSize: '0.9375rem', color: 'rgba(255,255,255,0.70)', lineHeight: 1.7 }}>
-              Office 149 &amp; 150<br />Wafra Square, Reem Island<br />Abu Dhabi
+            <p style={{ fontFamily: 'var(--font)', fontSize: '0.9375rem', color: 'rgba(255,255,255,0.70)', lineHeight: 1.7, whiteSpace: 'pre-line' }}>
+              {addrAD}
             </p>
           </div>
 
@@ -196,7 +203,7 @@ export default function Footer() {
           gap: 12,
         }}>
           <span style={{ fontFamily: 'var(--font)', fontSize: '0.8125rem', color: 'rgba(255,255,255,0.45)' }}>
-            Copyright &copy; 2025, Macins Luxe | ORN No: 11929
+            Copyright &copy; 2025, Macins Luxe | ORN No: {orn}
           </span>
           <div style={{ display: 'flex', gap: 20 }}>
             {['Privacy Policy', 'Terms & Conditions'].map(l => (
