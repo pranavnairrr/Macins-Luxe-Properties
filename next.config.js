@@ -2,7 +2,9 @@
 const nextConfig = {
   images: {
     remotePatterns: [
-      { protocol: 'https', hostname: 'dqnrbbfiebnsjheznriy.supabase.co' },
+      // Allow any HTTPS host — property images can be hosted on any CDN/URL
+      { protocol: 'https', hostname: '**' },
+      { protocol: 'http',  hostname: '**' },
     ],
   },
   experimental: {
