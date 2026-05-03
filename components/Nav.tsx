@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -23,7 +23,18 @@ const navLinks = [
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [loginOpen, setLoginOpen] = useState(false);
+  const loginCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const navRef = useRef<HTMLElement>(null);
+
+  const openLogin  = useCallback(() => {
+    if (loginCloseTimer.current) clearTimeout(loginCloseTimer.current);
+    setLoginOpen(true);
+  }, []);
+
+  const closeLogin = useCallback(() => {
+    loginCloseTimer.current = setTimeout(() => setLoginOpen(false), 120);
+  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
@@ -108,6 +119,149 @@ export default function Nav() {
                 </Link>
               ))}
             </nav>
+
+            {/* ── Login dropdown ── */}
+            <div
+              className="nav-desktop"
+              style={{ position: 'relative', flexShrink: 0 }}
+              onMouseEnter={openLogin}
+              onMouseLeave={closeLogin}
+            >
+              {/* Trigger button */}
+              <button
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 6,
+                  fontFamily: 'var(--font)',
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
+                  color: scrolled ? 'rgba(255,255,255,0.88)' : 'var(--heading)',
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '9px 4px',
+                  transition: 'color 0.25s ease',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.color = scrolled ? '#D5BA8C' : 'var(--navy)'; }}
+                onMouseLeave={e => { e.currentTarget.style.color = scrolled ? 'rgba(255,255,255,0.88)' : 'var(--heading)'; }}
+              >
+                Login
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{
+                  transform: loginOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                  transition: 'transform 0.22s ease',
+                  opacity: 0.7,
+                }}>
+                  <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+
+              {/* Dropdown panel */}
+              <div
+                onMouseEnter={openLogin}
+                onMouseLeave={closeLogin}
+                style={{
+                  position: 'absolute',
+                  top: 'calc(100% + 10px)',
+                  right: 0,
+                  width: 220,
+                  background: scrolled ? 'rgba(21,33,64,0.97)' : '#fff',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  border: scrolled ? '1px solid rgba(213,186,140,0.20)' : '1px solid var(--border)',
+                  borderRadius: 10,
+                  boxShadow: '0 12px 40px rgba(0,0,0,0.18)',
+                  overflow: 'hidden',
+                  opacity: loginOpen ? 1 : 0,
+                  transform: loginOpen ? 'translateY(0)' : 'translateY(-8px)',
+                  pointerEvents: loginOpen ? 'auto' : 'none',
+                  transition: 'opacity 0.2s ease, transform 0.2s ease',
+                  zIndex: 60,
+                }}
+              >
+                {/* Header label */}
+                <div style={{
+                  padding: '10px 16px 8px',
+                  fontSize: '0.6875rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  color: scrolled ? 'rgba(213,186,140,0.55)' : 'var(--muted)',
+                  fontFamily: 'var(--font)',
+                  borderBottom: scrolled ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--border)',
+                }}>
+                  Portal Access
+                </div>
+
+                {/* Staff Access */}
+                <Link
+                  href="/staff/login"
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 12,
+                    padding: '13px 16px',
+                    fontFamily: 'var(--font)',
+                    fontSize: '0.9rem',
+                    fontWeight: 600,
+                    color: scrolled ? 'rgba(255,255,255,0.90)' : 'var(--heading)',
+                    textDecoration: 'none',
+                    transition: 'background 0.15s',
+                    borderBottom: scrolled ? '1px solid rgba(255,255,255,0.07)' : '1px solid var(--border)',
+                  }}
+                  onMouseEnter={e => {
+                    (e.currentTarget as HTMLElement).style.background = scrolled ? 'rgba(213,186,140,0.10)' : 'var(--white-section)';
+                    (e.currentTarget as HTMLElement).style.color = scrolled ? '#D5BA8C' : 'var(--navy)';
+                  }}
+                  onMouseLeave={e => {
+                    (e.currentTarget as HTMLElement).style.background = 'transparent';
+                    (e.currentTarget as HTMLElement).style.color = scrolled ? 'rgba(255,255,255,0.90)' : 'var(--heading)';
+                  }}
+                >
+                  <span style={{
+                    width: 32, height: 32, borderRadius: 8, flexShrink: 0,
+                    background: scrolled ? 'rgba(213,186,140,0.15)' : 'var(--white-section)',
+                    border: scrolled ? '1px solid rgba(213,186,140,0.25)' : '1px solid var(--border)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 15,
+                  }}>🔑</span>
+                  <div>
+                    <div style={{ fontSize: '0.875rem', fontWeight: 600, lineHeight: 1.2 }}>Staff Access</div>
+                    <div style={{ fontSize: '0.75rem', color: scrolled ? 'rgba(255,255,255,0.45)' : 'var(--muted)', marginTop: 2 }}>Internal portal</div>
+                  </div>
+                </Link>
+
+                {/* Client Access — not linked */}
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: 12,
+                  padding: '13px 16px',
+                  opacity: 0.45,
+                  cursor: 'not-allowed',
+                }}>
+                  <span style={{
+                    width: 32, height: 32, borderRadius: 8, flexShrink: 0,
+                    background: scrolled ? 'rgba(255,255,255,0.06)' : 'var(--white-section)',
+                    border: scrolled ? '1px solid rgba(255,255,255,0.10)' : '1px solid var(--border)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 15,
+                  }}>👤</span>
+                  <div>
+                    <div style={{
+                      fontSize: '0.875rem', fontWeight: 600, lineHeight: 1.2,
+                      color: scrolled ? 'rgba(255,255,255,0.70)' : 'var(--heading)',
+                      fontFamily: 'var(--font)',
+                      display: 'flex', alignItems: 'center', gap: 6,
+                    }}>
+                      Client Access
+                      <span style={{
+                        fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.06em',
+                        textTransform: 'uppercase', padding: '2px 5px',
+                        background: scrolled ? 'rgba(213,186,140,0.20)' : 'var(--white-card)',
+                        color: scrolled ? 'rgba(213,186,140,0.80)' : 'var(--muted)',
+                        borderRadius: 4,
+                      }}>Soon</span>
+                    </div>
+                    <div style={{ fontSize: '0.75rem', color: scrolled ? 'rgba(255,255,255,0.35)' : 'var(--muted)', marginTop: 2, fontFamily: 'var(--font)' }}>My properties</div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
             {/* ── Desktop CTA ── */}
             <button
@@ -222,9 +376,63 @@ export default function Nav() {
             {link.label}
           </Link>
         ))}
+        {/* Mobile login section */}
+        <div style={{ marginTop: 24, paddingTop: 24, borderTop: '1px solid rgba(255,255,255,0.10)' }}>
+          <div style={{
+            fontSize: '0.6875rem', fontWeight: 700,
+            letterSpacing: '0.10em', textTransform: 'uppercase',
+            color: 'rgba(213,186,140,0.55)', fontFamily: 'var(--font)',
+            marginBottom: 12,
+          }}>Portal Access</div>
+
+          <Link
+            href="/staff/login"
+            onClick={() => setMenuOpen(false)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 12,
+              padding: '12px 14px', borderRadius: 8,
+              background: 'rgba(213,186,140,0.08)',
+              border: '1px solid rgba(213,186,140,0.20)',
+              textDecoration: 'none', marginBottom: 8,
+            }}
+          >
+            <span style={{ fontSize: 18 }}>🔑</span>
+            <div>
+              <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#fff', fontFamily: 'var(--font)' }}>Staff Access</div>
+              <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.45)', fontFamily: 'var(--font)' }}>Internal portal</div>
+            </div>
+          </Link>
+
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 12,
+            padding: '12px 14px', borderRadius: 8,
+            background: 'rgba(255,255,255,0.04)',
+            border: '1px solid rgba(255,255,255,0.08)',
+            opacity: 0.45, cursor: 'not-allowed',
+          }}>
+            <span style={{ fontSize: 18 }}>👤</span>
+            <div>
+              <div style={{
+                fontSize: '0.9rem', fontWeight: 600,
+                color: 'rgba(255,255,255,0.80)', fontFamily: 'var(--font)',
+                display: 'flex', alignItems: 'center', gap: 8,
+              }}>
+                Client Access
+                <span style={{
+                  fontSize: '0.625rem', fontWeight: 700, letterSpacing: '0.06em',
+                  textTransform: 'uppercase', padding: '2px 5px',
+                  background: 'rgba(213,186,140,0.20)', color: 'rgba(213,186,140,0.80)',
+                  borderRadius: 3,
+                }}>Soon</span>
+              </div>
+              <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.35)', fontFamily: 'var(--font)' }}>My properties</div>
+            </div>
+          </div>
+        </div>
+
         <button
           style={{
-            marginTop: 32,
+            marginTop: 20,
             width: '100%',
             fontFamily: 'var(--font)',
             fontSize: '0.9375rem',

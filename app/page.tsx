@@ -14,75 +14,35 @@ import BlogsSection from '@/components/BlogsSection';
 import MapSection from '@/components/MapSection';
 import Footer from '@/components/Footer';
 import type { PropertyCard } from '@/components/PropertyCardsSection';
+import { createClient } from '@/utils/supabase/server';
+import type { ListingRecord } from '@/components/staff/PropertyListingForm';
 
-/* ── Property card data ── */
-const premiumCards: PropertyCard[] = [
-  {
-    image: '/images/properties/Binghatti-Hills-at-Dubai-HIlls.jpeg',
-    badge: 'Handover: Q3 2030',
-    developerLogoText: 'BINGHATTI',
-    title: 'Binghatti Hills',
-    developer: 'Binghatti Properties',
-    price: 'AED 1.10M',
-    location: 'Dubai Hills',
-    beds: '1, 2, 3',
-  },
-  {
-    image: '/images/properties/gulfnews_2025-12-12_kjm4wss9_Bugatti-Residences-by-Binghatti.avif',
-    badge: 'Handover: Q2 2027',
-    developerLogoText: 'BINGHATTI',
-    title: 'Bugatti Residences',
-    developer: 'Binghatti Properties',
-    price: 'AED 13.47M',
-    location: 'Business Bay',
-    beds: '3, 4, 5',
-  },
-  {
-    image: '/images/properties/binghatti-luxuria-hero-banner.avif',
-    badge: 'Handover: Q4 2026',
-    developerLogoText: 'BINGHATTI',
-    title: 'Binghatti Luxuria',
-    developer: 'Binghatti Properties',
-    price: 'AED 7.25M',
-    location: 'JVC',
-    beds: '1, 2, 3',
-  },
-];
+function toCard(l: ListingRecord): PropertyCard {
+  return {
+    id: l.id,
+    image: l.images[0] ?? '/images/properties/Binghatti-Hills-at-Dubai-HIlls.jpeg',
+    badge: l.badge,
+    developerLogoText: l.developer.split(' ')[0].toUpperCase(),
+    title: l.name,
+    developer: l.developer,
+    price: l.price,
+    location: l.location,
+    beds: l.beds,
+  }
+}
 
-const offplanCards: PropertyCard[] = [
-  {
-    image: '/images/properties/Binghatti-Hillside-at-Dubai-Science-Park.webp',
-    badge: 'Handover: Q4 2029',
-    developerLogoText: 'BINGHATTI',
-    title: 'Binghatti Hillside',
-    developer: 'Binghatti Properties',
-    price: 'AED 3.5M',
-    location: 'Dubai Science Park',
-    beds: '1, 2, 3',
-  },
-  {
-    image: '/images/properties/Binghatti-Falre-JVT-Towers.jpg',
-    badge: 'Handover: Q4 2027',
-    developerLogoText: 'BINGHATTI',
-    title: 'Binghatti Flare',
-    developer: 'Binghatti Properties',
-    price: 'AED 585K',
-    location: 'JVT',
-    beds: '1, 2, Studio',
-  },
-  {
-    image: '/images/properties/binghatti-hillcrest-hero-banner.avif',
-    badge: 'Handover: Q3 2026',
-    developerLogoText: 'BINGHATTI',
-    title: 'Binghatti Hillcrest',
-    developer: 'Binghatti Properties',
-    price: 'AED 1.10M',
-    location: 'Dubai Hills',
-    beds: '1, 2, Studio',
-  },
-];
+export default async function Home() {
+  const supabase = createClient();
+  const { data } = await supabase
+    .from('listings')
+    .select('*')
+    .eq('status', 'published')
+    .order('created_at', { ascending: true });
 
-export default function Home() {
+  const listings = (data as ListingRecord[]) ?? [];
+  const premiumCards: PropertyCard[] = listings.filter(l => l.category === 'premium').map(toCard);
+  const offplanCards: PropertyCard[] = listings.filter(l => l.category === 'offplan').map(toCard);
+
   return (
     <>
       {/* 1. NAV */}
@@ -92,22 +52,26 @@ export default function Home() {
       <HeroSection />
 
       {/* 3. PREMIUM LUXURY DEVELOPMENTS */}
-      <PropertyCardsSection
-        title="Premium Luxury Developments"
-        ctaText="More Off-plan Projects"
-        cards={premiumCards}
-      />
+      {premiumCards.length > 0 && (
+        <PropertyCardsSection
+          title="Premium Luxury Developments"
+          ctaText="More Off-plan Projects"
+          cards={premiumCards}
+        />
+      )}
 
       {/* 4. CTA BANNER */}
       <CTABanner />
 
       {/* 5. LATEST OFFPLAN LAUNCHES */}
-      <PropertyCardsSection
-        title="Latest Offplan Launches"
-        ctaText="More Off-plan Projects"
-        cards={offplanCards}
-        grey
-      />
+      {offplanCards.length > 0 && (
+        <PropertyCardsSection
+          title="Latest Offplan Launches"
+          ctaText="More Off-plan Projects"
+          cards={offplanCards}
+          grey
+        />
+      )}
 
       {/* 6. MAP — Dubai property locations */}
       <MapSection />

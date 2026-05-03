@@ -1,8 +1,10 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 
 export interface PropertyCard {
+  id?:         string;        // Supabase listing ID — enables detail page link
   image:       string;
   badge:       string;        // "Handover: Q4 2027"
   developerLogo?: string;     // path to logo img, or text fallback
@@ -111,7 +113,10 @@ export default function PropertyCardsSection({ title, ctaText, cards, grey }: Pr
           gridTemplateColumns: 'repeat(3, 1fr)',
           gap: 'var(--gap)',
         }}>
-          {cards.map(card => (
+          {cards.map(card => {
+            const cardHref = card.id ? `/properties/${card.id}` : undefined;
+            const Wrapper = cardHref ? Link : 'div';
+            return (
             <article
               key={card.title}
               style={{
@@ -120,6 +125,7 @@ export default function PropertyCardsSection({ title, ctaText, cards, grey }: Pr
                 background: 'var(--white)',
                 boxShadow: 'var(--shadow-card)',
                 transition: 'box-shadow 0.32s ease, transform 0.32s cubic-bezier(0.34,1.56,0.64,1)',
+                display: 'flex', flexDirection: 'column',
               }}
               onMouseEnter={e => {
                 (e.currentTarget as HTMLElement).style.boxShadow = '0 16px 40px rgba(27,48,121,0.18)';
@@ -130,103 +136,115 @@ export default function PropertyCardsSection({ title, ctaText, cards, grey }: Pr
                 (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
               }}
             >
-              {/* Image */}
-              <div style={{ position: 'relative', aspectRatio: '16/9', overflow: 'hidden' }}>
-                <Image
-                  src={card.image}
-                  alt={card.title}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  style={{ objectFit: 'cover', transition: 'transform 500ms cubic-bezier(0.4,0,0.2,1)' }}
-                  onMouseEnter={e => ((e.target as HTMLElement).style.transform = 'scale(1.04)')}
-                  onMouseLeave={e => ((e.target as HTMLElement).style.transform = 'scale(1)')}
-                />
-                {/* Handover badge */}
-                <span style={{
-                  position: 'absolute', top: 12, left: 12,
-                  background: 'rgba(0,0,0,0.48)',
-                  color: '#fff',
-                  fontSize: '0.75rem',
-                  fontWeight: 600,
-                  padding: '4px 10px',
-                  borderRadius: 4,
-                  backdropFilter: 'blur(4px)',
-                }}>
-                  {card.badge}
-                </span>
-                {/* Developer logo or text badge */}
-                {card.developerLogo ? (
-                  <div style={{
-                    position: 'absolute', top: 12, right: 12,
-                    background: '#fff',
-                    padding: '4px 10px',
-                    borderRadius: 4,
-                    maxHeight: 28,
-                    display: 'flex', alignItems: 'center',
-                  }}>
-                    <Image src={card.developerLogo} alt={card.developer} width={60} height={20} style={{ objectFit: 'contain', height: 18, width: 'auto' }} />
-                  </div>
-                ) : card.developerLogoText ? (
+              {/* Clickable top section — links to detail page */}
+              {/* @ts-expect-error dynamic tag */}
+              <Wrapper href={cardHref} style={{ textDecoration: 'none', color: 'inherit', display: 'block', flex: 1 }}>
+                {/* Image */}
+                <div style={{ position: 'relative', aspectRatio: '16/9', overflow: 'hidden' }}>
+                  <Image
+                    src={card.image}
+                    alt={card.title}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    style={{ objectFit: 'cover', transition: 'transform 500ms cubic-bezier(0.4,0,0.2,1)' }}
+                    onMouseEnter={e => ((e.target as HTMLElement).style.transform = 'scale(1.04)')}
+                    onMouseLeave={e => ((e.target as HTMLElement).style.transform = 'scale(1)')}
+                  />
+                  {/* Handover badge */}
                   <span style={{
-                    position: 'absolute', top: 12, right: 12,
-                    background: '#fff',
+                    position: 'absolute', top: 12, left: 12,
+                    background: 'rgba(0,0,0,0.48)',
+                    color: '#fff',
+                    fontSize: '0.75rem',
+                    fontWeight: 600,
                     padding: '4px 10px',
                     borderRadius: 4,
-                    fontSize: '0.6875rem',
-                    fontWeight: 700,
-                    letterSpacing: '0.04em',
-                    color: 'var(--heading)',
+                    backdropFilter: 'blur(4px)',
                   }}>
-                    {card.developerLogoText}
+                    {card.badge}
                   </span>
-                ) : null}
-              </div>
+                  {/* Developer logo or text badge */}
+                  {card.developerLogo ? (
+                    <div style={{
+                      position: 'absolute', top: 12, right: 12,
+                      background: '#fff',
+                      padding: '4px 10px',
+                      borderRadius: 4,
+                      maxHeight: 28,
+                      display: 'flex', alignItems: 'center',
+                    }}>
+                      <Image src={card.developerLogo} alt={card.developer} width={60} height={20} style={{ objectFit: 'contain', height: 18, width: 'auto' }} />
+                    </div>
+                  ) : card.developerLogoText ? (
+                    <span style={{
+                      position: 'absolute', top: 12, right: 12,
+                      background: '#fff',
+                      padding: '4px 10px',
+                      borderRadius: 4,
+                      fontSize: '0.6875rem',
+                      fontWeight: 700,
+                      letterSpacing: '0.04em',
+                      color: 'var(--heading)',
+                    }}>
+                      {card.developerLogoText}
+                    </span>
+                  ) : null}
+                </div>
 
-              {/* Body */}
-              <div style={{ padding: '20px 20px 0' }}>
-                <h3 style={{
-                  fontFamily: 'var(--font)',
-                  fontSize: '1.125rem',
-                  fontWeight: 600,
-                  lineHeight: 1.35,
-                  letterSpacing: '-0.01em',
-                  color: 'var(--heading)',
-                  marginBottom: 4,
-                }}>
-                  {card.title}
-                </h3>
-                <p style={{ fontSize: '0.8125rem', color: 'var(--muted)', marginBottom: 12 }}>
-                  by {card.developer}
-                </p>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 14 }}>
-                  <div>
-                    <div style={{ fontSize: '0.8125rem', color: 'var(--muted)', fontWeight: 400 }}>
-                      {card.priceLabel ?? 'Starting Price'}
+                {/* Body */}
+                <div style={{ padding: '20px 20px 0' }}>
+                  <h3 style={{
+                    fontFamily: 'var(--font)',
+                    fontSize: '1.125rem',
+                    fontWeight: 600,
+                    lineHeight: 1.35,
+                    letterSpacing: '-0.01em',
+                    color: 'var(--heading)',
+                    marginBottom: 4,
+                  }}>
+                    {card.title}
+                  </h3>
+                  <p style={{ fontSize: '0.8125rem', color: 'var(--muted)', marginBottom: 12 }}>
+                    by {card.developer}
+                  </p>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 14 }}>
+                    <div>
+                      <div style={{ fontSize: '0.8125rem', color: 'var(--muted)', fontWeight: 400 }}>
+                        {card.priceLabel ?? 'Starting Price'}
+                      </div>
+                      <div style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--heading)' }}>
+                        {card.price}
+                      </div>
                     </div>
-                    <div style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--heading)' }}>
-                      {card.price}
-                    </div>
+                    {card.id && (
+                      <span style={{
+                        fontSize: '0.75rem', fontWeight: 600, color: '#1B3079',
+                        display: 'flex', alignItems: 'center', gap: 4,
+                      }}>
+                        View Details →
+                      </span>
+                    )}
+                  </div>
+                  {/* Meta row */}
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 16,
+                    paddingBottom: 16,
+                    borderTop: '1px solid var(--border)',
+                    paddingTop: 12,
+                    fontSize: '0.8125rem',
+                    color: 'var(--muted)',
+                  }}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                      <BedIcon /> {card.beds}
+                    </span>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                      <PinIcon /> {card.location}
+                    </span>
                   </div>
                 </div>
-                {/* Meta row */}
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 16,
-                  paddingBottom: 16,
-                  borderTop: '1px solid var(--border)',
-                  paddingTop: 12,
-                  fontSize: '0.8125rem',
-                  color: 'var(--muted)',
-                }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                    <BedIcon /> {card.beds}
-                  </span>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                    <PinIcon /> {card.location}
-                  </span>
-                </div>
-              </div>
+              </Wrapper>
 
               {/* Enquire Now CTA */}
               <button
@@ -253,7 +271,8 @@ export default function PropertyCardsSection({ title, ctaText, cards, grey }: Pr
                 Enquire Now
               </button>
             </article>
-          ))}
+            );
+          })}
         </div>
 
       </div>
