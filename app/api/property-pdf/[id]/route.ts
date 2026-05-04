@@ -12,16 +12,9 @@ import { getCompanyInfo } from '@/utils/site-settings'
 
 export const dynamic = 'force-dynamic'
 
-// react-pdf only supports JPEG, PNG, GIF — no WebP/AVIF
-function isPdfSafeImage(url: string): boolean {
-  return /\.(jpe?g|png|gif)(\?|$)/i.test(url)
-}
-
-// Convert a local public path to a base64 data URI — works everywhere, no fetch needed
-function toDataUri(url: string): string | null {
-  if (!url) return null
-  if (url.startsWith('data:')) return url
-  if (url.startsWith('http://') || url.startsWith('https://')) return url
+// Read a local /public file as base64 data URI
+function localToDataUri(url: string): string | null {
+  if (!url || url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) return null
   const rel = url.startsWith('/') ? url.slice(1) : url
   const filePath = path.join(process.cwd(), 'public', rel)
   if (!fs.existsSync(filePath)) return null
@@ -33,6 +26,37 @@ function toDataUri(url: string): string | null {
   if (!mime) return null
   const data = fs.readFileSync(filePath)
   return `data:${mime};base64,${data.toString('base64')}`
+}
+
+// Fetch any image URL (remote or local) and return a base64 data URI.
+// Checks actual content-type so WebP/AVIF stored with any extension are handled correctly.
+// react-pdf requires JPEG, PNG, or GIF — WebP/AVIF are skipped.
+async function imageToDataUri(url: string): Promise<string | null> {
+  if (!url) return null
+  if (url.startsWith('data:')) return url
+
+  // Local /public file
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    return localToDataUri(url)
+  }
+
+  try {
+    const res = await fetch(url, { signal: AbortSignal.timeout(12000) })
+    if (!res.ok) return null
+
+    const ct = (res.headers.get('content-type') ?? '').toLowerCase()
+    const mime = ct.includes('jpeg') || ct.includes('jpg') ? 'image/jpeg'
+               : ct.includes('png')  ? 'image/png'
+               : ct.includes('gif')  ? 'image/gif'
+               : null
+
+    if (!mime) return null   // WebP, AVIF, HEIC etc. skipped — react-pdf can't render them
+
+    const buf = await res.arrayBuffer()
+    return `data:${mime};base64,${Buffer.from(buf).toString('base64')}`
+  } catch {
+    return null
+  }
 }
 
 export async function GET(
@@ -66,34 +90,28 @@ export async function GET(
 
   const record = listing as ListingRecord
 
-  // Convert all images to base64 data URIs (most reliable for react-pdf)
-  const resolvedImages = (record.images ?? [])
-    .filter(isPdfSafeImage)
-    .map(toDataUri)
-    .filter(Boolean) as string[]
-
-  const resolvedFloorPlans = (record.floor_plans ?? [])
-    .filter(isPdfSafeImage)
-    .map(toDataUri)
-    .filter(Boolean) as string[]
+  // Fetch all images in parallel as base64 data URIs.
+  // Checks actual content-type so format is detected correctly regardless of file extension.
+  const [resolvedImages, resolvedFloorPlans] = await Promise.all([
+    Promise.all((record.images ?? []).map(imageToDataUri)),
+    Promise.all((record.floor_plans ?? []).map(imageToDataUri)),
+  ])
 
   const resolvedListing: ListingRecord = {
     ...record,
-    images: resolvedImages,
-    floor_plans: resolvedFloorPlans,
+    images:      resolvedImages.filter(Boolean) as string[],
+    floor_plans: resolvedFloorPlans.filter(Boolean) as string[],
   }
 
   const resolvedAgent: AgentRecord | null = agent
     ? {
         ...agent,
-        photo_url: agent.photo_url && isPdfSafeImage(agent.photo_url)
-          ? toDataUri(agent.photo_url)
-          : null,
+        photo_url: agent.photo_url ? await imageToDataUri(agent.photo_url) : null,
       }
     : null
 
   // White logo PNG on navy backgrounds
-  const logoSrc = toDataUri('/images/logo-white-luxe.png') ?? undefined
+  const logoSrc = localToDataUri('/images/logo-white-luxe.png') ?? undefined
 
   const pdfBuffer = await renderToBuffer(
     createElement(PropertyPDF, {
