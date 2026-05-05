@@ -65,6 +65,19 @@ function colImageHtml(src: string | undefined): string {
   return `<div class="col-image"><div class="col-image-placeholder">${ICON_IMG}<span>Photo</span></div></div>`
 }
 
+// ── Page structure helpers ────────────────────────────────────────────────────
+
+function breadcrumbHtml(text: string, logoSrc?: string): string {
+  const logoEl = logoSrc
+    ? `<img src="${esc(logoSrc)}" style="height:22px;width:auto;object-fit:contain;opacity:0.65;flex-shrink:0;" loading="eager">`
+    : `<span style="font-size:9px;font-weight:700;letter-spacing:0.12em;color:rgba(26,31,46,0.35);">MACINS LUXE</span>`
+  return `<div class="breadcrumb"><span>${esc(text)}</span>${logoEl}</div>`
+}
+
+function pageFooter(): string {
+  return `<div class="page-footer"><span>Macins Luxe Properties</span><span>www.macinsluxe.com</span></div>`
+}
+
 // ── Page generators ───────────────────────────────────────────────────────────
 
 function coverPage(l: ListingRecord, a: AgentRecord | null, logoSrc?: string, ci?: CompanyContact): string {
@@ -137,14 +150,14 @@ function coverPage(l: ListingRecord, a: AgentRecord | null, logoSrc?: string, ci
 </div>`
 }
 
-function aboutPage(l: ListingRecord): string {
+function aboutPage(l: ListingRecord, logoSrc?: string): string {
   const imgs = l.images ?? []
   const img1 = imgs[1]
   const [p1, p2] = splitDesc(l.description)
 
   return `
 <div class="page">
-  <div class="breadcrumb">${esc(l.name)} / About the Project</div>
+  ${breadcrumbHtml(`${l.name} / About the Project`, logoSrc)}
   <div class="two-col">
     <div class="col-text">
       <div class="section-label">About the Project</div>
@@ -162,10 +175,11 @@ function aboutPage(l: ListingRecord): string {
     </div>
     ${colImageHtml(img1)}
   </div>
+  ${pageFooter()}
 </div>`
 }
 
-function projectInfoPage(l: ListingRecord): string {
+function projectInfoPage(l: ListingRecord, logoSrc?: string): string {
   const imgs = l.images ?? []
   const img2 = imgs[2]
   const [,,p3] = splitDesc(l.description)
@@ -185,7 +199,7 @@ function projectInfoPage(l: ListingRecord): string {
 
   return `
 <div class="page">
-  <div class="breadcrumb">${esc(l.name)} / Project Info</div>
+  ${breadcrumbHtml(`${l.name} / Project Info`, logoSrc)}
   <div class="two-col">
     <div class="col-text" style="padding-top:36px;">
       ${p3 ? `<p class="body-text" style="margin-bottom:24px;">${esc(p3)}</p>` : ''}
@@ -194,24 +208,26 @@ function projectInfoPage(l: ListingRecord): string {
     </div>
     ${colImageHtml(img2)}
   </div>
+  ${pageFooter()}
 </div>`
 }
 
-function photoGridPage(l: ListingRecord, images: string[], section: string): string {
+function photoGridPage(l: ListingRecord, images: string[], section: string, logoSrc?: string): string {
   const [a, b, c, d] = images
   return `
 <div class="page">
-  <div class="breadcrumb">${esc(l.name)} / ${esc(section)}</div>
+  ${breadcrumbHtml(`${l.name} / ${section}`, logoSrc)}
   <div class="photo-grid">
     ${photoCellHtml(a)}
     ${photoCellHtml(b)}
     ${photoCellHtml(c)}
     ${photoCellHtml(d)}
   </div>
+  ${pageFooter()}
 </div>`
 }
 
-function locationPage(l: ListingRecord): string {
+function locationPage(l: ListingRecord, logoSrc?: string): string {
   const highlights = (l.highlights ?? []) as string[]
   const poisHtml = highlights.map(h => {
     const parts = h.split('|')
@@ -226,7 +242,7 @@ function locationPage(l: ListingRecord): string {
 
   return `
 <div class="page">
-  <div class="breadcrumb">${esc(l.name)} / Point of Interest</div>
+  ${breadcrumbHtml(`${l.name} / Point of Interest`, logoSrc)}
   <div class="location-split">
     <div class="location-text">
       <h2 class="page-heading">Location</h2>
@@ -240,10 +256,11 @@ function locationPage(l: ListingRecord): string {
       </div>
     </div>
   </div>
+  ${pageFooter()}
 </div>`
 }
 
-function amenitiesPage(l: ListingRecord, imgs: string[]): string {
+function amenitiesPage(l: ListingRecord, imgs: string[], logoSrc?: string): string {
   const ams = (l.amenities ?? []) as string[]
 
   function amenCell(i: number): string {
@@ -265,7 +282,7 @@ function amenitiesPage(l: ListingRecord, imgs: string[]): string {
 
   return `
 <div class="page">
-  <div class="breadcrumb">${esc(l.name)} / Features &amp; Amenities</div>
+  ${breadcrumbHtml(`${l.name} / Features & Amenities`, logoSrc)}
   <div class="amenities-grid">
     <div class="amenities-label-cell">
       <h2 class="page-heading">Features &amp;<br>Amenities</h2>
@@ -274,10 +291,11 @@ function amenitiesPage(l: ListingRecord, imgs: string[]): string {
       ${amenCell(0)}${amenCell(1)}${amenCell(2)}${amenCell(3)}
     </div>
   </div>
+  ${pageFooter()}
 </div>`
 }
 
-function paymentPlanPage(l: ListingRecord): string {
+function paymentPlanPage(l: ListingRecord, logoSrc?: string): string {
   const raw = (l.payment_plan ?? '').split('\n').map((s: string) => s.trim()).filter(Boolean)
   const planName = raw[0] || 'Payment Plan'
   const payLines = raw.slice(1)
@@ -295,7 +313,7 @@ function paymentPlanPage(l: ListingRecord): string {
 
   return `
 <div class="page">
-  <div class="breadcrumb">${esc(l.name)} / Payment Plan</div>
+  ${breadcrumbHtml(`${l.name} / Payment Plan`, logoSrc)}
   <div class="payment-split">
     <div class="payment-text">
       <div class="payment-option-label">Payment Plan Option</div>
@@ -308,10 +326,11 @@ function paymentPlanPage(l: ListingRecord): string {
       ${rowsHtml}
     </div>
   </div>
+  ${pageFooter()}
 </div>`
 }
 
-function floorPlansPage(l: ListingRecord, floorImgs: string[]): string {
+function floorPlansPage(l: ListingRecord, floorImgs: string[], logoSrc?: string): string {
   const unitTypes = (l.beds || '').split(',').filter(Boolean).slice(0, 5)
   const floorImg = floorImgs[0]
 
@@ -329,7 +348,7 @@ function floorPlansPage(l: ListingRecord, floorImgs: string[]): string {
 
   return `
 <div class="page">
-  <div class="breadcrumb">${esc(l.name)} / Typical Units</div>
+  ${breadcrumbHtml(`${l.name} / Typical Units`, logoSrc)}
   <div class="units-split">
     <div class="units-text">
       <h2 class="page-heading">Typical Units</h2>
@@ -337,6 +356,7 @@ function floorPlansPage(l: ListingRecord, floorImgs: string[]): string {
     </div>
     <div class="units-floor-image">${imgHtml}</div>
   </div>
+  ${pageFooter()}
 </div>`
 }
 
@@ -368,6 +388,7 @@ function agentPage(l: ListingRecord, a: AgentRecord, logoSrc?: string, ci?: Comp
       </div>
     </div>
   </div>
+  ${pageFooter()}
 </div>`
 }
 
@@ -375,19 +396,21 @@ function agentPage(l: ListingRecord, a: AgentRecord, logoSrc?: string, ci?: Comp
 
 const CSS = `
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  img { image-rendering: -webkit-optimize-contrast; }
 
   :root {
     --navy: #1a1f2e; --navy2: #232a3b; --red: #c0392b;
     --gray: #f4f4f4; --gray2: #e8e8e8; --muted: #8a8f9e;
     --white: #ffffff; --text: #1a1f2e; --text2: #444b5a;
-    --page-w: 794px; --page-h: 1123px;
+    --page-w: 1123px; --page-h: 794px;
   }
 
   body { font-family: 'DM Sans', sans-serif; background: #d0d0d0; color: var(--text); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 
-  .page { width: var(--page-w); height: var(--page-h); background: var(--white); margin: 32px auto; position: relative; overflow: hidden; page-break-after: always; break-after: page; display: flex; flex-direction: column; }
+  .page { width: var(--page-w); height: var(--page-h); max-height: var(--page-h); background: var(--white); margin: 32px auto; position: relative; overflow: hidden; page-break-after: always; break-after: page; display: flex; flex-direction: column; }
 
-  .breadcrumb { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--navy); padding: 18px 40px; border-bottom: 1px solid var(--gray2); flex-shrink: 0; }
+  .breadcrumb { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--navy); padding: 14px 40px; border-bottom: 1px solid var(--gray2); flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; }
+  .page-footer { font-size: 9px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); padding: 9px 40px; border-top: 1px solid var(--gray2); flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; }
 
   .section-label { font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
 
@@ -398,7 +421,7 @@ const CSS = `
   p.body-text { font-size: 13px; line-height: 1.75; color: var(--text2); margin-bottom: 14px; }
 
   /* Cover */
-  .cover-page { height: var(--page-h); position: relative; overflow: hidden; display: block; }
+  .cover-page { width: var(--page-w); height: var(--page-h); max-height: var(--page-h); position: relative; overflow: hidden; display: block; page-break-after: always; break-after: page; }
   .cover-bg { width: 100%; height: 100%; object-fit: cover; display: block; }
   .cover-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(10,14,26,0.18) 0%, rgba(10,14,26,0.72) 100%); }
   .cover-logo-bar { position: absolute; top: 36px; left: 40px; right: 40px; display: flex; align-items: center; justify-content: space-between; }
@@ -429,8 +452,8 @@ const CSS = `
   .cover-agent-company-name { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.8); }
 
   /* Two-col */
-  .two-col { flex: 1; display: grid; grid-template-columns: 1fr 1fr; overflow: hidden; }
-  .col-text { padding: 48px 40px; display: flex; flex-direction: column; overflow: hidden; }
+  .two-col { flex: 1; min-height: 0; height: calc(var(--page-h) - 81px); display: grid; grid-template-columns: 1fr 1fr; overflow: hidden; }
+  .col-text { padding: 32px 36px; display: flex; flex-direction: column; overflow: hidden; }
   .col-image { position: relative; overflow: hidden; }
   .col-image-placeholder { width: 100%; height: 100%; background: var(--gray); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 8px; color: var(--muted); font-size: 12px; }
 
@@ -449,12 +472,12 @@ const CSS = `
   .info-cell .ic-value { font-size: 16px; font-weight: 700; color: var(--navy); }
 
   /* Photo grid */
-  .photo-grid { flex: 1; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 0; overflow: hidden; }
+  .photo-grid { flex: 1; min-height: 0; height: calc(var(--page-h) - 81px); display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 0; overflow: hidden; }
   .photo-cell { position: relative; overflow: hidden; }
   .photo-cell-placeholder { width: 100%; height: 100%; background: #c8cdd8; display: flex; align-items: center; justify-content: center; color: #8a8f9e; font-size: 11px; flex-direction: column; gap: 8px; }
 
   /* Location */
-  .location-split { flex: 1; display: grid; grid-template-columns: 5fr 7fr; overflow: hidden; }
+  .location-split { flex: 1; min-height: 0; height: calc(var(--page-h) - 81px); display: grid; grid-template-columns: 5fr 7fr; overflow: hidden; }
   .location-text { padding: 44px 36px; background: var(--gray); display: flex; flex-direction: column; }
   .nearby-list { margin-top: 24px; }
   .nearby-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--gray2); font-size: 13px; color: var(--text2); gap: 12px; }
@@ -466,7 +489,7 @@ const CSS = `
   .map-placeholder { width: 100%; height: 100%; background: #dde4ee; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 10px; color: #8a9ab5; font-size: 13px; }
 
   /* Amenities */
-  .amenities-grid { flex: 1; display: grid; grid-template-columns: 5fr 7fr; overflow: hidden; }
+  .amenities-grid { flex: 1; min-height: 0; height: calc(var(--page-h) - 81px); display: grid; grid-template-columns: 5fr 7fr; overflow: hidden; }
   .amenities-label-cell { background: var(--gray); padding: 44px 36px; display: flex; align-items: flex-start; }
   .amenities-photos { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; overflow: hidden; }
   .amenity-photo { position: relative; overflow: hidden; }
@@ -474,7 +497,7 @@ const CSS = `
   .amenity-photo-placeholder { width: 100%; height: 100%; background: #c8cdd8; display: flex; align-items: center; justify-content: center; color: #8a8f9e; font-size: 10px; }
 
   /* Payment */
-  .payment-split { flex: 1; display: grid; grid-template-columns: 5fr 7fr; overflow: hidden; }
+  .payment-split { flex: 1; min-height: 0; height: calc(var(--page-h) - 81px); display: grid; grid-template-columns: 5fr 7fr; overflow: hidden; }
   .payment-text { background: var(--gray); padding: 36px 32px; display: flex; flex-direction: column; }
   .payment-option-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
   .payment-plan-name { font-size: 24px; font-weight: 700; color: var(--navy); margin-bottom: 24px; line-height: 1.2; }
@@ -486,7 +509,7 @@ const CSS = `
   .payment-row .amount { font-weight: 700; color: var(--navy); }
 
   /* Floor plans */
-  .units-split { flex: 1; display: grid; grid-template-columns: 5fr 7fr; overflow: hidden; }
+  .units-split { flex: 1; min-height: 0; height: calc(var(--page-h) - 81px); display: grid; grid-template-columns: 5fr 7fr; overflow: hidden; }
   .units-text { background: var(--gray); padding: 44px 36px; display: flex; flex-direction: column; gap: 16px; }
   .unit-badge { display: inline-flex; align-items: center; background: var(--navy); color: white; font-size: 11px; font-weight: 600; padding: 6px 14px; border-radius: 20px; letter-spacing: 0.04em; width: fit-content; }
   .units-floor-image { position: relative; overflow: hidden; background: #1c3a4a; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; }
@@ -496,7 +519,7 @@ const CSS = `
   /* Agent page */
   .agent-red-bar { height: 4px; background: var(--red); width: 100%; flex-shrink: 0; }
   .agent-page { flex: 1; display: flex; flex-direction: column; background: var(--navy); overflow: hidden; }
-  .agent-inner { flex: 1; display: grid; grid-template-columns: 5fr 7fr; overflow: hidden; }
+  .agent-inner { flex: 1; min-height: 0; display: grid; grid-template-columns: 5fr 7fr; overflow: hidden; }
   .agent-left { display: flex; flex-direction: column; justify-content: flex-end; padding: 48px 40px; }
   .agent-right { display: flex; flex-direction: column; justify-content: center; padding: 48px 40px; border-left: 1px solid rgba(255,255,255,0.12); }
   .agent-eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 12px; }
@@ -513,7 +536,7 @@ const CSS = `
 
   @media print {
     body { background: white; }
-    .page { margin: 0; width: 210mm; height: 297mm; }
+    .page { margin: 0; width: 297mm; height: 210mm; }
   }
 `
 
@@ -528,18 +551,18 @@ export function buildLuxeHtml({ listing: l, agent: a, logoSrc, companyInfo }: Lu
 
   const galleryPages = Array.from({ length: galPageCount }, (_, i) => {
     const section = i === 0 ? 'Architecture' : 'Gallery'
-    return photoGridPage(l, galleryImgs.slice(i * 4, i * 4 + 4), section)
+    return photoGridPage(l, galleryImgs.slice(i * 4, i * 4 + 4), section, logoSrc)
   }).join('')
 
   const pages = [
     coverPage(l, a, logoSrc, companyInfo),
-    aboutPage(l),
-    projectInfoPage(l),
+    aboutPage(l, logoSrc),
+    projectInfoPage(l, logoSrc),
     galleryPages,
-    locationPage(l),
-    amenities.length > 0 ? amenitiesPage(l, galleryImgs) : '',
-    l.payment_plan ? paymentPlanPage(l) : '',
-    floorImgs.length > 0 ? floorPlansPage(l, floorImgs) : '',
+    locationPage(l, logoSrc),
+    amenities.length > 0 ? amenitiesPage(l, galleryImgs, logoSrc) : '',
+    l.payment_plan ? paymentPlanPage(l, logoSrc) : '',
+    floorImgs.length > 0 ? floorPlansPage(l, floorImgs, logoSrc) : '',
     a ? agentPage(l, a, logoSrc, companyInfo) : '',
   ].join('')
 

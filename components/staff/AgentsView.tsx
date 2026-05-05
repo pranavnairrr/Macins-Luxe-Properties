@@ -46,6 +46,13 @@ export default function AgentsView() {
     setAgents(prev => prev.map(a => a.id === agent.id ? { ...a, is_active: !a.is_active } : a))
   }
 
+  const handleSetDefault = async (agent: AgentRecord) => {
+    const supabase = createClient()
+    await supabase.from('agents').update({ is_default: false }).neq('id', agent.id)
+    await supabase.from('agents').update({ is_default: true }).eq('id', agent.id)
+    setAgents(prev => prev.map(a => ({ ...a, is_default: a.id === agent.id })))
+  }
+
   if (showForm || editing) {
     return (
       <AgentForm
@@ -136,15 +143,25 @@ export default function AgentsView() {
                       {agent.title}
                     </div>
                   )}
-                  <span style={{
-                    display: 'inline-block', marginTop: 4,
-                    fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.04em',
-                    padding: '2px 7px', borderRadius: 4, fontFamily: 'var(--font)',
-                    background: agent.is_active ? '#e6f4ea' : '#f5f5f5',
-                    color: agent.is_active ? '#2e7d32' : '#777',
-                  }}>
-                    {agent.is_active ? 'Active' : 'Inactive'}
-                  </span>
+                  <div style={{ display: 'flex', gap: 4, marginTop: 4, flexWrap: 'wrap' }}>
+                    <span style={{
+                      fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.04em',
+                      padding: '2px 7px', borderRadius: 4, fontFamily: 'var(--font)',
+                      background: agent.is_active ? '#e6f4ea' : '#f5f5f5',
+                      color: agent.is_active ? '#2e7d32' : '#777',
+                    }}>
+                      {agent.is_active ? 'Active' : 'Inactive'}
+                    </span>
+                    {agent.is_default && (
+                      <span style={{
+                        fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.04em',
+                        padding: '2px 7px', borderRadius: 4, fontFamily: 'var(--font)',
+                        background: '#1B3079', color: '#fff',
+                      }}>
+                        Default PDF
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -179,6 +196,14 @@ export default function AgentsView() {
                 }}>
                   {agent.is_active ? 'Deactivate' : 'Activate'}
                 </button>
+                {!agent.is_default && (
+                  <button onClick={() => handleSetDefault(agent)} style={{
+                    flex: 1, fontFamily: 'var(--font)', fontSize: '0.8125rem', fontWeight: 500,
+                    color: '#1B3079', background: 'transparent',
+                    border: '1px solid #1B3079', borderRadius: 6,
+                    padding: '7px 0', cursor: 'pointer', minWidth: 60,
+                  }}>Set Default</button>
+                )}
                 <button
                   onClick={() => handleDelete(agent.id)}
                   disabled={deletingId === agent.id}

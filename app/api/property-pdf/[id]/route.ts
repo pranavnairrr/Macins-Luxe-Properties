@@ -33,17 +33,24 @@ async function imageToDataUri(url: string): Promise<string | null> {
 
   try {
     const res = await fetch(url, { signal: AbortSignal.timeout(12000) })
+    console.log('[PDF img]', res.status, res.headers.get('content-type'), url.slice(0, 80))
     if (!res.ok) return null
-    const ct = (res.headers.get('content-type') ?? '').toLowerCase()
-    // Accept all common image types — Chrome handles WebP/AVIF natively
-    const mime = ct.includes('jpeg') || ct.includes('jpg') ? 'image/jpeg'
-               : ct.includes('png')  ? 'image/png'
-               : ct.includes('gif')  ? 'image/gif'
-               : ct.includes('webp') ? 'image/webp'
-               : ct.includes('avif') ? 'image/avif'
-               : ct.includes('svg')  ? 'image/svg+xml'
-               : null
-    if (!mime) return null
+
+    const ct  = (res.headers.get('content-type') ?? '').toLowerCase()
+    const ext = url.split('?')[0].split('.').pop()?.toLowerCase() ?? ''
+
+    // Detect MIME — content-type first, URL extension fallback, then default to jpeg.
+    // Supabase often returns application/octet-stream even for real images.
+    const mime =
+      ct.includes('jpeg') || ct.includes('jpg') || ext === 'jpg' || ext === 'jpeg' ? 'image/jpeg'
+      : ct.includes('png')  || ext === 'png'  ? 'image/png'
+      : ct.includes('gif')  || ext === 'gif'  ? 'image/gif'
+      : ct.includes('webp') || ext === 'webp' ? 'image/webp'
+      : ct.includes('avif') || ext === 'avif' ? 'image/avif'
+      : ct.includes('svg')  || ext === 'svg'  ? 'image/svg+xml'
+      : ct.startsWith('image/') ? ct.split(';')[0].trim()
+      : 'image/jpeg'  // last resort — Chrome detects actual format from magic bytes
+
     const buf = await res.arrayBuffer()
     return `data:${mime};base64,${Buffer.from(buf).toString('base64')}`
   } catch {
@@ -84,6 +91,15 @@ export async function GET(
       .single()
     agent = data as AgentRecord | null
   }
+  if (!agent) {
+    const { data } = await supabase
+      .from('agents')
+      .select('*')
+      .eq('is_default', true)
+      .eq('is_active', true)
+      .single()
+    agent = data as AgentRecord | null
+  }
 
   const companyInfo = await getCompanyInfo().catch(() => null)
   const record = listing as ListingRecord
@@ -98,6 +114,9 @@ export async function GET(
   const resolvedAgent: AgentRecord | null = agent
     ? { ...agent, photo_url: agent.photo_url ? await imageToDataUri(agent.photo_url) : null }
     : null
+
+  console.log('[PDF] raw images:', (record.images ?? []).length, 'resolved:', resolvedImages.filter(Boolean).length)
+  console.log('[PDF] raw image[0]:', (record.images ?? [])[0]?.slice(0, 80))
 
   const resolvedListing: ListingRecord = {
     ...record,
@@ -132,18 +151,20 @@ export async function GET(
 
   const browser = await puppeteer.launch({
     args: chromium?.args ?? ['--no-sandbox', '--disable-setuid-sandbox'],
-    defaultViewport: { width: 1240, height: 1754, deviceScaleFactor: 2 },
+    defaultViewport: { width: 1123, height: 794, deviceScaleFactor: 2 },
     executablePath,
     headless: chromium?.headless ?? true,
   })
 
   try {
     const page = await browser.newPage()
+    await page.setViewport({ width: 1123, height: 794, deviceScaleFactor: 2 })
     // Images are all data URIs now; only Google Fonts need network — use networkidle0
     await page.setContent(html, { waitUntil: 'networkidle0', timeout: 30000 })
 
     const pdfBuffer = await page.pdf({
       format: 'A4',
+      landscape: true,
       printBackground: true,
       margin: { top: 0, right: 0, bottom: 0, left: 0 },
     })

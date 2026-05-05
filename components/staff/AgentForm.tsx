@@ -13,6 +13,7 @@ export interface AgentRecord {
   email: string | null
   bio: string | null
   is_active: boolean
+  is_default: boolean
   created_at: string
 }
 
