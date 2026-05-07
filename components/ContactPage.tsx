@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Phone, Mail, MapPin, Instagram, Linkedin, Youtube, Facebook, CheckCircle2 } from 'lucide-react';
+import { Phone, Mail, MapPin, CheckCircle2 } from 'lucide-react';
 import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
 import type { CompanyInfo } from '@/utils/site-settings';
@@ -205,11 +205,11 @@ export default function ContactPage({ companyInfo }: Props) {
                 {/* Social */}
                 <div style={{ marginTop: 20, paddingTop: 20, borderTop: '1px solid var(--border)', display: 'flex', gap: 12 }}>
                   {[
-                    { label: 'Instagram', href: 'https://instagram.com/macinsluxe', Icon: Instagram },
-                    { label: 'LinkedIn', href: 'https://linkedin.com/company/macinsluxe', Icon: Linkedin },
-                    { label: 'YouTube', href: 'https://youtube.com/@macinsluxe', Icon: Youtube },
-                    { label: 'Facebook', href: 'https://facebook.com/macinsluxe', Icon: Facebook },
-                  ].map(({ label, href, Icon }) => (
+                    { label: 'Instagram', href: 'https://www.instagram.com/macins_luxe_properties/', svg: <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" aria-hidden="true"><rect x="1.5" y="1.5" width="13" height="13" rx="3.5"/><circle cx="8" cy="8" r="3"/><circle cx="11.5" cy="4.5" r="0.8" fill="currentColor" stroke="none"/></svg> },
+                    { label: 'LinkedIn', href: 'https://www.linkedin.com/company/macins-luxe-properties/posts/', svg: <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zM4.943 13.25V6.169H2.542v7.081h2.401zm-1.2-8.05a1.4 1.4 0 1 0 0-2.8 1.4 1.4 0 0 0 0 2.8zM13.25 13.25V9.4c0-2.307-1.24-3.382-2.894-3.382-1.333 0-1.928.733-2.263 1.248V6.169H5.692v7.081h2.401V9.9c0-.215.016-.43.079-.584.173-.43.567-.874 1.229-.874.867 0 1.213.66 1.213 1.628v3.18h2.636z"/></svg> },
+                    { label: 'YouTube', href: 'https://www.youtube.com/@macinsluxeproperties-y1s', svg: <svg width="18" height="13" viewBox="0 0 18 13" fill="currentColor" aria-hidden="true"><path d="M17.6 2.03A2.25 2.25 0 0 0 16.02.45C14.63 0 9 0 9 0S3.37 0 1.98.45A2.25 2.25 0 0 0 .4 2.03 23.7 23.7 0 0 0 0 6.5a23.7 23.7 0 0 0 .4 4.47 2.25 2.25 0 0 0 1.58 1.58C3.37 13 9 13 9 13s5.63 0 7.02-.45a2.25 2.25 0 0 0 1.58-1.58A23.7 23.7 0 0 0 18 6.5a23.7 23.7 0 0 0-.4-4.47zM7.2 9.25V3.75L12 6.5 7.2 9.25z"/></svg> },
+                    { label: 'Facebook', href: 'https://www.facebook.com/profile.php?id=61564082631890', svg: <svg width="10" height="18" viewBox="0 0 10 18" fill="currentColor" aria-hidden="true"><path d="M6.5 18V9.75h2.8l.4-3H6.5V5.05c0-.87.242-1.463 1.491-1.463H9.8V.928A20.4 20.4 0 0 0 7.546.75C5.077.75 3.5 2.2 3.5 4.95v1.8H.7v3H3.5V18h3z"/></svg> },
+                  ].map(({ label, href, svg }) => (
                     <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label}
                       style={{
                         width: 40, height: 40,
@@ -219,10 +219,10 @@ export default function ContactPage({ companyInfo }: Props) {
                         color: 'var(--heading)',
                         transition: 'background 0.2s, border-color 0.2s',
                       }}
-                      onMouseEnter={e => { e.currentTarget.style.background = 'var(--navy)'; e.currentTarget.style.borderColor = 'var(--navy)'; (e.currentTarget.querySelector('svg') as SVGElement).style.color = '#fff'; }}
-                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'var(--border)'; (e.currentTarget.querySelector('svg') as SVGElement).style.color = 'var(--heading)'; }}
+                      onMouseEnter={e => { e.currentTarget.style.background = 'var(--navy)'; e.currentTarget.style.borderColor = 'var(--navy)'; e.currentTarget.style.color = '#fff'; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--heading)'; }}
                     >
-                      <Icon size={16} strokeWidth={1.5} />
+                      {svg}
                     </a>
                   ))}
                 </div>
