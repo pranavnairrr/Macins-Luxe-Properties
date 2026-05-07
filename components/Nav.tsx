@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { KeyRound, UserCircle } from 'lucide-react';
+import { KeyRound, UserCircle, ChevronRight } from 'lucide-react';
 
 const navLinks = [
   { label: 'Areas',      href: '#' },
@@ -15,20 +15,11 @@ const navLinks = [
   { label: 'Contact Us', href: '#' },
 ];
 
-const RESIDENTIAL_TYPES = [
-  'Apartment', 'Townhouse', 'Villa Compound', 'Land', 'Building',
-  'Villa', 'Penthouse', 'Hotel Apartment', 'Floor',
-];
-const COMMERCIAL_TYPES = [
-  'Office', 'Shop', 'Warehouse', 'Labour Camp', 'Villa', 'Bulk Unit',
-  'Land', 'Floor', 'Building', 'Factory', 'Industrial Land',
-  'Mixed Use Land', 'Showroom', 'Other Commercial',
-];
 
 /* ─────────────────────────────────────────────────────────
    Nav states
-   · top   — transparent glass over hero image
-   · scrolled — footer-colour (#1D3159) glass
+   · top      — white opaque (over above-fold hero)
+   · scrolled — frosted glass matching the search bar
 ───────────────────────────────────────────────────────── */
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false);
@@ -85,17 +76,17 @@ export default function Nav() {
           right: 0,
           zIndex: 50,
           height: 72,
-          /* White opaque at top, footer-colour glassy when scrolled */
+          /* White opaque at top, brand-navy frosted glass when scrolled */
           background: scrolled
-            ? 'rgba(21,33,64,0.88)'
+            ? 'rgba(3,33,61,0.88)'
             : 'var(--white)',
-          backdropFilter: scrolled ? 'blur(18px)' : 'none',
-          WebkitBackdropFilter: scrolled ? 'blur(18px)' : 'none',
+          backdropFilter: scrolled ? 'blur(20px)' : 'none',
+          WebkitBackdropFilter: scrolled ? 'blur(20px)' : 'none',
           borderBottom: scrolled
-            ? '1px solid rgba(213,186,140,0.15)'
+            ? '1px solid rgba(255,255,255,0.10)'
             : '1px solid var(--border)',
           transition: 'background 0.45s ease, border-color 0.45s ease, box-shadow 0.45s ease',
-          boxShadow: scrolled ? '0 4px 24px rgba(0,0,0,0.25)' : 'none',
+          boxShadow: scrolled ? '0 2px 16px rgba(0,0,0,0.18)' : 'none',
         }}
       >
         <div className="container" style={{ height: '100%' }}>
@@ -120,7 +111,7 @@ export default function Nav() {
               style={{ display: 'flex', alignItems: 'center', gap: 28 }}
               className="nav-desktop"
             >
-              {/* ── Properties mega-dropdown ── */}
+              {/* ── Properties dropdown ── */}
               <div
                 style={{ position: 'relative' }}
                 onMouseEnter={openProps}
@@ -142,56 +133,57 @@ export default function Nav() {
                   </svg>
                 </button>
 
-                {/* Mega dropdown panel */}
+                {/* Compact two-link dropdown */}
                 <div
                   onMouseEnter={openProps}
                   onMouseLeave={closeProps}
                   style={{
                     position: 'absolute',
-                    top: 'calc(100% + 14px)',
-                    left: '50%',
-                    width: 500,
-                    background: scrolled ? 'rgba(21,33,64,0.97)' : '#fff',
+                    top: 'calc(100% + 10px)',
+                    left: 0,
+                    width: 220,
+                    background: scrolled ? 'rgba(3,33,61,0.97)' : '#fff',
                     backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
                     border: scrolled ? '1px solid rgba(213,186,140,0.20)' : '1px solid var(--border)',
-                    borderRadius: 12,
-                    boxShadow: '0 16px 48px rgba(0,0,0,0.20)',
+                    borderRadius: 10,
+                    boxShadow: '0 12px 40px rgba(0,0,0,0.14)',
                     overflow: 'hidden',
                     opacity: propsOpen ? 1 : 0,
-                    transform: propsOpen ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(-8px)',
+                    transform: propsOpen ? 'translateY(0)' : 'translateY(-8px)',
                     pointerEvents: propsOpen ? 'auto' : 'none',
                     transition: 'opacity 0.2s ease, transform 0.2s ease',
                     zIndex: 60,
                   }}
                 >
-                  {/* Header */}
-                  <div style={{ padding: '10px 20px 8px', fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: scrolled ? 'rgba(213,186,140,0.55)' : 'var(--muted)', fontFamily: 'var(--font)', borderBottom: scrolled ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--border)' }}>
-                    Browse by Type
+                  <div style={{ padding: '10px 16px 8px', fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: scrolled ? 'rgba(213,186,140,0.55)' : 'var(--muted)', fontFamily: 'var(--font)', borderBottom: scrolled ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--border)' }}>
+                    Properties
                   </div>
-                  <div style={{ display: 'flex' }}>
-                    {/* Residential column */}
-                    <div style={{ flex: 1, padding: '10px 0', borderRight: scrolled ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--border)' }}>
-                      <div style={{ padding: '2px 20px 8px', fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: scrolled ? 'rgba(213,186,140,0.70)' : 'var(--navy)', fontFamily: 'var(--font)' }}>Residential</div>
-                      {RESIDENTIAL_TYPES.map(type => (
-                        <a key={type} href="#"
-                          style={{ display: 'block', padding: '6px 20px', fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 400, color: scrolled ? 'rgba(255,255,255,0.82)' : 'var(--heading)', textDecoration: 'none', transition: 'background 0.15s ease, color 0.15s ease' }}
-                          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = scrolled ? 'rgba(213,186,140,0.08)' : 'var(--white-section)'; (e.currentTarget as HTMLElement).style.color = scrolled ? '#D5BA8C' : 'var(--navy)'; }}
-                          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.color = scrolled ? 'rgba(255,255,255,0.82)' : 'var(--heading)'; }}
-                        >{type}</a>
-                      ))}
-                    </div>
-                    {/* Commercial column */}
-                    <div style={{ flex: 1, padding: '10px 0' }}>
-                      <div style={{ padding: '2px 20px 8px', fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: scrolled ? 'rgba(213,186,140,0.70)' : 'var(--navy)', fontFamily: 'var(--font)' }}>Commercial</div>
-                      {COMMERCIAL_TYPES.map(type => (
-                        <a key={type} href="#"
-                          style={{ display: 'block', padding: '6px 20px', fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 400, color: scrolled ? 'rgba(255,255,255,0.82)' : 'var(--heading)', textDecoration: 'none', transition: 'background 0.15s ease, color 0.15s ease' }}
-                          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = scrolled ? 'rgba(213,186,140,0.08)' : 'var(--white-section)'; (e.currentTarget as HTMLElement).style.color = scrolled ? '#D5BA8C' : 'var(--navy)'; }}
-                          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.color = scrolled ? 'rgba(255,255,255,0.82)' : 'var(--heading)'; }}
-                        >{type}</a>
-                      ))}
-                    </div>
-                  </div>
+                  {(['Residential', 'Commercial'] as const).map((cat, i) => (
+                    <a
+                      key={cat}
+                      href="#"
+                      style={{
+                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                        padding: '13px 16px',
+                        fontFamily: 'var(--font)', fontSize: '0.9rem', fontWeight: 500,
+                        color: scrolled ? 'rgba(255,255,255,0.88)' : 'var(--heading)',
+                        textDecoration: 'none',
+                        borderBottom: i === 0 ? (scrolled ? '1px solid rgba(255,255,255,0.07)' : '1px solid var(--border)') : 'none',
+                        transition: 'background 0.15s ease, color 0.15s ease',
+                      }}
+                      onMouseEnter={e => {
+                        (e.currentTarget as HTMLElement).style.background = scrolled ? 'rgba(213,186,140,0.08)' : 'var(--white-section)';
+                        (e.currentTarget as HTMLElement).style.color = scrolled ? '#D5BA8C' : 'var(--navy)';
+                      }}
+                      onMouseLeave={e => {
+                        (e.currentTarget as HTMLElement).style.background = 'transparent';
+                        (e.currentTarget as HTMLElement).style.color = scrolled ? 'rgba(255,255,255,0.88)' : 'var(--heading)';
+                      }}
+                    >
+                      {cat}
+                      <ChevronRight size={14} strokeWidth={1.5} style={{ opacity: 0.4 }} />
+                    </a>
+                  ))}
                 </div>
               </div>
 
@@ -260,7 +252,7 @@ export default function Nav() {
                   top: 'calc(100% + 10px)',
                   right: 0,
                   width: 220,
-                  background: scrolled ? 'rgba(21,33,64,0.97)' : '#fff',
+                  background: scrolled ? 'rgba(26,20,14,0.97)' : '#fff',
                   backdropFilter: 'blur(20px)',
                   WebkitBackdropFilter: 'blur(20px)',
                   border: scrolled ? '1px solid rgba(213,186,140,0.20)' : '1px solid var(--border)',
@@ -438,7 +430,7 @@ export default function Nav() {
           position: 'fixed',
           inset: '72px 0 0 0',
           zIndex: 49,
-          background: 'rgba(21,33,64,0.97)',
+          background: 'rgba(3,33,61,0.97)',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
           transform: menuOpen ? 'translateX(0)' : 'translateX(100%)',
@@ -468,25 +460,26 @@ export default function Nav() {
             </svg>
           </button>
           {mobilePropsOpen && (
-            <div style={{ paddingBottom: 8 }}>
-              <div style={{ paddingTop: 10, paddingBottom: 4, fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(213,186,140,0.65)', fontFamily: 'var(--font)' }}>Residential</div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 14 }}>
-                {RESIDENTIAL_TYPES.map(type => (
-                  <a key={type} href="#" onClick={() => setMenuOpen(false)} style={{ fontFamily: 'var(--font)', fontSize: '0.8125rem', color: 'rgba(255,255,255,0.75)', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)', borderRadius: 6, padding: '5px 10px', textDecoration: 'none', transition: 'background 0.15s ease, color 0.15s ease' }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(213,186,140,0.12)'; (e.currentTarget as HTMLElement).style.color = '#D5BA8C'; }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)'; (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.75)'; }}
-                  >{type}</a>
-                ))}
-              </div>
-              <div style={{ paddingBottom: 4, fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(213,186,140,0.65)', fontFamily: 'var(--font)' }}>Commercial</div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                {COMMERCIAL_TYPES.map(type => (
-                  <a key={type} href="#" onClick={() => setMenuOpen(false)} style={{ fontFamily: 'var(--font)', fontSize: '0.8125rem', color: 'rgba(255,255,255,0.75)', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)', borderRadius: 6, padding: '5px 10px', textDecoration: 'none', transition: 'background 0.15s ease, color 0.15s ease' }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(213,186,140,0.12)'; (e.currentTarget as HTMLElement).style.color = '#D5BA8C'; }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)'; (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.75)'; }}
-                  >{type}</a>
-                ))}
-              </div>
+            <div style={{ paddingBottom: 4 }}>
+              {(['Residential', 'Commercial'] as const).map(cat => (
+                <a
+                  key={cat}
+                  href="#"
+                  onClick={() => setMenuOpen(false)}
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    padding: '11px 12px', marginBottom: 6,
+                    fontFamily: 'var(--font)', fontSize: '0.9375rem', fontWeight: 500,
+                    color: 'rgba(255,255,255,0.80)',
+                    background: 'rgba(255,255,255,0.05)',
+                    border: '1px solid rgba(255,255,255,0.09)',
+                    borderRadius: 8, textDecoration: 'none',
+                  }}
+                >
+                  {cat}
+                  <ChevronRight size={15} strokeWidth={1.5} style={{ opacity: 0.4 }} />
+                </a>
+              ))}
             </div>
           )}
         </div>

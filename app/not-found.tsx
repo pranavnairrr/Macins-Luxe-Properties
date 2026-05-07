@@ -4,7 +4,7 @@ export default function NotFound() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #152140 0%, #1B3079 100%)',
+      background: 'linear-gradient(135deg, #021a30 0%, #03213d 100%)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -25,7 +25,7 @@ export default function NotFound() {
             fontFamily: 'var(--font)',
             fontSize: '0.9375rem',
             fontWeight: 600,
-            color: '#1B3079',
+            color: '#03213d',
             background: '#D5BA8C',
             borderRadius: 8,
             padding: '12px 28px',

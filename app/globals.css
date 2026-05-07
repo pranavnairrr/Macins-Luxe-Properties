@@ -14,9 +14,9 @@
    CSS CUSTOM PROPERTIES (DESIGN TOKENS)
 ───────────────────────────────────────────────────────────── */
 :root {
-  --navy:             #1B3079;
-  --navy-dark:        #152567;
-  --navy-light:       #1F3A8F;
+  --navy:             #03213d;
+  --navy-dark:        #021a30;
+  --navy-light:       #043654;
 
   --white:            #FFFFFF;
   --white-section:    #F5F6F8;

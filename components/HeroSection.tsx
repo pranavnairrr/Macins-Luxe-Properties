@@ -106,15 +106,6 @@ const IMAGES = [
 /* Fallback slides — image + cycling text content */
 const FALLBACK_SLIDES = IMAGES.map((image, i) => ({ image, cta_href: '#' as string, ...TEXTS[i % TEXTS.length] }));
 
-const RESIDENTIAL_TYPES = [
-  'Apartment', 'Townhouse', 'Villa Compound', 'Land', 'Building',
-  'Villa', 'Penthouse', 'Hotel Apartment', 'Floor',
-];
-const COMMERCIAL_TYPES = [
-  'Office', 'Shop', 'Warehouse', 'Labour Camp', 'Villa', 'Bulk Unit',
-  'Land', 'Floor', 'Building', 'Factory', 'Industrial Land',
-  'Mixed Use Land', 'Showroom', 'Other Commercial',
-];
 
 /* Ken Burns GSAP end-states — desktop (scale + pan) */
 const KB_VARIANTS = [
@@ -129,6 +120,11 @@ const AUTO_MS  = 5000;   // ms per slide
 const FADE_MS  = 1400;   // cross-dissolve duration
 const SEARCH_H = 136;    // px — glass search bar height at bottom (tabs + bar)
 
+const KEY_TYPES: Record<'Residential' | 'Commercial', string[]> = {
+  Residential: ['Apartment', 'Villa', 'Penthouse', 'Townhouse', 'Floor'],
+  Commercial:  ['Office', 'Shop', 'Warehouse', 'Showroom'],
+};
+
 export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide[] }) {
   const slides = propSlides && propSlides.length > 0
     ? propSlides.map(s => ({ image: s.image_url, badge: s.badge, title: s.title, sub: s.sub, cta: s.cta, cta_href: s.cta_href }))
@@ -141,17 +137,16 @@ export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide
   const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   /* ── Search bar state ── */
-  const [searchTab, setSearchTab]           = useState<'All' | 'Ready' | 'Off-Plan'>('All');
-  const [typeOpen, setTypeOpen]             = useState(false);
-  const [areaOpen, setAreaOpen]             = useState(false);
-  const [priceOpen, setPriceOpen]           = useState(false);
+  const [searchTab, setSearchTab]               = useState<'All' | 'Ready' | 'Off-Plan'>('All');
+  const [areaOpen, setAreaOpen]                 = useState(false);
+  const [priceOpen, setPriceOpen]               = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<'Residential' | 'Commercial' | ''>('');
-  const [selectedSubtype, setSelectedSubtype]   = useState('');
-  const [minArea, setMinArea]               = useState('');
-  const [maxArea, setMaxArea]               = useState('');
-  const [minPrice, setMinPrice]             = useState('');
-  const [maxPrice, setMaxPrice]             = useState('');
-  const [searchText, setSearchText]         = useState('');
+  const [selectedType, setSelectedType]         = useState('');
+  const [minArea, setMinArea]                   = useState('');
+  const [maxArea, setMaxArea]                   = useState('');
+  const [minPrice, setMinPrice]                 = useState('');
+  const [maxPrice, setMaxPrice]                 = useState('');
+  const [searchText, setSearchText]             = useState('');
   const searchRef = useRef<HTMLDivElement>(null);
 
   /* GSAP refs — text elements */
@@ -231,11 +226,10 @@ export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide
     };
   }, [active, animateText, animateKenBurns]);
 
-  /* ── Close search dropdowns on outside click ── */
+  /* ── Close search shelf on outside click ── */
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
-        setTypeOpen(false);
         setAreaOpen(false);
         setPriceOpen(false);
       }
@@ -320,14 +314,18 @@ export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide
         <a ref={btnRef} href={slide.cta_href ?? '#'} className="hero-cta">{slide.cta}</a>
       </div>
 
-      {/* ── Slide counter  01 / 21 ── */}
+
+      {/* ── Slide counter — left of arrows, same bottom + height so flex centres it ── */}
       <div
         className="hero-counter"
         style={{
           position: 'absolute',
-          bottom: SEARCH_H + 28,
-          right: 'var(--gutter-lg)',
+          bottom: 185,
+          right: 132,
+          height: 46,
           zIndex: 4,
+          display: 'flex',
+          alignItems: 'center',
           fontFamily: 'var(--font)',
           fontSize: '0.6875rem',
           fontWeight: 600,
@@ -397,170 +395,184 @@ export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide
           </div>
         </div>
 
-        {/* Main search row */}
+        {/* Glass container — expands to reveal shelf below */}
         <div style={{
-          display: 'flex', alignItems: 'stretch',
+          display: 'flex', flexDirection: 'column',
           background: 'rgba(255,255,255,0.10)',
           backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
           border: '1px solid rgba(255,255,255,0.20)',
           borderRadius: 'var(--radius-btn)',
-          height: 50, position: 'relative',
+          overflow: 'hidden',
+          maxHeight: (areaOpen || priceOpen || selectedCategory !== '') ? 106 : 50,
+          transition: 'max-height 0.28s cubic-bezier(0.4,0,0.2,1)',
         }}>
 
-          {/* ── Property Type dropdown ── */}
-          <div style={{ position: 'relative', flexShrink: 0 }}>
-            <button
-              onClick={() => { setTypeOpen(o => !o); setAreaOpen(false); setPriceOpen(false); }}
-              style={{
-                height: '100%', display: 'flex', alignItems: 'center', gap: 6,
-                padding: '0 16px', fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 500,
-                color: selectedSubtype ? '#fff' : 'rgba(255,255,255,0.65)',
-                background: 'transparent', border: 'none',
-                borderRight: '1px solid rgba(255,255,255,0.15)', cursor: 'pointer', whiteSpace: 'nowrap',
-              }}
-            >
-              {selectedSubtype ? `${selectedCategory}: ${selectedSubtype}` : selectedCategory || 'Property Type'}
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ transform: typeOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease', opacity: 0.65 }}>
-                <path d="M2 4l4 4 4-4" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          {/* ── Main bar row ── */}
+          <div style={{ display: 'flex', alignItems: 'stretch', height: 50, flexShrink: 0 }}>
+
+            {/* Search icon + input — leftmost, dominant */}
+            <div style={{ display: 'flex', alignItems: 'center', paddingLeft: 14, flexShrink: 0 }}>
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <circle cx="7" cy="7" r="5.5" stroke="rgba(255,255,255,0.55)" strokeWidth="1.4"/>
+                <path d="M11 11l3 3" stroke="rgba(255,255,255,0.55)" strokeWidth="1.4" strokeLinecap="round"/>
               </svg>
-            </button>
+            </div>
+            <input
+              type="text"
+              placeholder="Search by location, developer..."
+              value={searchText}
+              onChange={e => setSearchText(e.target.value)}
+              style={{ flex: 1, fontFamily: 'var(--font)', fontSize: '0.875rem', color: '#fff', background: 'transparent', border: 'none', outline: 'none', padding: '0 10px' }}
+            />
 
-            {typeOpen && (
-              <div style={{
-                position: 'absolute', bottom: 'calc(100% + 8px)', left: 0, width: 460,
-                background: 'rgba(12,20,46,0.98)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
-                border: '1px solid rgba(213,186,140,0.20)', borderRadius: 10,
-                boxShadow: '0 -12px 40px rgba(0,0,0,0.5)', overflow: 'hidden', zIndex: 20,
-              }}>
-                <div style={{ padding: '10px 16px 8px', fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(213,186,140,0.55)', fontFamily: 'var(--font)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                  Property Type
-                </div>
-                <div style={{ display: 'flex' }}>
-                  {/* Residential */}
-                  <div style={{ flex: 1, padding: '10px 0', borderRight: '1px solid rgba(255,255,255,0.08)' }}>
-                    <div style={{ padding: '2px 16px 8px', fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'rgba(213,186,140,0.70)', fontFamily: 'var(--font)' }}>Residential</div>
-                    {RESIDENTIAL_TYPES.map(type => (
-                      <button key={type} onClick={() => { setSelectedCategory('Residential'); setSelectedSubtype(type); setTypeOpen(false); }}
-                        style={{ display: 'block', width: '100%', textAlign: 'left', padding: '7px 16px', fontFamily: 'var(--font)', fontSize: '0.875rem', color: (selectedSubtype === type && selectedCategory === 'Residential') ? '#D5BA8C' : 'rgba(255,255,255,0.82)', background: (selectedSubtype === type && selectedCategory === 'Residential') ? 'rgba(213,186,140,0.10)' : 'transparent', border: 'none', cursor: 'pointer', transition: 'background 0.15s ease, color 0.15s ease' }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(213,186,140,0.08)'; (e.currentTarget as HTMLElement).style.color = '#D5BA8C'; }}
-                        onMouseLeave={e => { const a = selectedSubtype === type && selectedCategory === 'Residential'; (e.currentTarget as HTMLElement).style.background = a ? 'rgba(213,186,140,0.10)' : 'transparent'; (e.currentTarget as HTMLElement).style.color = a ? '#D5BA8C' : 'rgba(255,255,255,0.82)'; }}
-                      >{type}</button>
-                    ))}
-                  </div>
-                  {/* Commercial */}
-                  <div style={{ flex: 1, padding: '10px 0' }}>
-                    <div style={{ padding: '2px 16px 8px', fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'rgba(213,186,140,0.70)', fontFamily: 'var(--font)' }}>Commercial</div>
-                    {COMMERCIAL_TYPES.map(type => (
-                      <button key={type} onClick={() => { setSelectedCategory('Commercial'); setSelectedSubtype(type); setTypeOpen(false); }}
-                        style={{ display: 'block', width: '100%', textAlign: 'left', padding: '7px 16px', fontFamily: 'var(--font)', fontSize: '0.875rem', color: (selectedSubtype === type && selectedCategory === 'Commercial') ? '#D5BA8C' : 'rgba(255,255,255,0.82)', background: (selectedSubtype === type && selectedCategory === 'Commercial') ? 'rgba(213,186,140,0.10)' : 'transparent', border: 'none', cursor: 'pointer', transition: 'background 0.15s ease, color 0.15s ease' }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(213,186,140,0.08)'; (e.currentTarget as HTMLElement).style.color = '#D5BA8C'; }}
-                        onMouseLeave={e => { const a = selectedSubtype === type && selectedCategory === 'Commercial'; (e.currentTarget as HTMLElement).style.background = a ? 'rgba(213,186,140,0.10)' : 'transparent'; (e.currentTarget as HTMLElement).style.color = a ? '#D5BA8C' : 'rgba(255,255,255,0.82)'; }}
-                      >{type}</button>
-                    ))}
-                  </div>
-                </div>
-                {(selectedSubtype) && (
-                  <div style={{ padding: '8px 16px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-                    <button onClick={() => { setSelectedCategory(''); setSelectedSubtype(''); setTypeOpen(false); }} style={{ fontFamily: 'var(--font)', fontSize: '0.75rem', color: 'rgba(255,255,255,0.40)', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>Clear selection</button>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+            {/* Segmented pill — Residential | Commercial */}
+            <div style={{
+              display: 'flex', alignItems: 'stretch', flexShrink: 0,
+              borderLeft: '1px solid rgba(255,255,255,0.15)',
+              borderRight: '1px solid rgba(255,255,255,0.15)',
+            }}>
+              {(['Residential', 'Commercial'] as const).map((cat, i) => (
+                <button
+                  key={cat}
+                  onClick={() => { setSelectedCategory(c => c === cat ? '' : cat); setSelectedType(''); setAreaOpen(false); setPriceOpen(false); }}
+                  style={{
+                    height: '100%', display: 'flex', alignItems: 'center',
+                    padding: '0 13px',
+                    fontFamily: 'var(--font)', fontSize: '0.8125rem', fontWeight: 500,
+                    color: selectedCategory === cat ? '#D5BA8C' : 'rgba(255,255,255,0.55)',
+                    background: selectedCategory === cat ? 'rgba(213,186,140,0.16)' : 'transparent',
+                    border: 'none',
+                    borderRight: i === 0 ? '1px solid rgba(255,255,255,0.12)' : 'none',
+                    cursor: 'pointer', whiteSpace: 'nowrap',
+                    transition: 'color 0.2s ease, background 0.2s ease',
+                  }}
+                >{cat}</button>
+              ))}
+            </div>
 
-          {/* ── Area (sq ft) ── */}
-          <div style={{ position: 'relative', flexShrink: 0 }}>
+            {/* Area (sq ft) */}
             <button
-              onClick={() => { setAreaOpen(o => !o); setTypeOpen(false); setPriceOpen(false); }}
+              onClick={() => { setAreaOpen(o => !o); setPriceOpen(false); }}
               style={{
-                height: '100%', display: 'flex', alignItems: 'center', gap: 6,
-                padding: '0 16px', fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 500,
+                height: '100%', display: 'flex', alignItems: 'center', gap: 5,
+                padding: '0 15px', fontFamily: 'var(--font)', fontSize: '0.8125rem', fontWeight: 500,
                 color: (minArea || maxArea) ? '#fff' : 'rgba(255,255,255,0.65)',
-                background: 'transparent', border: 'none',
-                borderRight: '1px solid rgba(255,255,255,0.15)', cursor: 'pointer', whiteSpace: 'nowrap',
+                background: areaOpen ? 'rgba(255,255,255,0.06)' : 'transparent',
+                border: 'none', borderRight: '1px solid rgba(255,255,255,0.15)',
+                cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
+                transition: 'color 0.2s ease, background 0.2s ease',
               }}
             >
-              {(minArea || maxArea) ? `${minArea || '0'} – ${maxArea || '∞'} sqft` : 'Area (sq ft)'}
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ transform: areaOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease', opacity: 0.65 }}>
+              {(minArea || maxArea) ? `${minArea || '0'}–${maxArea || '∞'} sqft` : 'Area (sq ft)'}
+              <svg width="11" height="11" viewBox="0 0 12 12" fill="none" style={{ transform: areaOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.22s ease', opacity: 0.55 }}>
                 <path d="M2 4l4 4 4-4" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </button>
-            {areaOpen && (
-              <div style={{ position: 'absolute', bottom: 'calc(100% + 8px)', left: 0, width: 280, background: 'rgba(12,20,46,0.98)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', border: '1px solid rgba(213,186,140,0.20)', borderRadius: 10, boxShadow: '0 -12px 40px rgba(0,0,0,0.5)', padding: 16, zIndex: 20 }}>
-                <div style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(213,186,140,0.55)', fontFamily: 'var(--font)', marginBottom: 12 }}>Area (sq ft)</div>
-                <div style={{ display: 'flex', gap: 10 }}>
-                  <div style={{ flex: 1 }}>
-                    <label style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.45)', fontFamily: 'var(--font)', display: 'block', marginBottom: 6 }}>Minimum</label>
-                    <input type="number" placeholder="Min sq ft" value={minArea} onChange={e => setMinArea(e.target.value)} className="hero-range-input" style={{ width: '100%', padding: '8px 10px', fontFamily: 'var(--font)', fontSize: '0.875rem', color: '#fff', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 6, outline: 'none', boxSizing: 'border-box' }} />
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <label style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.45)', fontFamily: 'var(--font)', display: 'block', marginBottom: 6 }}>Maximum</label>
-                    <input type="number" placeholder="Max sq ft" value={maxArea} onChange={e => setMaxArea(e.target.value)} className="hero-range-input" style={{ width: '100%', padding: '8px 10px', fontFamily: 'var(--font)', fontSize: '0.875rem', color: '#fff', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 6, outline: 'none', boxSizing: 'border-box' }} />
-                  </div>
-                </div>
-                <button onClick={() => setAreaOpen(false)} style={{ marginTop: 12, width: '100%', padding: '8px', fontFamily: 'var(--font)', fontSize: '0.8125rem', fontWeight: 600, color: '#fff', background: 'var(--navy)', border: 'none', borderRadius: 6, cursor: 'pointer' }}>Done</button>
-              </div>
-            )}
-          </div>
 
-          {/* ── Price (AED) ── */}
-          <div style={{ position: 'relative', flexShrink: 0 }}>
+            {/* Price (AED) */}
             <button
-              onClick={() => { setPriceOpen(o => !o); setTypeOpen(false); setAreaOpen(false); }}
+              onClick={() => { setPriceOpen(o => !o); setAreaOpen(false); }}
               style={{
-                height: '100%', display: 'flex', alignItems: 'center', gap: 6,
-                padding: '0 16px', fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 500,
+                height: '100%', display: 'flex', alignItems: 'center', gap: 5,
+                padding: '0 15px', fontFamily: 'var(--font)', fontSize: '0.8125rem', fontWeight: 500,
                 color: (minPrice || maxPrice) ? '#fff' : 'rgba(255,255,255,0.65)',
-                background: 'transparent', border: 'none',
-                borderRight: '1px solid rgba(255,255,255,0.15)', cursor: 'pointer', whiteSpace: 'nowrap',
+                background: priceOpen ? 'rgba(255,255,255,0.06)' : 'transparent',
+                border: 'none', borderRight: '1px solid rgba(255,255,255,0.15)',
+                cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
+                transition: 'color 0.2s ease, background 0.2s ease',
               }}
             >
-              {(minPrice || maxPrice) ? `AED ${minPrice || '0'} – ${maxPrice || '∞'}` : 'Price (AED)'}
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ transform: priceOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease', opacity: 0.65 }}>
+              {(minPrice || maxPrice) ? `AED ${minPrice || '0'}–${maxPrice || '∞'}` : 'Price (AED)'}
+              <svg width="11" height="11" viewBox="0 0 12 12" fill="none" style={{ transform: priceOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.22s ease', opacity: 0.55 }}>
                 <path d="M2 4l4 4 4-4" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </button>
-            {priceOpen && (
-              <div style={{ position: 'absolute', bottom: 'calc(100% + 8px)', left: 0, width: 280, background: 'rgba(12,20,46,0.98)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', border: '1px solid rgba(213,186,140,0.20)', borderRadius: 10, boxShadow: '0 -12px 40px rgba(0,0,0,0.5)', padding: 16, zIndex: 20 }}>
-                <div style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(213,186,140,0.55)', fontFamily: 'var(--font)', marginBottom: 12 }}>Price (AED)</div>
-                <div style={{ display: 'flex', gap: 10 }}>
-                  <div style={{ flex: 1 }}>
-                    <label style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.45)', fontFamily: 'var(--font)', display: 'block', marginBottom: 6 }}>Minimum</label>
-                    <input type="number" placeholder="Min AED" value={minPrice} onChange={e => setMinPrice(e.target.value)} className="hero-range-input" style={{ width: '100%', padding: '8px 10px', fontFamily: 'var(--font)', fontSize: '0.875rem', color: '#fff', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 6, outline: 'none', boxSizing: 'border-box' }} />
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <label style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.45)', fontFamily: 'var(--font)', display: 'block', marginBottom: 6 }}>Maximum</label>
-                    <input type="number" placeholder="Max AED" value={maxPrice} onChange={e => setMaxPrice(e.target.value)} className="hero-range-input" style={{ width: '100%', padding: '8px 10px', fontFamily: 'var(--font)', fontSize: '0.875rem', color: '#fff', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 6, outline: 'none', boxSizing: 'border-box' }} />
-                  </div>
-                </div>
-                <button onClick={() => setPriceOpen(false)} style={{ marginTop: 12, width: '100%', padding: '8px', fontFamily: 'var(--font)', fontSize: '0.8125rem', fontWeight: 600, color: '#fff', background: 'var(--navy)', border: 'none', borderRadius: 6, cursor: 'pointer' }}>Done</button>
-              </div>
-            )}
+
+            {/* Search button */}
+            <button
+              style={{ fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600, color: '#fff', background: 'var(--navy)', border: 'none', borderLeft: '1px solid rgba(255,255,255,0.15)', padding: '0 26px', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0, transition: 'background 0.2s ease' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--navy-dark)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'var(--navy)')}
+            >
+              Search
+            </button>
           </div>
 
-          {/* ── Text search ── */}
-          <div style={{ display: 'flex', alignItems: 'center', paddingLeft: 14, flexShrink: 0 }}>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <circle cx="7" cy="7" r="5.5" stroke="rgba(255,255,255,0.65)" strokeWidth="1.4"/>
-              <path d="M11 11l3 3" stroke="rgba(255,255,255,0.65)" strokeWidth="1.4" strokeLinecap="round"/>
-            </svg>
+          {/* ── Expanding shelf row ── */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 10,
+            padding: '0 16px',
+            borderTop: '1px solid rgba(255,255,255,0.15)',
+            height: 56, flexShrink: 0,
+          }}>
+            {(areaOpen || priceOpen) ? (
+              /* Range inputs for Area / Price */
+              <>
+                {selectedType && (
+                  <button
+                    onClick={() => setSelectedType('')}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0,
+                      fontFamily: 'var(--font)', fontSize: '0.8125rem', fontWeight: 500,
+                      padding: '4px 10px 4px 12px', borderRadius: 'var(--radius-pill)',
+                      border: '1px solid rgba(213,186,140,0.65)',
+                      background: 'rgba(213,186,140,0.18)', color: '#D5BA8C',
+                      cursor: 'pointer', whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {selectedType}
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+                      <path d="M2 2l6 6M8 2l-6 6" stroke="#D5BA8C" strokeWidth="1.5" strokeLinecap="round"/>
+                    </svg>
+                  </button>
+                )}
+                <span style={{ fontFamily: 'var(--font)', fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.55)', whiteSpace: 'nowrap' }}>
+                  {areaOpen ? 'Area (sq ft)' : 'Price (AED)'}
+                </span>
+                <input
+                  type="number" placeholder="Min"
+                  value={areaOpen ? minArea : minPrice}
+                  onChange={e => areaOpen ? setMinArea(e.target.value) : setMinPrice(e.target.value)}
+                  className="hero-range-input"
+                  style={{ width: 110, padding: '7px 10px', fontFamily: 'var(--font)', fontSize: '0.875rem', color: '#fff', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.18)', borderRadius: 4, outline: 'none' }}
+                />
+                <span style={{ color: 'rgba(255,255,255,0.35)', fontFamily: 'var(--font)', fontSize: '0.8125rem' }}>–</span>
+                <input
+                  type="number" placeholder="Max"
+                  value={areaOpen ? maxArea : maxPrice}
+                  onChange={e => areaOpen ? setMaxArea(e.target.value) : setMaxPrice(e.target.value)}
+                  className="hero-range-input"
+                  style={{ width: 110, padding: '7px 10px', fontFamily: 'var(--font)', fontSize: '0.875rem', color: '#fff', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.18)', borderRadius: 4, outline: 'none' }}
+                />
+                <button
+                  onClick={() => { setAreaOpen(false); setPriceOpen(false); }}
+                  style={{ fontFamily: 'var(--font)', fontSize: '0.8125rem', fontWeight: 600, color: '#D5BA8C', background: 'transparent', border: 'none', cursor: 'pointer', padding: '0 4px', marginLeft: 4 }}
+                >Done</button>
+              </>
+            ) : selectedCategory ? (
+              /* Property type chips for selected category */
+              <>
+                <span style={{ fontFamily: 'var(--font)', fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.40)', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                  Type
+                </span>
+                {KEY_TYPES[selectedCategory].map(type => (
+                  <button
+                    key={type}
+                    onClick={() => setSelectedType(t => t === type ? '' : type)}
+                    style={{
+                      fontFamily: 'var(--font)', fontSize: '0.8125rem', fontWeight: 500,
+                      padding: '5px 13px', borderRadius: 'var(--radius-pill)',
+                      border: selectedType === type ? '1px solid rgba(213,186,140,0.65)' : '1px solid rgba(255,255,255,0.18)',
+                      background: selectedType === type ? 'rgba(213,186,140,0.18)' : 'rgba(255,255,255,0.06)',
+                      color: selectedType === type ? '#D5BA8C' : 'rgba(255,255,255,0.75)',
+                      cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
+                      transition: 'all 0.18s ease',
+                    }}
+                  >{type}</button>
+                ))}
+              </>
+            ) : null}
           </div>
-          <input
-            type="text"
-            placeholder="Search by location, developer..."
-            value={searchText}
-            onChange={e => setSearchText(e.target.value)}
-            style={{ flex: 1, fontFamily: 'var(--font)', fontSize: '0.9375rem', color: '#fff', background: 'transparent', border: 'none', outline: 'none', padding: '0 12px' }}
-          />
-
-          {/* ── Search button ── */}
-          <button
-            style={{ fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600, color: '#fff', background: 'var(--navy)', border: 'none', borderLeft: '1px solid rgba(255,255,255,0.15)', padding: '0 28px', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0, transition: 'background 0.2s ease', borderRadius: '0 var(--radius-btn) var(--radius-btn) 0' }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'var(--navy-dark, #0f1e3d)')}
-            onMouseLeave={e => (e.currentTarget.style.background = 'var(--navy)')}
-          >
-            Search
-          </button>
         </div>
       </div>
 
@@ -627,7 +639,7 @@ export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide
         /* ── Nav arrows — sit above the search bar in the clear bottom space ── */
         .hero-arrow {
           position: absolute;
-          bottom: 152px;   /* above search bar (136px) + gap */
+          bottom: 185px;   /* above expanded bar (~172px) + gap */
           z-index: 4;
           width: 46px; height: 46px;
           border-radius: 50%;

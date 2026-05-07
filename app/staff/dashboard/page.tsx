@@ -56,7 +56,7 @@ function OverviewPanel() {
                 ;(e.currentTarget as HTMLElement).style.transform = 'translateY(0)'
               }}
             >
-              <div style={{ marginBottom: 12, color: '#1B3079' }}>
+              <div style={{ marginBottom: 12, color: '#03213d' }}>
                 <Icon size={28} strokeWidth={1.4} />
               </div>
               <div style={{ fontSize: '0.9375rem', fontWeight: 600, color: 'var(--heading)', marginBottom: 4, fontFamily: 'var(--font)' }}>

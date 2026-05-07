@@ -21,9 +21,9 @@
 
   /* Primary navy — footer bg, hero overlay, nav CTA */
   /* Source: Image 1 (footer), Image 14/15 (hero) */
-  --navy:             #1B3079;
-  --navy-dark:        #152567;
-  --navy-light:       #1F3A8F;
+  --navy:             #03213d;
+  --navy-dark:        #021a30;
+  --navy-light:       #043654;
 
   /* Page surfaces */
   /* Source: all white-section screenshots */
@@ -514,9 +514,9 @@ h1, h2, h3, h4, h5, h6 {
   inset: 0;
   background: linear-gradient(
     to right,
-    rgba(21, 37, 103, 0.82) 0%,
-    rgba(21, 37, 103, 0.50) 55%,
-    rgba(21, 37, 103, 0.15) 100%
+    rgba(3, 33, 61, 0.82) 0%,
+    rgba(3, 33, 61, 0.50) 55%,
+    rgba(3, 33, 61, 0.15) 100%
   );
 }
 
@@ -1315,7 +1315,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .glass-dark {
-  background: rgba(21, 37, 103, 0.70);
+  background: rgba(3, 33, 61, 0.70);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border: 1px solid rgba(255, 255, 255, 0.12);
