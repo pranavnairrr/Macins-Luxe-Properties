@@ -6,13 +6,13 @@ import Image from 'next/image';
 import { KeyRound, UserCircle, ChevronRight } from 'lucide-react';
 
 const navLinks = [
-  { label: 'Areas',      href: '#' },
-  { label: 'About Us',   href: '#' },
-  { label: 'Our Team',   href: '#' },
-  { label: 'Reports',    href: '#' },
-  { label: 'Careers',    href: '#' },
-  { label: 'Blog',       href: '#' },
-  { label: 'Contact Us', href: '#' },
+  { label: 'Areas',      href: '/areas' },
+  { label: 'About Us',   href: '/about' },
+  { label: 'Our Team',   href: '/team' },
+  { label: 'Reports',    href: '/reports' },
+  { label: 'Careers',    href: '/careers' },
+  { label: 'Blog',       href: '/blog' },
+  { label: 'Contact Us', href: '/contact' },
 ];
 
 
@@ -159,9 +159,9 @@ export default function Nav() {
                     Properties
                   </div>
                   {(['Residential', 'Commercial'] as const).map((cat, i) => (
-                    <a
+                    <Link
                       key={cat}
-                      href="#"
+                      href={`/properties?tab=${cat}`}
                       style={{
                         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                         padding: '13px 16px',
@@ -182,7 +182,7 @@ export default function Nav() {
                     >
                       {cat}
                       <ChevronRight size={14} strokeWidth={1.5} style={{ opacity: 0.4 }} />
-                    </a>
+                    </Link>
                   ))}
                 </div>
               </div>
@@ -462,9 +462,9 @@ export default function Nav() {
           {mobilePropsOpen && (
             <div style={{ paddingBottom: 4 }}>
               {(['Residential', 'Commercial'] as const).map(cat => (
-                <a
+                <Link
                   key={cat}
-                  href="#"
+                  href={`/properties?tab=${cat}`}
                   onClick={() => setMenuOpen(false)}
                   style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -478,7 +478,7 @@ export default function Nav() {
                 >
                   {cat}
                   <ChevronRight size={15} strokeWidth={1.5} style={{ opacity: 0.4 }} />
-                </a>
+                </Link>
               ))}
             </div>
           )}

@@ -64,8 +64,8 @@ export default function PropertyCardsSection({ title, ctaText, cards, grey }: Pr
             {title}
           </h2>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <a
-              href="#"
+            <Link
+              href="/properties"
               style={{
                 fontFamily: 'var(--font)',
                 fontSize: '0.875rem',
@@ -81,7 +81,7 @@ export default function PropertyCardsSection({ title, ctaText, cards, grey }: Pr
               onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
             >
               {ctaText}
-            </a>
+            </Link>
             {/* Prev / Next */}
             {(['prev','next'] as const).map(dir => (
               <button

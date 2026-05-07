@@ -41,7 +41,7 @@ export default function CTABanner() {
             Comprehensive annual reports with key trends, prices, and forecasts.
           </p>
           <a
-            href="#"
+            href="/reports"
             style={{
               display: 'inline-block',
               fontFamily: 'var(--font)',

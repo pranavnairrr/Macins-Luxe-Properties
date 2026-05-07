@@ -1,10 +1,29 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 
-const quickLinks  = ['Home', 'Projects', 'Areas', 'Blog', 'Developers'];
-const companyLinks = ['About Us', 'Our Team', 'Reports', 'Careers', 'Contact Us'];
-const buyFrom     = ['Emaar', 'Binghatti', 'Damac', 'Shoba Realty', 'Nakheel'];
+const quickLinks = [
+  { label: 'Home',        href: '/' },
+  { label: 'Properties',  href: '/properties' },
+  { label: 'Areas',       href: '/areas' },
+  { label: 'Blog',        href: '/blog' },
+  { label: 'Developers',  href: '/properties' },
+];
+const companyLinks = [
+  { label: 'About Us',    href: '/about' },
+  { label: 'Our Team',    href: '/team' },
+  { label: 'Reports',     href: '/reports' },
+  { label: 'Careers',     href: '/careers' },
+  { label: 'Contact Us',  href: '/contact' },
+];
+const buyFrom = [
+  { label: 'Emaar',       href: '/properties?developer=Emaar' },
+  { label: 'Binghatti',   href: '/properties?developer=Binghatti' },
+  { label: 'Damac',       href: '/properties?developer=Damac' },
+  { label: 'Shoba Realty',href: '/properties?developer=Sobha' },
+  { label: 'Nakheel',     href: '/properties?developer=Nakheel' },
+];
 const socialLinks = [
   { label: 'Facebook',  icon: 'f',  href: 'https://www.facebook.com/profile.php?id=61564082631890' },
   { label: 'Instagram', icon: 'ig', href: 'https://www.instagram.com/macins_luxe_properties/' },
@@ -120,7 +139,7 @@ export default function Footer({ companyInfo }: { companyInfo?: CompanyInfo }) {
               Quick Links
             </div>
             {quickLinks.map(link => (
-              <a key={link} href="#" className="text-footer-link">{link}</a>
+              <Link key={link.label} href={link.href} className="text-footer-link">{link.label}</Link>
             ))}
           </div>
 
@@ -130,7 +149,7 @@ export default function Footer({ companyInfo }: { companyInfo?: CompanyInfo }) {
               Company
             </div>
             {companyLinks.map(link => (
-              <a key={link} href="#" className="text-footer-link">{link}</a>
+              <Link key={link.label} href={link.href} className="text-footer-link">{link.label}</Link>
             ))}
           </div>
 
@@ -140,7 +159,7 @@ export default function Footer({ companyInfo }: { companyInfo?: CompanyInfo }) {
               Buy from
             </div>
             {buyFrom.map(link => (
-              <a key={link} href="#" className="text-footer-link">{link}</a>
+              <Link key={link.label} href={link.href} className="text-footer-link">{link.label}</Link>
             ))}
           </div>
 

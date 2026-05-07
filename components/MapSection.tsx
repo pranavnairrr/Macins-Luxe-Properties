@@ -34,7 +34,7 @@ export default function MapSection() {
           </div>
 
           <a
-            href="#"
+            href="/properties"
             style={{
               fontFamily: 'var(--font)',
               fontSize: '0.875rem',

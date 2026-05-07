@@ -1,21 +1,25 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 
 const blogs = [
   {
+    slug: 'rera-forms-dubai-guide',
     image: '/images/properties/binghatti-hillcrest-hero-banner.avif',
     title: 'RERA Forms in Dubai for Property Buyers, Sellers, and Tenants: What You Need to Know',
     date: 'January 30, 2026',
     readTime: '58 min read',
   },
   {
+    slug: 'dubai-real-estate-market-q1-2026',
     image: '/images/properties/binghatti-luxuria-hero-banner.avif',
     title: 'Dubai Real Estate Market Q1 2026 Report by Macins Luxe',
     date: 'April 3, 2026',
     readTime: '08 min read',
   },
   {
+    slug: 'citadel-tower-business-bay-guide',
     image: '/images/properties/Binghatti-Hills-at-Dubai-HIlls.jpeg',
     title: 'The Citadel Tower, Business Bay: A Comprehensive Guide',
     date: 'April 1, 2026',
@@ -41,8 +45,8 @@ export default function BlogsSection() {
             Latest Blogs
           </h2>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <a
-              href="#"
+            <Link
+              href="/blog"
               style={{
                 fontFamily: 'var(--font)',
                 fontSize: '0.875rem',
@@ -58,7 +62,7 @@ export default function BlogsSection() {
               onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
             >
               View All Blogs
-            </a>
+            </Link>
             {(['prev','next'] as const).map(dir => (
               <button
                 key={dir}
@@ -137,8 +141,8 @@ export default function BlogsSection() {
                 {blog.date} &nbsp;—&nbsp; {blog.readTime}
               </div>
 
-              <a
-                href="#"
+              <Link
+                href={`/blog/${blog.slug}`}
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -153,7 +157,7 @@ export default function BlogsSection() {
                 onMouseLeave={e => ((e.currentTarget as HTMLElement).style.gap = '6px')}
               >
                 Read More <span aria-hidden="true">→</span>
-              </a>
+              </Link>
             </article>
           ))}
         </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { gsap } from 'gsap';
 import type { HeroSlide } from '@/utils/site-settings';
@@ -126,6 +127,7 @@ const KEY_TYPES: Record<'Residential' | 'Commercial', string[]> = {
 };
 
 export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide[] }) {
+  const router = useRouter();
   const slides = propSlides && propSlides.length > 0
     ? propSlides.map(s => ({ image: s.image_url, badge: s.badge, title: s.title, sub: s.sub, cta: s.cta, cta_href: s.cta_href }))
     : FALLBACK_SLIDES
@@ -405,6 +407,7 @@ export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide
           overflow: 'hidden',
           maxHeight: (areaOpen || priceOpen || selectedCategory !== '') ? 106 : 50,
           transition: 'max-height 0.28s cubic-bezier(0.4,0,0.2,1)',
+          // On mobile the shelf is hidden via CSS so this stays 50px effectively
         }}>
 
           {/* ── Main bar row ── */}
@@ -426,7 +429,7 @@ export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide
             />
 
             {/* Segmented pill — Residential | Commercial */}
-            <div style={{
+            <div className="hero-filter-group" style={{
               display: 'flex', alignItems: 'stretch', flexShrink: 0,
               borderLeft: '1px solid rgba(255,255,255,0.15)',
               borderRight: '1px solid rgba(255,255,255,0.15)',
@@ -452,6 +455,7 @@ export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide
 
             {/* Area (sq ft) */}
             <button
+              className="hero-filter-btn"
               onClick={() => { setAreaOpen(o => !o); setPriceOpen(false); }}
               style={{
                 height: '100%', display: 'flex', alignItems: 'center', gap: 5,
@@ -471,6 +475,7 @@ export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide
 
             {/* Price (AED) */}
             <button
+              className="hero-filter-btn"
               onClick={() => { setPriceOpen(o => !o); setAreaOpen(false); }}
               style={{
                 height: '100%', display: 'flex', alignItems: 'center', gap: 5,
@@ -490,6 +495,18 @@ export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide
 
             {/* Search button */}
             <button
+              onClick={() => {
+                const params = new URLSearchParams();
+                if (searchTab !== 'All') params.set('tab', searchTab);
+                if (selectedCategory) params.set('category', selectedCategory);
+                if (selectedType) params.set('type', selectedType);
+                if (minPrice) params.set('minPrice', minPrice);
+                if (maxPrice) params.set('maxPrice', maxPrice);
+                if (minArea) params.set('minArea', minArea);
+                if (maxArea) params.set('maxArea', maxArea);
+                if (searchText.trim()) params.set('q', searchText.trim());
+                router.push('/properties' + (params.toString() ? '?' + params.toString() : ''));
+              }}
               style={{ fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600, color: '#fff', background: 'var(--navy)', border: 'none', borderLeft: '1px solid rgba(255,255,255,0.15)', padding: '0 26px', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0, transition: 'background 0.2s ease' }}
               onMouseEnter={e => (e.currentTarget.style.background = 'var(--navy-dark)')}
               onMouseLeave={e => (e.currentTarget.style.background = 'var(--navy)')}
@@ -499,7 +516,7 @@ export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide
           </div>
 
           {/* ── Expanding shelf row ── */}
-          <div style={{
+          <div className="hero-shelf" style={{
             display: 'flex', alignItems: 'center', gap: 10,
             padding: '0 16px',
             borderTop: '1px solid rgba(255,255,255,0.15)',
@@ -661,19 +678,29 @@ export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide
         /* ── Mobile ── */
         @media (max-width: 640px) {
           .hero-section {
-            height: 42vh !important;
-            min-height: 260px !important;
+            height: 100vh !important;
+            height: 100svh !important;
+            min-height: 560px !important;
           }
           .hero-content-wrap {
-            padding-inline: 16px !important;
+            padding-inline: 20px !important;
             max-width: 100% !important;
-            top: 44% !important;
-            transform: translateY(-52%) !important;
+            top: 46% !important;
+            transform: translateY(-58%) !important;
           }
-          .hero-title { font-size: clamp(1.45rem, 6.5vw, 2.2rem) !important; white-space: normal !important; }
-          .hero-sub { font-size: 0.8125rem !important; margin-bottom: 12px !important; line-height: 1.6 !important; }
-          .hero-search-wrap { padding-inline: 16px !important; padding-bottom: 12px !important; }
-          .hero-arrow { width: 28px !important; height: 28px !important; bottom: 80px !important; }
+          .hero-badge { margin-bottom: 14px !important; }
+          .hero-title {
+            font-size: clamp(1.75rem, 7.5vw, 2.5rem) !important;
+            white-space: normal !important;
+            margin-bottom: 16px !important;
+          }
+          .hero-sub { display: none !important; }
+          .hero-cta { padding: 12px 24px !important; font-size: 0.8125rem !important; }
+          .hero-search-wrap { padding-inline: 16px !important; padding-bottom: 20px !important; gap: 8px !important; }
+          .hero-filter-group { display: none !important; }
+          .hero-filter-btn { display: none !important; }
+          .hero-shelf { display: none !important; }
+          .hero-arrow { width: 32px !important; height: 32px !important; bottom: 120px !important; }
           .hero-counter { display: none !important; }
         }
       `}</style>

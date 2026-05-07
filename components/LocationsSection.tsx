@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 
 
 export default function LocationsSection() {
@@ -20,8 +21,8 @@ export default function LocationsSection() {
           }}>
             Explore Prime Locations
           </h2>
-          <a
-            href="#"
+          <Link
+            href="/areas"
             style={{
               fontFamily: 'var(--font)',
               fontSize: '0.875rem',
@@ -37,7 +38,7 @@ export default function LocationsSection() {
             onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
           >
             View More Areas
-          </a>
+          </Link>
         </div>
 
         {/*
@@ -57,6 +58,7 @@ export default function LocationsSection() {
           {/* Palm Jebel Ali — spans both rows */}
           <LocationCard
             name="Palm Jebel Ali"
+            slug="palm-jebel-ali"
             image="/images/properties/616795878.jpg"
             spanRows
           />
@@ -64,12 +66,14 @@ export default function LocationsSection() {
           {/* Business Bay */}
           <LocationCard
             name="Business Bay"
+            slug="business-bay"
             image="/images/properties/Binghatti_Flare_in_JVT_Dubai_by_Binghatti_Developers_f712d33e54.webp"
           />
 
           {/* Downtown Dubai — spans both rows */}
           <LocationCard
             name="Downtown Dubai"
+            slug="downtown-dubai"
             image="/images/hero/img227.jpg"
             spanRows
           />
@@ -77,6 +81,7 @@ export default function LocationsSection() {
           {/* Dubai Marina */}
           <LocationCard
             name="Dubai Marina"
+            slug="dubai-marina"
             image="/images/hero/img302.jpg"
           />
 
@@ -110,15 +115,17 @@ export default function LocationsSection() {
   );
 }
 
-function LocationCard({ name, image, spanRows }: { name: string; image: string; spanRows?: boolean }) {
+function LocationCard({ name, slug, image, spanRows }: { name: string; slug: string; image: string; spanRows?: boolean }) {
   return (
-    <div
+    <Link
+      href={`/areas/${slug}`}
       className={spanRows ? 'loc-card loc-card--tall' : 'loc-card'}
       style={{
         position: 'relative',
         borderRadius: 'var(--radius-md)',
         overflow: 'hidden',
         cursor: 'pointer',
+        display: 'block',
         ...(spanRows ? { gridRow: '1 / 3' } : {}),
       }}
     >
@@ -157,6 +164,6 @@ function LocationCard({ name, image, spanRows }: { name: string; image: string; 
           {name}
         </span>
       </div>
-    </div>
+    </Link>
   );
 }
