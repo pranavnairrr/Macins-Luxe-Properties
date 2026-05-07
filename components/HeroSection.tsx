@@ -387,9 +387,9 @@ export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide
                 style={{
                   fontFamily: 'var(--font)', fontSize: '0.75rem', fontWeight: 600,
                   padding: '5px 14px', borderRadius: 'var(--radius-pill)',
-                  border: searchTab === tab ? '1px solid rgba(213,186,140,0.80)' : '1px solid rgba(255,255,255,0.25)',
-                  background: searchTab === tab ? 'rgba(213,186,140,0.20)' : 'transparent',
-                  color: searchTab === tab ? '#D5BA8C' : 'rgba(255,255,255,0.70)',
+                  border: searchTab === tab ? '1px solid rgba(255,255,255,0.80)' : '1px solid rgba(255,255,255,0.25)',
+                  background: searchTab === tab ? 'rgba(255,255,255,0.20)' : 'transparent',
+                  color: searchTab === tab ? '#fff' : 'rgba(255,255,255,0.70)',
                   cursor: 'pointer', transition: 'all 0.2s ease',
                 }}
               >{tab}</button>
@@ -442,8 +442,8 @@ export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide
                     height: '100%', display: 'flex', alignItems: 'center',
                     padding: '0 13px',
                     fontFamily: 'var(--font)', fontSize: '0.8125rem', fontWeight: 500,
-                    color: selectedCategory === cat ? '#D5BA8C' : 'rgba(255,255,255,0.55)',
-                    background: selectedCategory === cat ? 'rgba(213,186,140,0.16)' : 'transparent',
+                    color: selectedCategory === cat ? '#fff' : 'rgba(255,255,255,0.55)',
+                    background: selectedCategory === cat ? 'rgba(255,255,255,0.18)' : 'transparent',
                     border: 'none',
                     borderRight: i === 0 ? '1px solid rgba(255,255,255,0.12)' : 'none',
                     cursor: 'pointer', whiteSpace: 'nowrap',
@@ -507,9 +507,9 @@ export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide
                 if (searchText.trim()) params.set('q', searchText.trim());
                 router.push('/properties' + (params.toString() ? '?' + params.toString() : ''));
               }}
-              style={{ fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600, color: '#fff', background: 'var(--navy)', border: 'none', borderLeft: '1px solid rgba(255,255,255,0.15)', padding: '0 26px', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0, transition: 'background 0.2s ease' }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'var(--navy-dark)')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'var(--navy)')}
+              style={{ fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600, color: '#fff', background: 'rgba(0,0,0,0.55)', border: 'none', borderLeft: '1px solid rgba(255,255,255,0.15)', padding: '0 26px', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0, transition: 'background 0.2s ease' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.80)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.55)')}
             >
               Search
             </button>
@@ -532,14 +532,14 @@ export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide
                       display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0,
                       fontFamily: 'var(--font)', fontSize: '0.8125rem', fontWeight: 500,
                       padding: '4px 10px 4px 12px', borderRadius: 'var(--radius-pill)',
-                      border: '1px solid rgba(213,186,140,0.65)',
-                      background: 'rgba(213,186,140,0.18)', color: '#D5BA8C',
+                      border: '1px solid rgba(255,255,255,0.65)',
+                      background: 'rgba(255,255,255,0.18)', color: '#fff',
                       cursor: 'pointer', whiteSpace: 'nowrap',
                     }}
                   >
                     {selectedType}
                     <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
-                      <path d="M2 2l6 6M8 2l-6 6" stroke="#D5BA8C" strokeWidth="1.5" strokeLinecap="round"/>
+                      <path d="M2 2l6 6M8 2l-6 6" stroke="#fff" strokeWidth="1.5" strokeLinecap="round"/>
                     </svg>
                   </button>
                 )}
@@ -563,7 +563,7 @@ export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide
                 />
                 <button
                   onClick={() => { setAreaOpen(false); setPriceOpen(false); }}
-                  style={{ fontFamily: 'var(--font)', fontSize: '0.8125rem', fontWeight: 600, color: '#D5BA8C', background: 'transparent', border: 'none', cursor: 'pointer', padding: '0 4px', marginLeft: 4 }}
+                  style={{ fontFamily: 'var(--font)', fontSize: '0.8125rem', fontWeight: 600, color: '#fff', background: 'transparent', border: 'none', cursor: 'pointer', padding: '0 4px', marginLeft: 4 }}
                 >Done</button>
               </>
             ) : selectedCategory ? (
@@ -579,9 +579,9 @@ export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide
                     style={{
                       fontFamily: 'var(--font)', fontSize: '0.8125rem', fontWeight: 500,
                       padding: '5px 13px', borderRadius: 'var(--radius-pill)',
-                      border: selectedType === type ? '1px solid rgba(213,186,140,0.65)' : '1px solid rgba(255,255,255,0.18)',
-                      background: selectedType === type ? 'rgba(213,186,140,0.18)' : 'rgba(255,255,255,0.06)',
-                      color: selectedType === type ? '#D5BA8C' : 'rgba(255,255,255,0.75)',
+                      border: selectedType === type ? '1px solid rgba(255,255,255,0.80)' : '1px solid rgba(255,255,255,0.18)',
+                      background: selectedType === type ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.06)',
+                      color: selectedType === type ? '#fff' : 'rgba(255,255,255,0.75)',
                       cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
                       transition: 'all 0.18s ease',
                     }}

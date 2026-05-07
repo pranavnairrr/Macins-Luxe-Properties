@@ -75,7 +75,7 @@ export default function Footer({ companyInfo }: { companyInfo?: CompanyInfo }) {
   const orn       = companyInfo?.orn     ?? '11929'
   return (
     <footer style={{
-      background: '#152140',
+      background: 'var(--footer-bg)',
       color: '#fff',
       paddingTop: 56,
       paddingBottom: 32,
@@ -109,7 +109,7 @@ export default function Footer({ companyInfo }: { companyInfo?: CompanyInfo }) {
               fontFamily: 'var(--font)',
               fontSize: '1.375rem',
               fontWeight: 600,
-              color: '#D5BA8C',
+              color: 'var(--gold)',
               letterSpacing: '-0.01em',
             }}>
               {phone}
@@ -135,7 +135,7 @@ export default function Footer({ companyInfo }: { companyInfo?: CompanyInfo }) {
 
           {/* Quick Links */}
           <div>
-            <div style={{ fontFamily: 'var(--font)', fontSize: '0.9375rem', fontWeight: 600, color: '#D5BA8C', marginBottom: 20 }}>
+            <div style={{ fontFamily: 'var(--font)', fontSize: '0.9375rem', fontWeight: 600, color: 'var(--gold)', marginBottom: 20 }}>
               Quick Links
             </div>
             {quickLinks.map(link => (
@@ -145,7 +145,7 @@ export default function Footer({ companyInfo }: { companyInfo?: CompanyInfo }) {
 
           {/* Company */}
           <div>
-            <div style={{ fontFamily: 'var(--font)', fontSize: '0.9375rem', fontWeight: 600, color: '#D5BA8C', marginBottom: 20 }}>
+            <div style={{ fontFamily: 'var(--font)', fontSize: '0.9375rem', fontWeight: 600, color: 'var(--gold)', marginBottom: 20 }}>
               Company
             </div>
             {companyLinks.map(link => (
@@ -155,7 +155,7 @@ export default function Footer({ companyInfo }: { companyInfo?: CompanyInfo }) {
 
           {/* Buy from */}
           <div>
-            <div style={{ fontFamily: 'var(--font)', fontSize: '0.9375rem', fontWeight: 600, color: '#D5BA8C', marginBottom: 20 }}>
+            <div style={{ fontFamily: 'var(--font)', fontSize: '0.9375rem', fontWeight: 600, color: 'var(--gold)', marginBottom: 20 }}>
               Buy from
             </div>
             {buyFrom.map(link => (
@@ -165,7 +165,7 @@ export default function Footer({ companyInfo }: { companyInfo?: CompanyInfo }) {
 
           {/* Our Offices */}
           <div>
-            <div style={{ fontFamily: 'var(--font)', fontSize: '0.9375rem', fontWeight: 600, color: '#D5BA8C', marginBottom: 20 }}>
+            <div style={{ fontFamily: 'var(--font)', fontSize: '0.9375rem', fontWeight: 600, color: 'var(--gold)', marginBottom: 20 }}>
               Our Offices
             </div>
             <p style={{ fontFamily: 'var(--font)', fontSize: '0.9375rem', color: 'rgba(255,255,255,0.70)', lineHeight: 1.7, marginBottom: 16, whiteSpace: 'pre-line' }}>
@@ -178,7 +178,7 @@ export default function Footer({ companyInfo }: { companyInfo?: CompanyInfo }) {
 
           {/* Follow Us */}
           <div>
-            <div style={{ fontFamily: 'var(--font)', fontSize: '0.9375rem', fontWeight: 600, color: '#D5BA8C', marginBottom: 20 }}>
+            <div style={{ fontFamily: 'var(--font)', fontSize: '0.9375rem', fontWeight: 600, color: 'var(--gold)', marginBottom: 20 }}>
               Follow Us
             </div>
             {socialLinks.map(s => (
@@ -198,7 +198,7 @@ export default function Footer({ companyInfo }: { companyInfo?: CompanyInfo }) {
                   lineHeight: 2,
                   transition: 'color var(--transition)',
                 }}
-                onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = '#D5BA8C')}
+                onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = 'var(--gold)')}
                 onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.75)')}
               >
                 <span style={{ width: 18, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -221,8 +221,19 @@ export default function Footer({ companyInfo }: { companyInfo?: CompanyInfo }) {
           flexWrap: 'wrap',
           gap: 12,
         }}>
-          <span style={{ fontFamily: 'var(--font)', fontSize: '0.8125rem', color: 'rgba(255,255,255,0.45)' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 10, fontFamily: 'var(--font)', fontSize: '0.8125rem', color: 'rgba(255,255,255,0.45)' }}>
             Copyright &copy; 2025, Macins Luxe | ORN No: {orn}
+            <span style={{ opacity: 0.3 }}>|</span>
+            <a href="https://waynere.com/" target="_blank" rel="noopener noreferrer" className="waynere-link">
+              <span className="waynere-built">Built by</span>
+              <Image
+                src="/images/waynere-logo.png"
+                alt="Waynere"
+                width={80}
+                height={29}
+                style={{ height: 29, width: 'auto', display: 'block', flexShrink: 0 }}
+              />
+            </a>
           </span>
           <div style={{ display: 'flex', gap: 20 }}>
             {['Privacy Policy', 'Terms & Conditions'].map(l => (

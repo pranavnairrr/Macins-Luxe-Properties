@@ -1,12 +1,13 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
+import CinemaImage from '@/components/CinemaImage';
 
 const blogs = [
   {
     slug: 'rera-forms-dubai-guide',
     image: '/images/properties/binghatti-hillcrest-hero-banner.avif',
+    category: 'Legal Guide',
     title: 'RERA Forms in Dubai for Property Buyers, Sellers, and Tenants: What You Need to Know',
     date: 'January 30, 2026',
     readTime: '58 min read',
@@ -14,6 +15,7 @@ const blogs = [
   {
     slug: 'dubai-real-estate-market-q1-2026',
     image: '/images/properties/binghatti-luxuria-hero-banner.avif',
+    category: 'Market Report',
     title: 'Dubai Real Estate Market Q1 2026 Report by Macins Luxe',
     date: 'April 3, 2026',
     readTime: '08 min read',
@@ -21,6 +23,7 @@ const blogs = [
   {
     slug: 'citadel-tower-business-bay-guide',
     image: '/images/properties/Binghatti-Hills-at-Dubai-HIlls.jpeg',
+    category: 'Property Guide',
     title: 'The Citadel Tower, Business Bay: A Comprehensive Guide',
     date: 'April 1, 2026',
     readTime: '09 min read',
@@ -34,82 +37,52 @@ export default function BlogsSection() {
 
         {/* Header */}
         <div className="section-header">
-          <h2 style={{
-            fontFamily: 'var(--font)',
-            fontSize: 'clamp(1.75rem, 2.75vw, 2.375rem)',
-            fontWeight: 700,
-            lineHeight: 1.2,
-            letterSpacing: '-0.02em',
-            color: 'var(--heading)',
-          }}>
-            Latest Blogs
-          </h2>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Link
-              href="/blog"
-              style={{
-                fontFamily: 'var(--font)',
-                fontSize: '0.875rem',
-                fontWeight: 600,
-                color: 'var(--heading)',
-                border: '1px solid var(--border)',
-                borderRadius: 'var(--radius-btn)',
-                padding: '8px 16px',
-                whiteSpace: 'nowrap',
-                transition: 'border-color var(--transition)',
-              }}
-              onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--heading)')}
-              onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
-            >
-              View All Blogs
-            </Link>
-            {(['prev','next'] as const).map(dir => (
-              <button
-                key={dir}
-                aria-label={dir}
-                style={{
-                  width: 36, height: 36,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  border: '1px solid var(--border)',
-                  borderRadius: 'var(--radius-btn)',
-                  background: 'var(--white)',
-                  cursor: 'pointer',
-                  transition: 'border-color var(--transition)',
-                }}
-                onMouseEnter={e => ((e.currentTarget as HTMLElement).style.borderColor = 'var(--heading)')}
-                onMouseLeave={e => ((e.currentTarget as HTMLElement).style.borderColor = 'var(--border)')}
-              >
-                <svg width="7" height="12" viewBox="0 0 7 12" fill="none" aria-hidden="true">
-                  <path d={dir === 'prev' ? 'M6 1L1 6l5 5' : 'M1 1l5 5-5 5'} stroke="var(--heading)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </button>
-            ))}
+          <div>
+            <span style={{
+              fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.12em',
+              textTransform: 'uppercase', color: '#999',
+              display: 'block', marginBottom: 8,
+            }}>
+              Insights &amp; Analysis
+            </span>
+            <h2 style={{
+              fontFamily: 'var(--font)',
+              fontSize: 'clamp(1.75rem, 2.75vw, 2.375rem)',
+              fontWeight: 700, lineHeight: 1.2,
+              letterSpacing: '-0.02em', color: 'var(--heading)',
+            }}>
+              Latest Blogs
+            </h2>
           </div>
+          <Link
+            href="/blog"
+            style={{
+              fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600,
+              color: 'var(--heading)', border: '1px solid var(--border)',
+              borderRadius: 'var(--radius-btn)', padding: '8px 16px',
+              whiteSpace: 'nowrap', transition: 'border-color var(--transition)',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--heading)')}
+            onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
+          >
+            View All Blogs
+          </Link>
         </div>
 
         {/* 3-column grid */}
-        <div className="blogs-grid" style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          gap: 'var(--gap)',
-        }}>
+        <div className="blogs-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 'var(--gap)' }}>
           {blogs.map(blog => (
-            <article
-              key={blog.title}
+            <Link
+              key={blog.slug}
+              href={`/blog/${blog.slug}`}
               className="blog-card"
-              style={{ transition: 'transform 0.28s ease' }}
+              style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', transition: 'transform 0.28s ease' }}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-4px)'; }}
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; }}
             >
               {/* Image */}
-              <div style={{
-                position: 'relative',
-                aspectRatio: '16/9',
-                borderRadius: 'var(--radius-md)',
-                overflow: 'hidden',
-                marginBottom: 20,
-              }}>
-                <Image
+              <div style={{ position: 'relative', aspectRatio: '16/9', borderRadius: 'var(--radius-md)', overflow: 'hidden', marginBottom: 20 }}>
+                <CinemaImage
                   src={blog.image}
                   alt={blog.title}
                   fill
@@ -120,45 +93,42 @@ export default function BlogsSection() {
                 />
               </div>
 
-              {/* Body */}
+              {/* Category chip */}
+              <span style={{
+                display: 'inline-block', fontSize: '0.6875rem', fontWeight: 700,
+                letterSpacing: '0.08em', textTransform: 'uppercase',
+                color: '#777', background: '#f0ede8',
+                borderRadius: 'var(--radius-pill)', padding: '4px 12px',
+                marginBottom: 12, alignSelf: 'flex-start',
+              }}>
+                {blog.category}
+              </span>
+
+              {/* Title */}
               <h3 className="blog-title" style={{
-                fontFamily: 'var(--font)',
-                fontSize: '1.0625rem',
-                fontWeight: 600,
-                lineHeight: 1.45,
-                color: 'var(--heading)',
-                marginBottom: 10,
+                fontFamily: 'var(--font)', fontSize: '1.0625rem', fontWeight: 600,
+                lineHeight: 1.45, color: 'var(--heading)', marginBottom: 10,
                 transition: 'color 0.22s ease',
               }}>
                 {blog.title}
               </h3>
 
-              <div style={{
-                fontSize: '0.8125rem',
-                color: 'var(--muted)',
-                marginBottom: 20,
-              }}>
+              {/* Meta */}
+              <div style={{ fontSize: '0.8125rem', color: 'var(--muted)', marginBottom: 20, marginTop: 'auto' }}>
                 {blog.date} &nbsp;—&nbsp; {blog.readTime}
               </div>
 
-              <Link
-                href={`/blog/${blog.slug}`}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  fontFamily: 'var(--font)',
-                  fontSize: '0.875rem',
-                  fontWeight: 600,
-                  color: 'var(--heading)',
-                  transition: 'gap var(--transition)',
-                }}
+              <span style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600,
+                color: 'var(--heading)', transition: 'gap var(--transition)',
+              }}
                 onMouseEnter={e => ((e.currentTarget as HTMLElement).style.gap = '10px')}
                 onMouseLeave={e => ((e.currentTarget as HTMLElement).style.gap = '6px')}
               >
                 Read More <span aria-hidden="true">→</span>
-              </Link>
-            </article>
+              </span>
+            </Link>
           ))}
         </div>
 
@@ -167,7 +137,7 @@ export default function BlogsSection() {
       <style jsx>{`
         @media (max-width: 1024px) { .blogs-grid { grid-template-columns: repeat(2, 1fr) !important; } }
         @media (max-width: 640px)  { .blogs-grid { grid-template-columns: 1fr !important; } }
-        .blog-card:hover .blog-title { color: var(--navy) !important; }
+        .blog-card:hover .blog-title { color: #111 !important; }
       `}</style>
     </section>
   );

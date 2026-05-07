@@ -188,7 +188,7 @@ function PropertiesInner({ listings }: Props) {
 
       {/* Page Hero */}
       <section style={{
-        background: 'var(--navy)',
+        background: '#111',
         paddingTop: 72 + 56,
         paddingBottom: 56,
       }}>
@@ -498,7 +498,7 @@ function PropertiesInner({ listings }: Props) {
                                 <div style={{ fontSize: '0.8125rem', color: 'var(--muted)' }}>Starting Price</div>
                                 <div style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--heading)' }}>{listing.price}</div>
                               </div>
-                              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#1B3079' }}>View Details →</span>
+                              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--muted)' }}>View Details →</span>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 16, paddingBottom: 16, borderTop: '1px solid var(--border)', paddingTop: 12, fontSize: '0.8125rem', color: 'var(--muted)' }}>
                               <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}><BedIcon /> {listing.beds}</span>
@@ -560,7 +560,7 @@ function PropertiesInner({ listings }: Props) {
           <aside className="prop-sidebar">
             {/* Can't find it? CTA */}
             <div style={{
-              background: 'var(--navy)',
+              background: '#111',
               borderRadius: 'var(--radius-lg)',
               padding: 28,
               marginBottom: 20,
@@ -577,7 +577,7 @@ function PropertiesInner({ listings }: Props) {
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                   width: '100%', padding: '12px 20px',
-                  background: '#C9A96E', color: '#fff',
+                  background: '#fff', color: '#111',
                   fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600,
                   border: 'none', borderRadius: 'var(--radius-btn)',
                   cursor: 'pointer',

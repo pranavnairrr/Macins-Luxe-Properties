@@ -16,7 +16,7 @@ function SaveButton({ onClick, saving, saved }: { onClick: () => void; saving: b
         display: 'flex', alignItems: 'center', gap: 6,
         fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600,
         color: saved ? '#16a34a' : '#fff',
-        background: saved ? 'rgba(22,163,74,0.10)' : saving ? 'rgba(27,48,121,0.55)' : '#1B3079',
+        background: saved ? 'rgba(22,163,74,0.10)' : saving ? 'rgba(0,0,0,0.40)' : '#111',
         border: saved ? '1px solid rgba(22,163,74,0.35)' : 'none',
         borderRadius: 8, padding: '9px 18px',
         cursor: saving ? 'not-allowed' : 'pointer',
@@ -129,12 +129,12 @@ function HeroSlidesSection() {
                     value={sl.image_url}
                     onChange={e => update(i, 'image_url', e.target.value)}
                     style={{ ...inputStyle, flex: 1 }}
-                    onFocus={e => (e.currentTarget.style.borderColor = '#1B3079')}
+                    onFocus={e => (e.currentTarget.style.borderColor = '#333')}
                     onBlur={e => (e.currentTarget.style.borderColor = 'var(--border)')}
                   />
                   <label style={{
                     fontFamily: 'var(--font)', fontSize: '0.8125rem', fontWeight: 600,
-                    color: '#1B3079', border: '1px solid #1B3079', borderRadius: 8,
+                    color: 'var(--heading)', border: '1px solid var(--border)', borderRadius: 8,
                     padding: '8px 14px', cursor: 'pointer', whiteSpace: 'nowrap',
                     opacity: uploading === i ? 0.55 : 1,
                   }}>
@@ -152,14 +152,14 @@ function HeroSlidesSection() {
                 <label style={labelStyle}>Badge</label>
                 <input type="text" placeholder="e.g. New Launch" value={sl.badge}
                   onChange={e => update(i, 'badge', e.target.value)} style={inputStyle}
-                  onFocus={e => (e.currentTarget.style.borderColor = '#1B3079')}
+                  onFocus={e => (e.currentTarget.style.borderColor = '#333')}
                   onBlur={e => (e.currentTarget.style.borderColor = 'var(--border)')} />
               </div>
               <div>
                 <label style={labelStyle}>CTA Label</label>
                 <input type="text" placeholder="e.g. Explore Properties" value={sl.cta}
                   onChange={e => update(i, 'cta', e.target.value)} style={inputStyle}
-                  onFocus={e => (e.currentTarget.style.borderColor = '#1B3079')}
+                  onFocus={e => (e.currentTarget.style.borderColor = '#333')}
                   onBlur={e => (e.currentTarget.style.borderColor = 'var(--border)')} />
               </div>
               <div style={{ gridColumn: '1/-1' }}>
@@ -167,21 +167,21 @@ function HeroSlidesSection() {
                 <textarea rows={2} placeholder="Slide title" value={sl.title}
                   onChange={e => update(i, 'title', e.target.value)}
                   style={{ ...inputStyle, resize: 'vertical' }}
-                  onFocus={e => (e.currentTarget.style.borderColor = '#1B3079')}
+                  onFocus={e => (e.currentTarget.style.borderColor = '#333')}
                   onBlur={e => (e.currentTarget.style.borderColor = 'var(--border)')} />
               </div>
               <div style={{ gridColumn: '1/-1' }}>
                 <label style={labelStyle}>Subtitle</label>
                 <input type="text" placeholder="Slide subtitle" value={sl.sub}
                   onChange={e => update(i, 'sub', e.target.value)} style={inputStyle}
-                  onFocus={e => (e.currentTarget.style.borderColor = '#1B3079')}
+                  onFocus={e => (e.currentTarget.style.borderColor = '#333')}
                   onBlur={e => (e.currentTarget.style.borderColor = 'var(--border)')} />
               </div>
               <div>
                 <label style={labelStyle}>CTA Link</label>
                 <input type="text" placeholder="/properties" value={sl.cta_href}
                   onChange={e => update(i, 'cta_href', e.target.value)} style={inputStyle}
-                  onFocus={e => (e.currentTarget.style.borderColor = '#1B3079')}
+                  onFocus={e => (e.currentTarget.style.borderColor = '#333')}
                   onBlur={e => (e.currentTarget.style.borderColor = 'var(--border)')} />
               </div>
             </div>
@@ -194,8 +194,8 @@ function HeroSlidesSection() {
           style={{
             display: 'flex', alignItems: 'center', gap: 6,
             fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600,
-            color: '#1B3079', background: 'rgba(27,48,121,0.06)',
-            border: '1px solid rgba(27,48,121,0.20)', borderRadius: 8, padding: '9px 16px', cursor: 'pointer',
+            color: 'var(--heading)', background: 'var(--white-section)',
+            border: '1px solid var(--border)', borderRadius: 8, padding: '9px 16px', cursor: 'pointer',
           }}
         >
           <Plus size={14} strokeWidth={2} /> Add Slide
@@ -252,7 +252,7 @@ function CompanyInfoSection() {
               value={info[f.key]}
               onChange={e => update(f.key, e.target.value)}
               style={inputStyle}
-              onFocus={e => (e.currentTarget.style.borderColor = '#1B3079')}
+              onFocus={e => (e.currentTarget.style.borderColor = '#333')}
               onBlur={e => (e.currentTarget.style.borderColor = 'var(--border)')}
             />
           </div>
@@ -299,21 +299,21 @@ function StatsSection() {
               <label style={labelStyle}>Value</label>
               <input type="text" placeholder="AED 3B+" value={item.value} onChange={e => update(i, 'value', e.target.value)}
                 style={inputStyle}
-                onFocus={e => (e.currentTarget.style.borderColor = '#1B3079')}
+                onFocus={e => (e.currentTarget.style.borderColor = '#333')}
                 onBlur={e => (e.currentTarget.style.borderColor = 'var(--border)')} />
             </div>
             <div>
               <label style={labelStyle}>Label</label>
               <input type="text" placeholder="Properties Sold" value={item.label} onChange={e => update(i, 'label', e.target.value)}
                 style={inputStyle}
-                onFocus={e => (e.currentTarget.style.borderColor = '#1B3079')}
+                onFocus={e => (e.currentTarget.style.borderColor = '#333')}
                 onBlur={e => (e.currentTarget.style.borderColor = 'var(--border)')} />
             </div>
             <div>
               <label style={labelStyle}>Description</label>
               <input type="text" placeholder="Short description" value={item.desc} onChange={e => update(i, 'desc', e.target.value)}
                 style={inputStyle}
-                onFocus={e => (e.currentTarget.style.borderColor = '#1B3079')}
+                onFocus={e => (e.currentTarget.style.borderColor = '#333')}
                 onBlur={e => (e.currentTarget.style.borderColor = 'var(--border)')} />
             </div>
           </div>

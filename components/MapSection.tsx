@@ -86,7 +86,7 @@ export default function MapSection() {
               width: 7,
               height: 7,
               borderRadius: '50%',
-              background: 'var(--navy)',
+              background: '#111',
               display: 'inline-block',
             }} />
             6 Properties

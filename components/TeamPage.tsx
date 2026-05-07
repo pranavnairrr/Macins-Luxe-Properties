@@ -54,9 +54,9 @@ export default function TeamPage({ agents }: { agents: Agent[] }) {
       <Nav />
 
       {/* Hero */}
-      <section style={{ background: 'var(--navy)', padding: 'clamp(72px, 10vw, 100px) var(--gutter-lg) clamp(48px, 6vw, 64px)', textAlign: 'center' }}>
+      <section style={{ background: '#111', padding: 'clamp(72px, 10vw, 100px) var(--gutter-lg) clamp(48px, 6vw, 64px)', textAlign: 'center' }}>
         <div className="container" style={{ maxWidth: 600 }}>
-          <span style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--gold)', display: 'block', marginBottom: 16 }}>
+          <span style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.50)', display: 'block', marginBottom: 16 }}>
             Macins Luxe Team
           </span>
           <h1 style={{ fontFamily: 'var(--font)', fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 700, lineHeight: 1.15, letterSpacing: '-0.025em', color: '#fff', marginBottom: 16 }}>
@@ -74,7 +74,7 @@ export default function TeamPage({ agents }: { agents: Agent[] }) {
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 40 }}>
             {FILTERS.map(f => (
               <button key={f} onClick={() => setActiveFilter(f)}
-                style={{ fontFamily: 'var(--font)', fontSize: '0.8125rem', fontWeight: 600, padding: '8px 18px', borderRadius: 'var(--radius-pill)', border: activeFilter === f ? 'none' : '1px solid var(--border)', background: activeFilter === f ? 'var(--navy)' : 'transparent', color: activeFilter === f ? '#fff' : 'var(--heading)', cursor: 'pointer', transition: 'all 0.2s ease' }}
+                style={{ fontFamily: 'var(--font)', fontSize: '0.8125rem', fontWeight: 600, padding: '8px 18px', borderRadius: 'var(--radius-pill)', border: activeFilter === f ? 'none' : '1px solid var(--border)', background: activeFilter === f ? '#111' : 'transparent', color: activeFilter === f ? '#fff' : 'var(--heading)', cursor: 'pointer', transition: 'all 0.2s ease' }}
               >{f}</button>
             ))}
           </div>
@@ -92,7 +92,7 @@ export default function TeamPage({ agents }: { agents: Agent[] }) {
       </section>
 
       {/* Join us CTA */}
-      <section style={{ background: 'var(--navy)', padding: 'clamp(48px, 6vw, 64px) var(--gutter-lg)', textAlign: 'center' }}>
+      <section style={{ background: '#111', padding: 'clamp(48px, 6vw, 64px) var(--gutter-lg)', textAlign: 'center' }}>
         <div className="container" style={{ maxWidth: 520 }}>
           <h2 style={{ fontFamily: 'var(--font)', fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', fontWeight: 700, color: '#fff', marginBottom: 12 }}>
             Join Our Team
@@ -143,8 +143,8 @@ function AgentCard({ agent }: { agent: Agent }) {
               onMouseLeave={e => ((e.target as HTMLElement).style.transform = 'scale(1)')}
             />
           ) : (
-            <div style={{ width: '100%', height: '100%', background: 'var(--navy)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <span style={{ fontFamily: 'var(--font)', fontSize: '2rem', fontWeight: 700, color: 'var(--gold)' }}>{getInitials(agent.name)}</span>
+            <div style={{ width: '100%', height: '100%', background: '#333', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ fontFamily: 'var(--font)', fontSize: '2rem', fontWeight: 700, color: '#fff' }}>{getInitials(agent.name)}</span>
             </div>
           )}
         </div>
@@ -179,7 +179,7 @@ function AgentCard({ agent }: { agent: Agent }) {
             </a>
           )}
           <Link href={`/team/${toSlug(agent.name)}`}
-            style={{ marginLeft: 'auto', fontSize: '0.75rem', fontWeight: 600, color: 'var(--navy)', display: 'flex', alignItems: 'center', gap: 3, textDecoration: 'none' }}>
+            style={{ marginLeft: 'auto', fontSize: '0.75rem', fontWeight: 600, color: '#111', display: 'flex', alignItems: 'center', gap: 3, textDecoration: 'none' }}>
             Profile →
           </Link>
         </div>

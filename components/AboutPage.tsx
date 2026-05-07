@@ -46,11 +46,11 @@ export default function AboutPage({ stats, companyInfo }: { stats?: StatItem[]; 
       {/* ── Split Hero ── */}
       <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', minHeight: 520 }}>
         <div style={{
-          background: 'var(--navy)',
+          background: '#111',
           display: 'flex', flexDirection: 'column', justifyContent: 'center',
           padding: 'clamp(48px, 8vw, 80px)',
         }}>
-          <span style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 20 }}>
+          <span style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.50)', marginBottom: 20 }}>
             About Macins Luxe
           </span>
           <h1 style={{
@@ -94,11 +94,11 @@ export default function AboutPage({ stats, companyInfo }: { stats?: StatItem[]; 
         <div className="container">
           <div className="about-story-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: 64, alignItems: 'start' }}>
             <div data-reveal>
-              <span style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--gold)', display: 'block', marginBottom: 16 }}>Our Story</span>
+              <span style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#999', display: 'block', marginBottom: 16 }}>Our Story</span>
               <h2 style={{ fontFamily: 'var(--font)', fontSize: 'clamp(1.75rem, 2.5vw, 2.25rem)', fontWeight: 700, lineHeight: 1.2, letterSpacing: '-0.02em', color: 'var(--heading)', marginBottom: 16 }}>
                 18 Years of Luxury Real Estate Excellence
               </h2>
-              <div style={{ width: 48, height: 3, background: 'var(--gold)', borderRadius: 2 }} />
+              <div style={{ width: 48, height: 3, background: '#ddd', borderRadius: 2 }} />
             </div>
             <div data-reveal style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
               <p style={{ fontSize: '0.9375rem', lineHeight: 1.8, color: 'var(--body)' }}>
@@ -119,7 +119,7 @@ export default function AboutPage({ stats, companyInfo }: { stats?: StatItem[]; 
       <section className="section" style={{ background: 'var(--white-section)' }}>
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: 56 }} data-reveal>
-            <span style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--gold)', display: 'block', marginBottom: 12 }}>Our Journey</span>
+            <span style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#999', display: 'block', marginBottom: 12 }}>Our Journey</span>
             <h2 style={{ fontFamily: 'var(--font)', fontSize: 'clamp(1.75rem, 2.5vw, 2.25rem)', fontWeight: 700, lineHeight: 1.2, letterSpacing: '-0.02em', color: 'var(--heading)' }}>
               Milestones That Define Us
             </h2>
@@ -149,22 +149,22 @@ export default function AboutPage({ stats, companyInfo }: { stats?: StatItem[]; 
                       <div style={{ fontSize: '0.8125rem', lineHeight: 1.6, color: 'var(--body)' }}>{item.desc}</div>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                      <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--navy)', border: '3px solid var(--white)', boxShadow: '0 0 0 2px var(--navy)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <span style={{ fontSize: '0.625rem', fontWeight: 700, color: 'var(--gold)', letterSpacing: '0.04em' }}>{item.year.slice(2)}</span>
+                      <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#111', border: '3px solid var(--white)', boxShadow: '0 0 0 2px #111', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <span style={{ fontSize: '0.625rem', fontWeight: 700, color: '#fff', letterSpacing: '0.04em' }}>{item.year.slice(2)}</span>
                       </div>
                     </div>
                     <div style={{ paddingLeft: 8 }}>
-                      <span style={{ fontFamily: 'var(--font)', fontSize: 'clamp(1.5rem, 2vw, 1.875rem)', fontWeight: 700, color: 'var(--navy)', letterSpacing: '-0.02em' }}>{item.year}</span>
+                      <span style={{ fontFamily: 'var(--font)', fontSize: 'clamp(1.5rem, 2vw, 1.875rem)', fontWeight: 700, color: '#111', letterSpacing: '-0.02em' }}>{item.year}</span>
                     </div>
                   </>
                 ) : (
                   <>
                     <div style={{ paddingRight: 8, textAlign: 'right' }}>
-                      <span style={{ fontFamily: 'var(--font)', fontSize: 'clamp(1.5rem, 2vw, 1.875rem)', fontWeight: 700, color: 'var(--navy)', letterSpacing: '-0.02em' }}>{item.year}</span>
+                      <span style={{ fontFamily: 'var(--font)', fontSize: 'clamp(1.5rem, 2vw, 1.875rem)', fontWeight: 700, color: '#111', letterSpacing: '-0.02em' }}>{item.year}</span>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                      <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--navy)', border: '3px solid var(--white)', boxShadow: '0 0 0 2px var(--navy)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <span style={{ fontSize: '0.625rem', fontWeight: 700, color: 'var(--gold)', letterSpacing: '0.04em' }}>{item.year.slice(2)}</span>
+                      <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#111', border: '3px solid var(--white)', boxShadow: '0 0 0 2px #111', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <span style={{ fontSize: '0.625rem', fontWeight: 700, color: '#fff', letterSpacing: '0.04em' }}>{item.year.slice(2)}</span>
                       </div>
                     </div>
                     <div className="timeline-card" style={{ textAlign: 'left', padding: '20px 24px', background: 'var(--white)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', boxShadow: '0 2px 12px rgba(26,37,53,0.06)' }}>
@@ -236,7 +236,7 @@ export default function AboutPage({ stats, companyInfo }: { stats?: StatItem[]; 
       </section>
 
       {/* ── CTA Block ── */}
-      <section style={{ background: 'var(--navy)', padding: 'clamp(48px, 8vw, 80px) var(--gutter-lg)', textAlign: 'center' }}>
+      <section style={{ background: '#111', padding: 'clamp(48px, 8vw, 80px) var(--gutter-lg)', textAlign: 'center' }}>
         <div className="container">
           <h2 style={{ fontFamily: 'var(--font)', fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', fontWeight: 700, lineHeight: 1.2, letterSpacing: '-0.02em', color: '#fff', marginBottom: 16 }}>
             Ready to Find Your Dream Property?

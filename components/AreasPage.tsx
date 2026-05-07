@@ -35,9 +35,9 @@ export default function AreasPage() {
       <Nav />
 
       {/* Hero */}
-      <section style={{ background: 'var(--navy)', padding: 'clamp(72px, 10vw, 100px) var(--gutter-lg) clamp(48px, 6vw, 64px)', textAlign: 'center' }}>
+      <section style={{ background: '#111', padding: 'clamp(72px, 10vw, 100px) var(--gutter-lg) clamp(48px, 6vw, 64px)', textAlign: 'center' }}>
         <div className="container" style={{ maxWidth: 620 }}>
-          <span style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--gold)', display: 'block', marginBottom: 16 }}>
+          <span style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)', display: 'block', marginBottom: 16 }}>
             Prime Locations
           </span>
           <h1 style={{ fontFamily: 'var(--font)', fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 700, lineHeight: 1.15, letterSpacing: '-0.025em', color: '#fff', marginBottom: 16 }}>
@@ -56,7 +56,7 @@ export default function AreasPage() {
           <div style={{ display: 'flex', gap: 8, marginBottom: 36 }}>
             {EMIRATE_FILTERS.map(f => (
               <button key={f} onClick={() => setActiveFilter(f)}
-                style={{ fontFamily: 'var(--font)', fontSize: '0.8125rem', fontWeight: 600, padding: '8px 20px', borderRadius: 'var(--radius-pill)', border: activeFilter === f ? 'none' : '1px solid var(--border)', background: activeFilter === f ? 'var(--navy)' : 'transparent', color: activeFilter === f ? '#fff' : 'var(--heading)', cursor: 'pointer', transition: 'all 0.2s ease' }}
+                style={{ fontFamily: 'var(--font)', fontSize: '0.8125rem', fontWeight: 600, padding: '8px 20px', borderRadius: 'var(--radius-pill)', border: activeFilter === f ? 'none' : '1px solid var(--border)', background: activeFilter === f ? '#111' : 'transparent', color: activeFilter === f ? '#fff' : 'var(--heading)', cursor: 'pointer', transition: 'all 0.2s ease' }}
               >{f}</button>
             ))}
           </div>
@@ -74,7 +74,7 @@ export default function AreasPage() {
         <div className="container">
           <div className="why-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'center' }}>
             <div data-reveal>
-              <span style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--gold)', display: 'block', marginBottom: 16 }}>
+              <span style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#999', display: 'block', marginBottom: 16 }}>
                 Why Invest
               </span>
               <h2 style={{ fontFamily: 'var(--font)', fontSize: 'clamp(1.75rem, 2.5vw, 2.25rem)', fontWeight: 700, lineHeight: 1.2, letterSpacing: '-0.02em', color: 'var(--heading)', marginBottom: 20 }}>
@@ -86,14 +86,14 @@ export default function AreasPage() {
               <p style={{ fontSize: '0.9375rem', lineHeight: 1.8, color: 'var(--body)', marginBottom: 28 }}>
                 With no property tax, no capital gains tax, and rental yields consistently between 5–8%, Dubai and Abu Dhabi continue to attract investors from across the globe seeking both income and capital appreciation.
               </p>
-              <Link href="/properties" style={{ fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600, color: '#fff', background: 'var(--navy)', borderRadius: 'var(--radius-btn)', padding: '12px 24px', display: 'inline-block', textDecoration: 'none', transition: 'background 0.2s ease' }}>
+              <Link href="/properties" style={{ fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600, color: '#fff', background: '#111', borderRadius: 'var(--radius-btn)', padding: '12px 24px', display: 'inline-block', textDecoration: 'none', transition: 'opacity 0.2s ease' }}>
                 Explore Properties
               </Link>
             </div>
             <div data-reveal style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
               {WHY_STATS.map(s => (
                 <div key={s.value} style={{ background: 'var(--white)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', padding: '24px 20px', textAlign: 'center', boxShadow: '0 2px 8px rgba(26,37,53,0.05)' }}>
-                  <div style={{ fontFamily: 'var(--font)', fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', fontWeight: 700, color: 'var(--navy)', letterSpacing: '-0.02em', marginBottom: 6 }}>{s.value}</div>
+                  <div style={{ fontFamily: 'var(--font)', fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', fontWeight: 700, color: 'var(--heading)', letterSpacing: '-0.02em', marginBottom: 6 }}>{s.value}</div>
                   <div style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--heading)', marginBottom: 4 }}>{s.label}</div>
                   <div style={{ fontSize: '0.8125rem', color: 'var(--muted)', lineHeight: 1.5 }}>{s.desc}</div>
                 </div>
@@ -104,7 +104,7 @@ export default function AreasPage() {
       </section>
 
       {/* CTA */}
-      <section style={{ background: 'var(--navy)', padding: 'clamp(48px, 6vw, 64px) var(--gutter-lg)', textAlign: 'center' }}>
+      <section style={{ background: '#111', padding: 'clamp(48px, 6vw, 64px) var(--gutter-lg)', textAlign: 'center' }}>
         <div className="container" style={{ maxWidth: 520 }}>
           <h2 style={{ fontFamily: 'var(--font)', fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', fontWeight: 700, color: '#fff', marginBottom: 12 }}>
             Not Sure Which Area Is Right for You?
@@ -145,7 +145,7 @@ function AreaCard({ area }: { area: AreaData }) {
           onMouseEnter={e => ((e.target as HTMLElement).style.transform = 'scale(1.06)')}
           onMouseLeave={e => ((e.target as HTMLElement).style.transform = 'scale(1)')}
         />
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(3,33,61,0.85) 0%, rgba(3,33,61,0.20) 55%, transparent 80%)' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.80) 0%, rgba(0,0,0,0.15) 55%, transparent 80%)' }} />
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '20px 18px' }}>
           <div style={{ fontFamily: 'var(--font)', fontSize: '1rem', fontWeight: 700, color: '#fff', marginBottom: 6 }}>{area.name}</div>
           <div style={{ display: 'flex', gap: 12, fontSize: '0.75rem', color: 'rgba(255,255,255,0.75)' }}>

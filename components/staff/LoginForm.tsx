@@ -35,7 +35,7 @@ export default function LoginForm() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #152140 0%, #1B3079 55%, #1F3A8F 100%)',
+      background: 'linear-gradient(135deg, #111 0%, #1a1815 100%)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -48,7 +48,7 @@ export default function LoginForm() {
         background: 'rgba(255,255,255,0.06)',
         backdropFilter: 'blur(24px)',
         WebkitBackdropFilter: 'blur(24px)',
-        border: '1px solid rgba(213,186,140,0.20)',
+        border: '1px solid rgba(255,255,255,0.12)',
         borderRadius: 16,
         padding: '48px 40px 40px',
         boxShadow: '0 24px 64px rgba(0,0,0,0.45)',
@@ -76,7 +76,7 @@ export default function LoginForm() {
         </h1>
         <p style={{
           fontSize: '0.875rem',
-          color: 'rgba(213,186,140,0.80)',
+          color: 'rgba(255,255,255,0.50)',
           textAlign: 'center',
           marginBottom: 32,
         }}>
@@ -93,7 +93,7 @@ export default function LoginForm() {
               onChange={e => setEmail(e.target.value)}
               placeholder="Email address"
               style={inputStyle}
-              onFocus={e => (e.currentTarget.style.borderColor = 'rgba(213,186,140,0.70)')}
+              onFocus={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.60)')}
               onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.18)')}
             />
           </div>
@@ -108,7 +108,7 @@ export default function LoginForm() {
                 onChange={e => setPassword(e.target.value)}
                 placeholder="••••••••"
                 style={{ ...inputStyle, paddingRight: 44 }}
-                onFocus={e => (e.currentTarget.style.borderColor = 'rgba(213,186,140,0.70)')}
+                onFocus={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.60)')}
                 onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.18)')}
               />
               <button
@@ -149,8 +149,8 @@ export default function LoginForm() {
               fontFamily: 'var(--font)',
               fontSize: '0.9375rem',
               fontWeight: 600,
-              color: '#152140',
-              background: loading ? 'rgba(213,186,140,0.60)' : '#D5BA8C',
+              color: '#111',
+              background: loading ? 'rgba(255,255,255,0.45)' : '#fff',
               border: 'none',
               borderRadius: 8,
               padding: '14px',

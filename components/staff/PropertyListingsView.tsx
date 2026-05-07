@@ -92,7 +92,7 @@ export default function PropertyListingsView() {
           onClick={() => { setEditing(undefined); setShowForm(true) }}
           style={{
             fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600,
-            color: '#fff', background: '#1B3079',
+            color: '#fff', background: '#111',
             border: 'none', borderRadius: 8,
             padding: '10px 20px', cursor: 'pointer',
             display: 'flex', alignItems: 'center', gap: 8,
@@ -117,7 +117,7 @@ export default function PropertyListingsView() {
             <button key={f} onClick={() => setFilter(f)} style={{
               fontFamily: 'var(--font)', fontSize: '0.8125rem', fontWeight: 600,
               color: filter === f ? '#fff' : 'var(--muted)',
-              background: filter === f ? '#1B3079' : 'transparent',
+              background: filter === f ? '#111' : 'transparent',
               border: 'none', borderRadius: 6,
               padding: '6px 14px', cursor: 'pointer',
               textTransform: 'capitalize',
@@ -263,7 +263,7 @@ function ListingCard({
             rel="noopener noreferrer"
             style={{
               flex: 1, fontFamily: 'var(--font)', fontSize: '0.8125rem', fontWeight: 600,
-              color: '#1B3079', background: 'transparent', border: 'none',
+              color: 'var(--heading)', background: 'transparent', border: 'none',
               padding: '10px 0', cursor: 'pointer', transition: 'background 0.15s',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
               textDecoration: 'none',

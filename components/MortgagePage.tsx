@@ -1,273 +1,359 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
-import Link from 'next/link';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import Nav from './Nav';
 import Footer from './Footer';
 
-const LENDERS = ['Emirates NBD', 'HSBC', 'Mashreq', 'RAK Bank', 'ADCB', 'FAB'];
-
-function formatAED(n: number) {
+function fmt(n: number) {
   if (n >= 1_000_000) return `AED ${(n / 1_000_000).toFixed(2)}M`;
-  if (n >= 1_000) return `AED ${(n / 1_000).toFixed(0)}K`;
+  if (n >= 1_000)     return `AED ${(n / 1_000).toFixed(0)}K`;
   return `AED ${n.toFixed(0)}`;
 }
 
-export default function MortgagePage() {
-  const [propertyPrice, setPropertyPrice] = useState(3_000_000);
-  const [downPaymentPct, setDownPaymentPct] = useState(20);
-  const [interestRate, setInterestRate] = useState(4.5);
-  const [loanTerm, setLoanTerm] = useState(25);
-
-  const [income, setIncome] = useState('');
-  const [obligations, setObligations] = useState('');
-
-  const [formData, setFormData] = useState({ name: '', email: '', phone: '' });
-  const [submitted, setSubmitted] = useState(false);
-
+function useAnimated(target: number, ms = 320) {
+  const [val, setVal] = useState(target);
+  const from  = useRef(target);
+  const frame = useRef<number>();
   useEffect(() => {
-    const obs = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting) (e.target as HTMLElement).classList.add('revealed'); });
-    }, { threshold: 0.1 });
-    document.querySelectorAll('[data-reveal]').forEach(el => obs.observe(el));
-    return () => obs.disconnect();
-  }, []);
+    const start = from.current, end = target;
+    if (start === end) return;
+    let t0: number | null = null;
+    const tick = (now: number) => {
+      if (!t0) t0 = now;
+      const p = Math.min((now - t0) / ms, 1);
+      setVal(start + (end - start) * (1 - Math.pow(1 - p, 3)));
+      if (p < 1) frame.current = requestAnimationFrame(tick);
+      else from.current = end;
+    };
+    frame.current = requestAnimationFrame(tick);
+    return () => { if (frame.current) cancelAnimationFrame(frame.current); };
+  }, [target, ms]);
+  return val;
+}
 
-  const { monthlyPayment, loanAmount, totalInterest, totalCost } = useMemo(() => {
-    const loanAmount = propertyPrice * (1 - downPaymentPct / 100);
-    const r = interestRate / 100 / 12;
-    const n = loanTerm * 12;
-    const monthly = r === 0 ? loanAmount / n : loanAmount * r * Math.pow(1 + r, n) / (Math.pow(1 + r, n) - 1);
-    const totalCost = monthly * n;
-    const totalInterest = totalCost - loanAmount;
-    return { monthlyPayment: monthly, loanAmount, totalInterest, totalCost };
-  }, [propertyPrice, downPaymentPct, interestRate, loanTerm]);
+/* ── Palette ── */
+const CHAR  = '#1a1815';          /* warm charcoal – result card bg   */
+const GOLD  = '#D5BA8C';          /* gold – hero number               */
+const GDEEP = '#b8965a';          /* deeper gold – slider fill        */
+const PAGE  = '#f5f3f0';          /* warm off-white – section bg      */
+const BADGE = '#eeebe5';          /* value badge bg                   */
 
-  const principalPct = loanAmount / totalCost * 100;
-  const interestPct = 100 - principalPct;
+export default function MortgagePage() {
+  const [price,   setPrice]   = useState(3_000_000);
+  const [downPct, setDownPct] = useState(20);
+  const [rate,    setRate]    = useState(4.5);
+  const [term,    setTerm]    = useState(25);
+  const [form,    setForm]    = useState({ name: '', email: '', phone: '' });
+  const [sent,    setSent]    = useState(false);
 
-  const eligibility = useMemo(() => {
-    const monthlyIncome = parseFloat(income) || 0;
-    const monthlyObligations = parseFloat(obligations) || 0;
-    const maxPayment = monthlyIncome * 0.50 - monthlyObligations;
-    if (maxPayment <= 0) return null;
-    const r = 4.5 / 100 / 12;
-    const n = 25 * 12;
-    const maxLoan = maxPayment * (Math.pow(1 + r, n) - 1) / (r * Math.pow(1 + r, n));
-    const maxProperty = maxLoan / 0.80;
-    return { maxLoan, maxProperty };
-  }, [income, obligations]);
+  const { monthly, loan, interest, total } = useMemo(() => {
+    const loan    = price * (1 - downPct / 100);
+    const r       = rate / 100 / 12;
+    const n       = term * 12;
+    const monthly = r === 0 ? loan / n : loan * r * Math.pow(1+r,n) / (Math.pow(1+r,n)-1);
+    const total   = monthly * n;
+    return { monthly, loan, interest: total - loan, total };
+  }, [price, downPct, rate, term]);
+
+  const principalPct = (loan / total) * 100;
+  const animMonthly  = useAnimated(monthly);
+  const downAED      = price * (downPct / 100);
+  const fill = (v: number, lo: number, hi: number) => `${((v-lo)/(hi-lo))*100}%`;
+
+  const sliders = [
+    { label: 'Property Price', sub: null,         min: 500_000,  max: 20_000_000, step: 50_000, value: price,   set: setPrice,   display: fmt(price),           minL: '500K',    maxL: '20M'    },
+    { label: 'Down Payment',   sub: fmt(downAED), min: 10,        max: 40,         step: 1,      value: downPct, set: setDownPct, display: `${downPct}%`,         minL: '10%',     maxL: '40%'    },
+    { label: 'Interest Rate',  sub: null,         min: 2.5,       max: 8,          step: 0.1,    value: rate,    set: setRate,    display: `${rate.toFixed(1)}%`, minL: '2.5%',    maxL: '8%'     },
+    { label: 'Loan Term',      sub: null,         min: 5,         max: 30,         step: 1,      value: term,    set: setTerm,    display: `${term} yrs`,         minL: '5 yrs',   maxL: '30 yrs' },
+  ];
 
   return (
     <>
       <Nav />
 
-      {/* Hero */}
-      <section style={{ background: 'var(--navy)', padding: 'clamp(72px, 10vw, 100px) var(--gutter-lg) clamp(48px, 6vw, 64px)', textAlign: 'center' }}>
-        <div className="container" style={{ maxWidth: 600 }}>
-          <span style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--gold)', display: 'block', marginBottom: 16 }}>
+      {/* ── Hero strip ── */}
+      <section style={{ background: CHAR, padding: '88px var(--gutter-lg) 36px', textAlign: 'center' }}>
+        <div className="container" style={{ maxWidth: 500 }}>
+          <span style={{
+            display: 'inline-block', marginBottom: 10,
+            fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.14em',
+            textTransform: 'uppercase', color: 'rgba(255,255,255,0.50)',
+          }}>
             Financial Planning
           </span>
-          <h1 style={{ fontFamily: 'var(--font)', fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 700, lineHeight: 1.15, letterSpacing: '-0.025em', color: '#fff', marginBottom: 16 }}>
+          <h1 style={{
+            fontFamily: 'var(--font)',
+            fontSize: 'clamp(1.75rem,3.5vw,2.375rem)',
+            fontWeight: 700, lineHeight: 1.2, letterSpacing: '-0.025em',
+            color: '#fff', marginBottom: 10,
+          }}>
             Mortgage Calculator
           </h1>
-          <p style={{ fontSize: '1rem', lineHeight: 1.75, color: 'rgba(255,255,255,0.70)' }}>
-            Estimate your monthly repayments and check your eligibility for Dubai property financing.
+          <p style={{ fontSize: '0.9375rem', lineHeight: 1.7, color: 'rgba(255,255,255,0.45)' }}>
+            Drag the sliders — your monthly payment updates instantly.
           </p>
         </div>
       </section>
 
-      {/* Calculator */}
-      <section className="section" style={{ background: 'var(--white)' }}>
+      {/* ── Calculator ── */}
+      <section style={{ background: PAGE, paddingBlock: 40 }}>
         <div className="container">
-          <div className="calc-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: 48, alignItems: 'start' }}>
+          <div className="mc-grid" style={{ display: 'grid', gridTemplateColumns: '1.15fr 0.85fr', gap: 20, alignItems: 'start' }}>
 
-            {/* Sliders */}
-            <div data-reveal>
-              <h2 style={{ fontFamily: 'var(--font)', fontSize: '1.25rem', fontWeight: 700, color: 'var(--heading)', marginBottom: 32 }}>Adjust Your Loan</h2>
+            {/* Left — sliders */}
+            <div style={{
+              background: '#fff',
+              borderRadius: 16,
+              boxShadow: '0 2px 20px rgba(0,0,0,0.07)',
+              padding: '28px 24px',
+            }}>
+              <p style={{
+                fontSize: '0.625rem', fontWeight: 700, letterSpacing: '0.14em',
+                textTransform: 'uppercase', color: '#aaa79f', marginBottom: 24,
+              }}>
+                Loan Parameters
+              </p>
 
-              {[
-                { label: 'Property Price', min: 500_000, max: 20_000_000, step: 50_000, value: propertyPrice, onChange: setPropertyPrice, format: formatAED },
-                { label: `Down Payment (${downPaymentPct}%)`, min: 10, max: 40, step: 1, value: downPaymentPct, onChange: setDownPaymentPct, format: (v: number) => `${v}%` },
-                { label: 'Annual Interest Rate', min: 2.5, max: 8, step: 0.1, value: interestRate, onChange: setInterestRate, format: (v: number) => `${v.toFixed(1)}%` },
-                { label: 'Loan Term', min: 5, max: 30, step: 1, value: loanTerm, onChange: setLoanTerm, format: (v: number) => `${v} years` },
-              ].map(slider => (
-                <div key={slider.label} style={{ marginBottom: 28 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                    <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--heading)' }}>{slider.label}</span>
-                    <span style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--navy)' }}>{slider.format(slider.value)}</span>
+              <div className="mc-sliders" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '26px 32px' }}>
+                {sliders.map(s => (
+                  <div key={s.label}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10, gap: 8 }}>
+                      <div>
+                        <div style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#2a2520', lineHeight: 1.3 }}>
+                          {s.label}
+                        </div>
+                        {s.sub && (
+                          <div style={{ fontSize: '0.6875rem', color: '#aaa79f', marginTop: 2 }}>
+                            ≈ {s.sub}
+                          </div>
+                        )}
+                      </div>
+                      <span style={{
+                        fontSize: '0.8125rem', fontWeight: 700,
+                        color: CHAR, background: BADGE,
+                        borderRadius: 6, padding: '3px 9px',
+                        whiteSpace: 'nowrap', flexShrink: 0,
+                        fontFamily: 'var(--font)',
+                      }}>
+                        {s.display}
+                      </span>
+                    </div>
+
+                    <input
+                      type="range"
+                      min={s.min} max={s.max} step={s.step}
+                      value={s.value}
+                      onChange={e => s.set(parseFloat(e.target.value))}
+                      className="mlx-slider"
+                      style={{ width: '100%', '--fill': fill(s.value, s.min, s.max) } as React.CSSProperties}
+                    />
+
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.625rem', color: '#bbb8b0', marginTop: 5 }}>
+                      <span>{s.minL}</span><span>{s.maxL}</span>
+                    </div>
                   </div>
-                  <input
-                    type="range"
-                    min={slider.min}
-                    max={slider.max}
-                    step={slider.step}
-                    value={slider.value}
-                    onChange={e => slider.onChange(parseFloat(e.target.value))}
-                    className="mlx-slider"
-                    style={{ width: '100%' }}
-                  />
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--muted)', marginTop: 4 }}>
-                    <span>{slider.format(slider.min)}</span>
-                    <span>{slider.format(slider.max)}</span>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
 
-            {/* Results panel */}
-            <div data-reveal style={{ background: 'var(--navy)', borderRadius: 'var(--radius-lg)', padding: 'clamp(28px, 4vw, 40px)', color: '#fff' }}>
-              <div style={{ textAlign: 'center', marginBottom: 32 }}>
-                <div style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'rgba(255,255,255,0.60)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            {/* Right — result (sticky) */}
+            <div style={{
+              background: CHAR,
+              borderRadius: 16,
+              padding: '24px 20px',
+              position: 'sticky',
+              top: 80,
+            }}>
+
+              {/* Monthly payment */}
+              <div style={{ marginBottom: 20 }}>
+                <div style={{
+                  fontSize: '0.5625rem', fontWeight: 700, letterSpacing: '0.14em',
+                  textTransform: 'uppercase', color: `${GOLD}99`,
+                  marginBottom: 6,
+                }}>
                   Monthly Payment
                 </div>
-                <div style={{ fontFamily: 'var(--font)', fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--gold)' }}>
-                  {formatAED(monthlyPayment)}
-                </div>
-              </div>
-
-              {/* Donut chart */}
-              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 28 }}>
                 <div style={{
-                  width: 120, height: 120,
-                  borderRadius: '50%',
-                  background: `conic-gradient(#C9A96E 0% ${principalPct}%, rgba(255,255,255,0.20) ${principalPct}% 100%)`,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontFamily: 'var(--font)',
+                  fontSize: 'clamp(2rem,3.5vw,2.75rem)',
+                  fontWeight: 800, letterSpacing: '-0.03em',
+                  color: GOLD, lineHeight: 1,
                 }}>
-                  <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'var(--navy)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                    <span style={{ fontSize: '0.625rem', color: 'rgba(255,255,255,0.55)' }}>LTV</span>
-                    <span style={{ fontSize: '1rem', fontWeight: 700, color: '#fff' }}>{(100 - downPaymentPct)}%</span>
-                  </div>
+                  {fmt(animMonthly)}
                 </div>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginBottom: 28 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.8125rem', color: 'rgba(255,255,255,0.75)' }}>
-                  <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--gold)' }} />
-                  Principal ({principalPct.toFixed(0)}%)
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.8125rem', color: 'rgba(255,255,255,0.75)' }}>
-                  <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'rgba(255,255,255,0.25)' }} />
-                  Interest ({interestPct.toFixed(0)}%)
+                <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.30)', marginTop: 6 }}>
+                  per month &middot; {term}-year term
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginBottom: 28 }}>
+              {/* Principal vs interest bar */}
+              <div style={{ marginBottom: 18 }}>
+                <div style={{ height: 5, borderRadius: 3, background: 'rgba(255,255,255,0.08)', overflow: 'hidden', marginBottom: 7 }}>
+                  <div style={{
+                    height: '100%', width: `${principalPct}%`,
+                    background: 'rgba(255,255,255,0.55)', borderRadius: 3,
+                    transition: 'width 0.38s cubic-bezier(0.4,0,0.2,1)',
+                  }} />
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.625rem' }}>
+                  <span style={{ color: 'rgba(255,255,255,0.70)' }}>Principal {principalPct.toFixed(0)}%</span>
+                  <span style={{ color: 'rgba(255,255,255,0.28)' }}>Interest {(100-principalPct).toFixed(0)}%</span>
+                </div>
+              </div>
+
+              {/* Stats 2×2 */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 14 }}>
                 {[
-                  { label: 'Loan Amount', value: formatAED(loanAmount) },
-                  { label: 'Total Interest', value: formatAED(totalInterest) },
-                  { label: 'Total Cost', value: formatAED(totalCost) },
+                  { label: 'Loan Amount',    value: fmt(loan)     },
+                  { label: 'Down Payment',   value: fmt(downAED)  },
+                  { label: 'Total Interest', value: fmt(interest) },
+                  { label: 'Total Cost',     value: fmt(total)    },
                 ].map(item => (
-                  <div key={item.label} style={{ textAlign: 'center', background: 'rgba(255,255,255,0.06)', borderRadius: 8, padding: '12px 8px' }}>
-                    <div style={{ fontSize: '0.6875rem', color: 'rgba(255,255,255,0.55)', marginBottom: 4 }}>{item.label}</div>
-                    <div style={{ fontSize: '0.875rem', fontWeight: 700, color: '#fff' }}>{item.value}</div>
+                  <div key={item.label} style={{
+                    background: 'rgba(255,255,255,0.05)',
+                    border: '1px solid rgba(255,255,255,0.07)',
+                    borderRadius: 10, padding: '10px 12px',
+                  }}>
+                    <div style={{
+                      fontSize: '0.5625rem', fontWeight: 700, letterSpacing: '0.08em',
+                      textTransform: 'uppercase', color: 'rgba(255,255,255,0.28)',
+                      marginBottom: 4,
+                    }}>
+                      {item.label}
+                    </div>
+                    <div style={{ fontSize: '0.875rem', fontWeight: 700, color: '#fff', fontFamily: 'var(--font)' }}>
+                      {item.value}
+                    </div>
                   </div>
                 ))}
               </div>
 
+              {/* LTV */}
+              <div style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                background: 'rgba(255,255,255,0.05)',
+                border: '1px solid rgba(255,255,255,0.07)',
+                borderRadius: 8, padding: '8px 12px', marginBottom: 16,
+              }}>
+                <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.30)', fontWeight: 500 }}>
+                  Loan-to-Value
+                </span>
+                <span style={{ fontSize: '0.9375rem', fontWeight: 700, color: '#fff', fontFamily: 'var(--font)' }}>
+                  {100-downPct}%
+                </span>
+              </div>
+
               <button
-                onClick={() => { document.getElementById('mortgage-form')?.scrollIntoView({ behavior: 'smooth' }); }}
-                style={{ width: '100%', padding: '14px', background: 'var(--gold)', color: 'var(--heading)', fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 700, border: 'none', borderRadius: 'var(--radius-btn)', cursor: 'pointer', transition: 'opacity 0.2s ease' }}
-                onMouseEnter={e => ((e.currentTarget as HTMLElement).style.opacity = '0.88')}
+                onClick={() => document.getElementById('mortgage-form')?.scrollIntoView({ behavior: 'smooth' })}
+                style={{
+                  width: '100%', padding: '12px',
+                  background: '#fff', color: CHAR,
+                  fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 700,
+                  border: 'none', borderRadius: 10, cursor: 'pointer',
+                  transition: 'opacity 0.18s ease',
+                }}
+                onMouseEnter={e => ((e.currentTarget as HTMLElement).style.opacity = '0.85')}
                 onMouseLeave={e => ((e.currentTarget as HTMLElement).style.opacity = '1')}
               >
                 Apply for This Mortgage
               </button>
             </div>
+
           </div>
         </div>
       </section>
 
-      {/* Eligibility Checker */}
-      <section className="section" style={{ background: 'var(--white-section)' }}>
-        <div className="container" style={{ maxWidth: 640 }}>
-          <div style={{ textAlign: 'center', marginBottom: 40 }} data-reveal>
-            <h2 style={{ fontFamily: 'var(--font)', fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', fontWeight: 700, color: 'var(--heading)', marginBottom: 12 }}>
-              Eligibility Checker
-            </h2>
-            <p style={{ fontSize: '0.9375rem', color: 'var(--body)' }}>Based on 50% debt-to-income ratio and 80% LTV at 4.5% over 25 years.</p>
-          </div>
-          <div data-reveal style={{ background: 'var(--white)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', padding: 'clamp(24px, 4vw, 40px)' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 24 }}>
-              <div>
-                <label style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--heading)', display: 'block', marginBottom: 8 }}>Monthly Income (AED)</label>
-                <input type="number" placeholder="e.g. 30000" value={income} onChange={e => setIncome(e.target.value)}
-                  style={{ width: '100%', padding: '10px 12px', borderRadius: 'var(--radius-btn)', border: '1px solid var(--border)', fontFamily: 'var(--font)', fontSize: '0.875rem', color: 'var(--heading)', outline: 'none', boxSizing: 'border-box' }} />
+      {/* ── Contact form ── */}
+      <section id="mortgage-form" style={{ background: '#fff', paddingBlock: 64 }}>
+        <div className="container" style={{ maxWidth: 460 }}>
+          {sent ? (
+            <div style={{ textAlign: 'center' }}>
+              <div style={{
+                width: 52, height: 52, borderRadius: '50%',
+                background: CHAR, display: 'flex',
+                alignItems: 'center', justifyContent: 'center',
+                margin: '0 auto 20px',
+              }}>
+                <svg width="20" height="15" viewBox="0 0 22 16" fill="none">
+                  <path d="M2 8l6 6L20 2" stroke={GOLD} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
               </div>
-              <div>
-                <label style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--heading)', display: 'block', marginBottom: 8 }}>Monthly Obligations (AED)</label>
-                <input type="number" placeholder="e.g. 5000" value={obligations} onChange={e => setObligations(e.target.value)}
-                  style={{ width: '100%', padding: '10px 12px', borderRadius: 'var(--radius-btn)', border: '1px solid var(--border)', fontFamily: 'var(--font)', fontSize: '0.875rem', color: 'var(--heading)', outline: 'none', boxSizing: 'border-box' }} />
-              </div>
-            </div>
-            {eligibility ? (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                <div style={{ textAlign: 'center', background: 'var(--white-section)', borderRadius: 'var(--radius-md)', padding: '20px 16px', border: '1px solid var(--border)' }}>
-                  <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Max Loan</div>
-                  <div style={{ fontFamily: 'var(--font)', fontSize: '1.375rem', fontWeight: 700, color: 'var(--navy)' }}>{formatAED(eligibility.maxLoan)}</div>
-                </div>
-                <div style={{ textAlign: 'center', background: 'var(--navy)', borderRadius: 'var(--radius-md)', padding: '20px 16px' }}>
-                  <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.60)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Max Property Value</div>
-                  <div style={{ fontFamily: 'var(--font)', fontSize: '1.375rem', fontWeight: 700, color: 'var(--gold)' }}>{formatAED(eligibility.maxProperty)}</div>
-                </div>
-              </div>
-            ) : (
-              <div style={{ textAlign: 'center', padding: '20px 0', color: 'var(--muted)', fontSize: '0.875rem' }}>
-                Enter your income above to see your eligibility estimate.
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* Partner Lenders */}
-      <section className="section" style={{ background: 'var(--white)' }}>
-        <div className="container">
-          <div style={{ textAlign: 'center', marginBottom: 36 }} data-reveal>
-            <h2 style={{ fontFamily: 'var(--font)', fontSize: '1.5rem', fontWeight: 700, color: 'var(--heading)', marginBottom: 8 }}>Our Lending Partners</h2>
-            <p style={{ fontSize: '0.9375rem', color: 'var(--body)' }}>We work with UAE&apos;s leading banks to secure the best mortgage rates for our clients.</p>
-          </div>
-          <div data-reveal style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 16 }}>
-            {LENDERS.map(lender => (
-              <div key={lender} style={{ padding: '12px 24px', border: '1px solid var(--border)', borderRadius: 'var(--radius-btn)', fontFamily: 'var(--font)', fontSize: '0.9375rem', fontWeight: 600, color: 'var(--heading)', background: 'var(--white)' }}>
-                {lender}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Consultation form */}
-      <section id="mortgage-form" className="section" style={{ background: 'var(--navy)' }}>
-        <div className="container" style={{ maxWidth: 560 }}>
-          {submitted ? (
-            <div style={{ textAlign: 'center', color: '#fff' }}>
-              <div style={{ fontSize: '2rem', marginBottom: 16 }}>✓</div>
-              <h2 style={{ fontFamily: 'var(--font)', fontSize: '1.5rem', fontWeight: 700, color: '#fff', marginBottom: 8 }}>We&apos;ll be in touch!</h2>
-              <p style={{ color: 'rgba(255,255,255,0.70)' }}>Our mortgage specialist will contact you within 24 hours.</p>
+              <h2 style={{ fontFamily: 'var(--font)', fontSize: '1.5rem', fontWeight: 700, color: 'var(--heading)', marginBottom: 8 }}>
+                We&apos;ll be in touch!
+              </h2>
+              <p style={{ color: 'var(--muted)', lineHeight: 1.7 }}>
+                Our mortgage specialist will contact you within 24 hours.
+              </p>
             </div>
           ) : (
             <>
-              <div style={{ textAlign: 'center', marginBottom: 36 }}>
-                <h2 style={{ fontFamily: 'var(--font)', fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', fontWeight: 700, color: '#fff', marginBottom: 12 }}>
-                  Book a Free Mortgage Consultation
+              <div style={{ textAlign: 'center', marginBottom: 32 }}>
+                <span style={{
+                  display: 'inline-block', marginBottom: 10,
+                  fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.14em',
+                  textTransform: 'uppercase', color: '#999',
+                }}>
+                  Free Consultation
+                </span>
+                <h2 style={{ fontFamily: 'var(--font)', fontSize: 'clamp(1.375rem,2.5vw,1.875rem)', fontWeight: 700, color: 'var(--heading)', marginBottom: 8 }}>
+                  Speak with a Mortgage Advisor
                 </h2>
-                <p style={{ fontSize: '0.9375rem', color: 'rgba(255,255,255,0.70)' }}>Speak with our expert mortgage advisors — no obligation.</p>
+                <p style={{ fontSize: '0.9rem', color: 'var(--muted)', lineHeight: 1.7 }}>
+                  No obligation — expert guidance tailored to your situation.
+                </p>
               </div>
               <form onSubmit={async e => {
                 e.preventDefault();
-                const payload = { ...formData, message: `Mortgage consultation request. Property price: ${formatAED(propertyPrice)}, Down: ${downPaymentPct}%, Rate: ${interestRate}%, Term: ${loanTerm}yr`, type: 'mortgage' };
-                await fetch('/api/enquire', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).catch(() => null);
-                setSubmitted(true);
+                const msg = `Mortgage enquiry — Price: ${fmt(price)}, Down: ${downPct}%, Rate: ${rate}%, Term: ${term}yr, Monthly: ${fmt(monthly)}`;
+                await fetch('/api/enquire', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ ...form, message: msg, type: 'mortgage' }),
+                }).catch(() => null);
+                setSent(true);
               }}>
-                {[{ name: 'name', label: 'Full Name', type: 'text', placeholder: 'Your name' }, { name: 'email', label: 'Email', type: 'email', placeholder: 'Your email' }, { name: 'phone', label: 'Phone', type: 'tel', placeholder: '+971 50 000 0000' }].map(f => (
+                {[
+                  { name: 'name',  label: 'Full Name', type: 'text',  ph: 'Your name'        },
+                  { name: 'email', label: 'Email',     type: 'email', ph: 'your@email.com'    },
+                  { name: 'phone', label: 'Phone',     type: 'tel',   ph: '+971 50 000 0000'  },
+                ].map(f => (
                   <div key={f.name} style={{ marginBottom: 16 }}>
-                    <label style={{ fontSize: '0.875rem', fontWeight: 600, color: 'rgba(255,255,255,0.80)', display: 'block', marginBottom: 8 }}>{f.label}</label>
-                    <input type={f.type} placeholder={f.placeholder} required value={formData[f.name as keyof typeof formData]} onChange={e => setFormData(d => ({ ...d, [f.name]: e.target.value }))}
-                      style={{ width: '100%', padding: '12px 14px', borderRadius: 'var(--radius-btn)', border: '1px solid rgba(255,255,255,0.20)', background: 'rgba(255,255,255,0.08)', fontFamily: 'var(--font)', fontSize: '0.875rem', color: '#fff', outline: 'none', boxSizing: 'border-box' }} />
+                    <label style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--heading)', display: 'block', marginBottom: 7 }}>
+                      {f.label}
+                    </label>
+                    <input
+                      type={f.type} placeholder={f.ph} required
+                      value={form[f.name as keyof typeof form]}
+                      onChange={e => setForm(d => ({ ...d, [f.name]: e.target.value }))}
+                      style={{
+                        width: '100%', padding: '11px 14px',
+                        borderRadius: 10,
+                        border: '1.5px solid #ddd9d3',
+                        background: '#fff',
+                        fontFamily: 'var(--font)', fontSize: '0.9375rem',
+                        color: 'var(--heading)', outline: 'none',
+                        boxSizing: 'border-box',
+                        transition: 'border-color 0.2s ease',
+                      }}
+                      onFocus={e => ((e.currentTarget as HTMLElement).style.borderColor = '#333')}
+                      onBlur={e  => ((e.currentTarget as HTMLElement).style.borderColor = '#ddd9d3')}
+                    />
                   </div>
                 ))}
-                <button type="submit" style={{ width: '100%', padding: '14px', background: 'var(--gold)', color: 'var(--heading)', fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 700, border: 'none', borderRadius: 'var(--radius-btn)', cursor: 'pointer', marginTop: 8 }}>
-                  Book Consultation
+                <button
+                  type="submit"
+                  style={{
+                    width: '100%', padding: '13px', marginTop: 6,
+                    background: '#111', color: '#fff',
+                    fontFamily: 'var(--font)', fontSize: '0.9375rem', fontWeight: 700,
+                    border: 'none', borderRadius: 10, cursor: 'pointer',
+                    transition: 'opacity 0.18s ease',
+                  }}
+                  onMouseEnter={e => ((e.currentTarget as HTMLElement).style.opacity = '0.88')}
+                  onMouseLeave={e => ((e.currentTarget as HTMLElement).style.opacity = '1')}
+                >
+                  Book Free Consultation
                 </button>
               </form>
             </>
@@ -278,18 +364,56 @@ export default function MortgagePage() {
       <Footer />
 
       <style jsx global>{`
-        .mlx-slider { -webkit-appearance: none; appearance: none; height: 4px; background: var(--border); border-radius: 2px; outline: none; cursor: pointer; }
-        .mlx-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--gold); border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.15); cursor: pointer; }
-        .mlx-slider::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: var(--gold); border: 2px solid #fff; cursor: pointer; }
-      `}</style>
-      <style jsx>{`
-        [data-reveal] { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
-        [data-reveal].revealed { opacity: 1; transform: translateY(0); }
-        @media (max-width: 768px) {
-          .calc-grid { grid-template-columns: 1fr !important; }
+        .mlx-slider {
+          -webkit-appearance: none;
+          appearance: none;
+          height: 6px;
+          border-radius: 3px;
+          outline: none;
+          cursor: pointer;
+          background: linear-gradient(
+            to right,
+            #555 var(--fill, 40%),
+            #e8e5e0 var(--fill, 40%)
+          );
         }
-        input[type=number]::placeholder { color: var(--muted); }
-        input[type=text]::placeholder, input[type=email]::placeholder, input[type=tel]::placeholder { color: rgba(255,255,255,0.40); }
+        .mlx-slider::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          width: 20px; height: 20px;
+          border-radius: 50%;
+          background: #fff;
+          border: 2.5px solid #555;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+          cursor: pointer;
+          transition: transform 0.15s ease, background 0.15s ease;
+        }
+        .mlx-slider::-webkit-slider-thumb:hover {
+          background: #555;
+          transform: scale(1.18);
+        }
+        .mlx-slider:active::-webkit-slider-thumb {
+          transform: scale(1.08);
+        }
+        .mlx-slider::-moz-range-thumb {
+          width: 20px; height: 20px;
+          border-radius: 50%;
+          border: 2.5px solid #555;
+          background: #fff;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+          cursor: pointer;
+        }
+
+        @media (max-width: 860px) {
+          .mc-grid { grid-template-columns: 1fr !important; }
+        }
+        @media (max-width: 560px) {
+          .mc-sliders { grid-template-columns: 1fr !important; }
+        }
+
+        input::placeholder { color: #c4bfb8; }
+        input[type=number]::-webkit-outer-spin-button,
+        input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
+        input[type=number] { -moz-appearance: textfield; }
       `}</style>
     </>
   );

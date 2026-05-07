@@ -66,17 +66,17 @@ export default function PropertyBrochureDownload({ listingId, listingName, broch
     }}>
       {/* Header */}
       <div style={{
-        background: 'linear-gradient(135deg, #152140 0%, #1B3079 100%)',
+        background: 'linear-gradient(135deg, #1a1815 0%, #2d2a26 100%)',
         padding: '20px 24px',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-            <path d="M3 2h8l4 4v10a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="#D5BA8C" strokeWidth="1.4" strokeLinejoin="round"/>
-            <path d="M11 2v4h4" stroke="#D5BA8C" strokeWidth="1.4" strokeLinejoin="round"/>
-            <line x1="5" y1="9" x2="13" y2="9" stroke="#D5BA8C" strokeWidth="1.4" strokeLinecap="round"/>
-            <line x1="5" y1="12" x2="10" y2="12" stroke="#D5BA8C" strokeWidth="1.4" strokeLinecap="round"/>
+            <path d="M3 2h8l4 4v10a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="#fff" strokeWidth="1.4" strokeLinejoin="round"/>
+            <path d="M11 2v4h4" stroke="#fff" strokeWidth="1.4" strokeLinejoin="round"/>
+            <line x1="5" y1="9" x2="13" y2="9" stroke="#fff" strokeWidth="1.4" strokeLinecap="round"/>
+            <line x1="5" y1="12" x2="10" y2="12" stroke="#fff" strokeWidth="1.4" strokeLinecap="round"/>
           </svg>
-          <span style={{ fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 700, color: '#D5BA8C', letterSpacing: '0.03em' }}>
+          <span style={{ fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 700, color: '#fff', letterSpacing: '0.03em' }}>
             Download Brochure
           </span>
         </div>
@@ -94,10 +94,10 @@ export default function PropertyBrochureDownload({ listingId, listingName, broch
       }}>
         <div style={{
           width: 44, height: 44, borderRadius: '50%',
-          background: 'linear-gradient(135deg, #1B3079, #152140)',
+          background: 'linear-gradient(135deg, #1a1815, #2d2a26)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           flexShrink: 0,
-        }}><Building2 size={20} strokeWidth={1.5} color="#D5BA8C" /></div>
+        }}><Building2 size={20} strokeWidth={1.5} color="#fff" /></div>
         <div>
           <div style={{ fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600, color: 'var(--heading)' }}>
             Macins Luxe Team
@@ -131,7 +131,7 @@ export default function PropertyBrochureDownload({ listingId, listingName, broch
               style={{
                 display: 'inline-block',
                 fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600,
-                color: '#fff', background: '#1B3079',
+                color: '#fff', background: '#111',
                 borderRadius: 8, padding: '10px 20px',
                 textDecoration: 'none',
               }}
@@ -178,15 +178,15 @@ export default function PropertyBrochureDownload({ listingId, listingName, broch
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 fontFamily: 'var(--font)', fontSize: '0.9375rem', fontWeight: 600,
                 color: '#fff',
-                background: loading || !email.trim() ? 'rgba(27,48,121,0.45)' : '#1B3079',
+                background: loading || !email.trim() ? 'rgba(0,0,0,0.25)' : '#111',
                 border: 'none', borderRadius: 8,
                 padding: '13px',
                 cursor: loading || !email.trim() ? 'not-allowed' : 'pointer',
                 transition: 'background 0.2s',
                 width: '100%',
               }}
-              onMouseEnter={e => { if (!loading && email.trim()) e.currentTarget.style.background = '#152567' }}
-              onMouseLeave={e => { e.currentTarget.style.background = loading || !email.trim() ? 'rgba(27,48,121,0.45)' : '#1B3079' }}
+              onMouseEnter={e => { if (!loading && email.trim()) (e.currentTarget as HTMLElement).style.opacity = '0.85' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '1' }}
             >
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <path d="M8 1v9M5 7l3 3 3-3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
@@ -239,7 +239,7 @@ function BrochureInput({
           borderRadius: 8, padding: '11px 12px 11px 34px',
           outline: 'none', transition: 'border-color 0.2s',
         }}
-        onFocus={e => (e.currentTarget.style.borderColor = '#1B3079')}
+        onFocus={e => (e.currentTarget.style.borderColor = '#333')}
         onBlur={e => (e.currentTarget.style.borderColor = 'var(--border)')}
       />
     </div>

@@ -78,10 +78,10 @@ export default function CareersPage() {
       {/* Hero */}
       <section style={{ position: 'relative', minHeight: 480, display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
         <CinemaImage cinema priority src="/images/hero/img106.jpg" alt="Careers at Macins Luxe" fill sizes="100vw" style={{ objectFit: 'cover' }} />
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(3,33,61,0.90) 0%, rgba(3,33,61,0.55) 60%, rgba(3,33,61,0.20) 100%)' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.50) 60%, rgba(0,0,0,0.18) 100%)' }} />
         <div style={{ position: 'relative', zIndex: 1, width: '100%', padding: 'clamp(72px, 10vw, 100px) var(--gutter-lg)' }}>
           <div className="container" style={{ maxWidth: 620 }}>
-            <span style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--gold)', display: 'block', marginBottom: 16 }}>
+            <span style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)', display: 'block', marginBottom: 16 }}>
               Join Our Team
             </span>
             <h1 style={{ fontFamily: 'var(--font)', fontSize: 'clamp(2rem, 4.5vw, 3.5rem)', fontWeight: 700, lineHeight: 1.12, letterSpacing: '-0.025em', color: '#fff', marginBottom: 20 }}>
@@ -102,7 +102,7 @@ export default function CareersPage() {
         <div className="container">
           <div className="culture-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 56, alignItems: 'center' }}>
             <div data-reveal>
-              <span style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--gold)', display: 'block', marginBottom: 16 }}>
+              <span style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#999', display: 'block', marginBottom: 16 }}>
                 Our Culture
               </span>
               <h2 style={{ fontFamily: 'var(--font)', fontSize: 'clamp(1.75rem, 2.5vw, 2.25rem)', fontWeight: 700, lineHeight: 1.2, letterSpacing: '-0.02em', color: 'var(--heading)', marginBottom: 20 }}>
@@ -140,7 +140,7 @@ export default function CareersPage() {
                 onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-4px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 12px 32px rgba(26,37,53,0.10)'; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 2px 8px rgba(26,37,53,0.05)'; }}
               >
-                <div style={{ color: 'var(--gold)', marginBottom: 16, display: 'flex', justifyContent: 'center' }}>{item.icon}</div>
+                <div style={{ color: '#555', marginBottom: 16, display: 'flex', justifyContent: 'center' }}>{item.icon}</div>
                 <h3 style={{ fontFamily: 'var(--font)', fontSize: '1rem', fontWeight: 700, color: 'var(--heading)', marginBottom: 10 }}>{item.title}</h3>
                 <p style={{ fontSize: '0.875rem', lineHeight: 1.65, color: 'var(--body)' }}>{item.desc}</p>
               </div>
@@ -186,7 +186,7 @@ export default function CareersPage() {
                       <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
                         {pos.requirements.map(r => (
                           <li key={r} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: '0.875rem', color: 'var(--body)' }}>
-                            <span style={{ color: 'var(--gold)', fontWeight: 700, flexShrink: 0 }}>·</span>
+                            <span style={{ color: '#aaa', fontWeight: 700, flexShrink: 0 }}>·</span>
                             {r}
                           </li>
                         ))}
@@ -194,7 +194,7 @@ export default function CareersPage() {
                     </div>
                     <button
                       onClick={() => { setSelectedRole(pos.title); document.getElementById('apply')?.scrollIntoView({ behavior: 'smooth' }); }}
-                      style={{ fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600, color: '#fff', background: 'var(--navy)', borderRadius: 'var(--radius-btn)', padding: '12px 24px', border: 'none', cursor: 'pointer' }}
+                      style={{ fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600, color: '#fff', background: '#111', borderRadius: 'var(--radius-btn)', padding: '12px 24px', border: 'none', cursor: 'pointer' }}
                     >
                       Apply for this Role
                     </button>
@@ -207,54 +207,62 @@ export default function CareersPage() {
       </section>
 
       {/* Apply Form */}
-      <section id="apply" className="section" style={{ background: 'var(--navy)' }}>
+      <section id="apply" className="section" style={{ background: '#f5f3f0' }}>
         <div className="container" style={{ maxWidth: 640 }}>
           {submitted ? (
-            <div style={{ textAlign: 'center', color: '#fff' }}>
-              <div style={{ fontFamily: 'var(--font)', fontSize: '2rem', fontWeight: 700, color: 'var(--gold)', marginBottom: 16 }}>Application Received</div>
-              <p style={{ fontSize: '0.9375rem', color: 'rgba(255,255,255,0.75)' }}>Thank you for applying. Our HR team will review your application and be in touch within 5 business days.</p>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontFamily: 'var(--font)', fontSize: '2rem', fontWeight: 700, color: '#111', marginBottom: 16 }}>Application Received</div>
+              <p style={{ fontSize: '0.9375rem', color: 'var(--muted)' }}>Thank you for applying. Our HR team will review your application and be in touch within 5 business days.</p>
             </div>
           ) : (
             <>
               <div style={{ textAlign: 'center', marginBottom: 36 }}>
-                <h2 style={{ fontFamily: 'var(--font)', fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', fontWeight: 700, color: '#fff', marginBottom: 12 }}>Apply Now</h2>
-                <p style={{ fontSize: '0.9375rem', color: 'rgba(255,255,255,0.70)' }}>Take the first step toward your next career move.</p>
+                <h2 style={{ fontFamily: 'var(--font)', fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', fontWeight: 700, color: 'var(--heading)', marginBottom: 12 }}>Apply Now</h2>
+                <p style={{ fontSize: '0.9375rem', color: 'var(--muted)' }}>Take the first step toward your next career move.</p>
               </div>
-              <form onSubmit={async e => {
-                e.preventDefault();
-                await fetch('/api/enquire', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...formData, type: 'career', role: selectedRole }) }).catch(() => null);
-                setSubmitted(true);
-              }}>
-                {[
-                  { name: 'name', label: 'Full Name', type: 'text', placeholder: 'Your name' },
-                  { name: 'email', label: 'Email', type: 'email', placeholder: 'Your email' },
-                  { name: 'phone', label: 'Phone', type: 'tel', placeholder: '+971 50 000 0000' },
-                  { name: 'linkedin', label: 'LinkedIn URL', type: 'url', placeholder: 'https://linkedin.com/in/your-profile' },
-                ].map(f => (
-                  <div key={f.name} style={{ marginBottom: 16 }}>
-                    <label style={{ fontSize: '0.875rem', fontWeight: 600, color: 'rgba(255,255,255,0.80)', display: 'block', marginBottom: 8 }}>{f.label}</label>
-                    <input type={f.type} placeholder={f.placeholder} value={formData[f.name as keyof typeof formData]} onChange={e => setFormData(d => ({ ...d, [f.name]: e.target.value }))}
-                      required={f.name !== 'linkedin'}
-                      style={{ width: '100%', padding: '12px 14px', borderRadius: 'var(--radius-btn)', border: '1px solid rgba(255,255,255,0.20)', background: 'rgba(255,255,255,0.08)', fontFamily: 'var(--font)', fontSize: '0.875rem', color: '#fff', outline: 'none', boxSizing: 'border-box' }} />
+              <div style={{ background: '#fff', borderRadius: 16, boxShadow: '0 2px 20px rgba(0,0,0,0.07)', padding: '32px 28px' }}>
+                <form onSubmit={async e => {
+                  e.preventDefault();
+                  await fetch('/api/enquire', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...formData, type: 'career', role: selectedRole }) }).catch(() => null);
+                  setSubmitted(true);
+                }}>
+                  {[
+                    { name: 'name', label: 'Full Name', type: 'text', placeholder: 'Your name' },
+                    { name: 'email', label: 'Email', type: 'email', placeholder: 'Your email' },
+                    { name: 'phone', label: 'Phone', type: 'tel', placeholder: '+971 50 000 0000' },
+                    { name: 'linkedin', label: 'LinkedIn URL', type: 'url', placeholder: 'https://linkedin.com/in/your-profile' },
+                  ].map(f => (
+                    <div key={f.name} style={{ marginBottom: 16 }}>
+                      <label style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--heading)', display: 'block', marginBottom: 8 }}>{f.label}</label>
+                      <input type={f.type} placeholder={f.placeholder} value={formData[f.name as keyof typeof formData]} onChange={e => setFormData(d => ({ ...d, [f.name]: e.target.value }))}
+                        required={f.name !== 'linkedin'}
+                        style={{ width: '100%', padding: '12px 14px', borderRadius: 'var(--radius-btn)', border: '1px solid var(--border)', background: '#fff', fontFamily: 'var(--font)', fontSize: '0.875rem', color: 'var(--heading)', outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.2s' }}
+                        onFocus={e => (e.currentTarget.style.borderColor = '#333')}
+                        onBlur={e => (e.currentTarget.style.borderColor = 'var(--border)')} />
+                    </div>
+                  ))}
+                  <div style={{ marginBottom: 16 }}>
+                    <label style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--heading)', display: 'block', marginBottom: 8 }}>Role of Interest</label>
+                    <select value={selectedRole} onChange={e => setSelectedRole(e.target.value)} required
+                      style={{ width: '100%', padding: '12px 14px', borderRadius: 'var(--radius-btn)', border: '1px solid var(--border)', background: '#fff', fontFamily: 'var(--font)', fontSize: '0.875rem', color: 'var(--heading)', outline: 'none', boxSizing: 'border-box' }}>
+                      <option value="">Select a role</option>
+                      {POSITIONS.map(p => <option key={p.id} value={p.title}>{p.title} — {p.location}</option>)}
+                    </select>
                   </div>
-                ))}
-                <div style={{ marginBottom: 16 }}>
-                  <label style={{ fontSize: '0.875rem', fontWeight: 600, color: 'rgba(255,255,255,0.80)', display: 'block', marginBottom: 8 }}>Role of Interest</label>
-                  <select value={selectedRole} onChange={e => setSelectedRole(e.target.value)} required
-                    style={{ width: '100%', padding: '12px 14px', borderRadius: 'var(--radius-btn)', border: '1px solid rgba(255,255,255,0.20)', background: 'rgba(255,255,255,0.08)', fontFamily: 'var(--font)', fontSize: '0.875rem', color: '#fff', outline: 'none', boxSizing: 'border-box' }}>
-                    <option value="" style={{ color: '#000' }}>Select a role</option>
-                    {POSITIONS.map(p => <option key={p.id} value={p.title} style={{ color: '#000' }}>{p.title} — {p.location}</option>)}
-                  </select>
-                </div>
-                <div style={{ marginBottom: 20 }}>
-                  <label style={{ fontSize: '0.875rem', fontWeight: 600, color: 'rgba(255,255,255,0.80)', display: 'block', marginBottom: 8 }}>Cover Message</label>
-                  <textarea rows={4} placeholder="Tell us why you'd be a great fit..." value={formData.message} onChange={e => setFormData(d => ({ ...d, message: e.target.value }))}
-                    style={{ width: '100%', padding: '12px 14px', borderRadius: 'var(--radius-btn)', border: '1px solid rgba(255,255,255,0.20)', background: 'rgba(255,255,255,0.08)', fontFamily: 'var(--font)', fontSize: '0.875rem', color: '#fff', outline: 'none', resize: 'vertical', boxSizing: 'border-box' }} />
-                </div>
-                <button type="submit" style={{ width: '100%', padding: '14px', background: 'var(--gold)', color: 'var(--heading)', fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 700, border: 'none', borderRadius: 'var(--radius-btn)', cursor: 'pointer' }}>
-                  Submit Application
-                </button>
-              </form>
+                  <div style={{ marginBottom: 20 }}>
+                    <label style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--heading)', display: 'block', marginBottom: 8 }}>Cover Message</label>
+                    <textarea rows={4} placeholder="Tell us why you'd be a great fit..." value={formData.message} onChange={e => setFormData(d => ({ ...d, message: e.target.value }))}
+                      style={{ width: '100%', padding: '12px 14px', borderRadius: 'var(--radius-btn)', border: '1px solid var(--border)', background: '#fff', fontFamily: 'var(--font)', fontSize: '0.875rem', color: 'var(--heading)', outline: 'none', resize: 'vertical', boxSizing: 'border-box' }}
+                      onFocus={e => (e.currentTarget.style.borderColor = '#333')}
+                      onBlur={e => (e.currentTarget.style.borderColor = 'var(--border)')} />
+                  </div>
+                  <button type="submit" style={{ width: '100%', padding: '14px', background: '#111', color: '#fff', fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 700, border: 'none', borderRadius: 'var(--radius-btn)', cursor: 'pointer', transition: 'opacity 0.2s' }}
+                    onMouseEnter={e => ((e.currentTarget as HTMLElement).style.opacity = '0.88')}
+                    onMouseLeave={e => ((e.currentTarget as HTMLElement).style.opacity = '1')}>
+                    Submit Application
+                  </button>
+                </form>
+              </div>
             </>
           )}
         </div>

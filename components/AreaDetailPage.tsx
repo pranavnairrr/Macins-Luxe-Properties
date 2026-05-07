@@ -39,7 +39,7 @@ export default function AreaDetailPage({ area, listings }: { area: AreaData; lis
       {/* Full-bleed hero */}
       <section style={{ position: 'relative', height: '60vh', minHeight: 400, overflow: 'hidden', display: 'flex', alignItems: 'flex-end' }}>
         <CinemaImage cinema priority src={area.heroImage} alt={area.name} fill sizes="100vw" style={{ objectFit: 'cover' }} />
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(3,33,61,0.85) 0%, rgba(3,33,61,0.30) 50%, transparent 80%)' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.80) 0%, rgba(0,0,0,0.25) 50%, transparent 80%)' }} />
         <div style={{ position: 'relative', zIndex: 1, width: '100%', padding: 'clamp(32px, 5vw, 56px) var(--gutter-lg)' }}>
           <div className="container">
             <nav style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.8125rem', color: 'rgba(255,255,255,0.55)', marginBottom: 16 }}>
@@ -58,7 +58,7 @@ export default function AreaDetailPage({ area, listings }: { area: AreaData; lis
               </div>
               {listings.length > 0 && (
                 <div style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.20)', borderRadius: 'var(--radius-btn)', padding: '8px 16px', fontSize: '0.875rem', fontWeight: 600, color: '#fff', display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--gold)', display: 'inline-block' }} />
+                  <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#fff', display: 'inline-block' }} />
                   {listings.length} Properties Available
                 </div>
               )}
@@ -84,7 +84,7 @@ export default function AreaDetailPage({ area, listings }: { area: AreaData; lis
                 ))}
               </div>
             </div>
-            <div data-reveal style={{ background: 'var(--navy)', borderRadius: 'var(--radius-md)', padding: '28px 24px', color: '#fff' }}>
+            <div data-reveal style={{ background: '#111', borderRadius: 'var(--radius-md)', padding: '28px 24px', color: '#fff' }}>
               <div style={{ fontFamily: 'var(--font)', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.50)', marginBottom: 20 }}>
                 Area Statistics
               </div>
@@ -98,7 +98,7 @@ export default function AreaDetailPage({ area, listings }: { area: AreaData; lis
                   <div style={{ fontFamily: 'var(--font)', fontSize: '1rem', fontWeight: 600, color: '#fff' }}>{stat.value}</div>
                 </div>
               ))}
-              <Link href={`/properties?area=${encodeURIComponent(area.name)}`} style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600, color: 'var(--heading)', background: 'var(--gold)', borderRadius: 'var(--radius-btn)', padding: '12px', textDecoration: 'none', marginTop: 8, transition: 'opacity 0.2s' }}
+              <Link href={`/properties?area=${encodeURIComponent(area.name)}`} style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600, color: '#fff', background: 'rgba(255,255,255,0.15)', borderRadius: 'var(--radius-btn)', padding: '12px', textDecoration: 'none', marginTop: 8, transition: 'opacity 0.2s', border: '1px solid rgba(255,255,255,0.25)' }}
                 onMouseEnter={e => ((e.currentTarget as HTMLElement).style.opacity = '0.88')}
                 onMouseLeave={e => ((e.currentTarget as HTMLElement).style.opacity = '1')}
               >
@@ -137,7 +137,7 @@ export default function AreaDetailPage({ area, listings }: { area: AreaData; lis
                     <div style={{ padding: '16px 20px 20px' }}>
                       <h3 style={{ fontFamily: 'var(--font)', fontSize: '0.9375rem', fontWeight: 600, color: 'var(--heading)', marginBottom: 4 }}>{listing.title}</h3>
                       <div style={{ fontSize: '0.8125rem', color: 'var(--muted)', marginBottom: 10 }}>{listing.location}</div>
-                      <div style={{ fontFamily: 'var(--font)', fontSize: '1rem', fontWeight: 700, color: 'var(--navy)' }}>{listing.price}</div>
+                      <div style={{ fontFamily: 'var(--font)', fontSize: '1rem', fontWeight: 700, color: 'var(--heading)' }}>{listing.price}</div>
                     </div>
                   </article>
                 </Link>
@@ -146,7 +146,7 @@ export default function AreaDetailPage({ area, listings }: { area: AreaData; lis
           ) : (
             <div style={{ background: 'var(--white)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', padding: '48px 32px', textAlign: 'center' }}>
               <p style={{ fontSize: '0.9375rem', color: 'var(--body)', marginBottom: 20 }}>No listed properties in {area.name} right now. Contact us for off-market opportunities.</p>
-              <Link href="/contact" style={{ fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600, color: '#fff', background: 'var(--navy)', borderRadius: 'var(--radius-btn)', padding: '12px 24px', textDecoration: 'none' }}>
+              <Link href="/contact" style={{ fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600, color: '#fff', background: '#111', borderRadius: 'var(--radius-btn)', padding: '12px 24px', textDecoration: 'none' }}>
                 Contact Us
               </Link>
             </div>
@@ -181,7 +181,7 @@ export default function AreaDetailPage({ area, listings }: { area: AreaData; lis
                     onMouseLeave={e => ((e.currentTarget as HTMLElement).style.transform = 'translateY(0)')}
                   >
                     <Image src={nearby.image} alt={nearby.name} fill sizes="220px" style={{ objectFit: 'cover' }} />
-                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(3,33,61,0.75) 0%, transparent 60%)' }} />
+                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.72) 0%, transparent 60%)' }} />
                     <div style={{ position: 'absolute', bottom: 12, left: 14 }}>
                       <div style={{ fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600, color: '#fff' }}>{nearby.name}</div>
                     </div>

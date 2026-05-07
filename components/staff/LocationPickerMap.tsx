@@ -50,7 +50,7 @@ export default function LocationPickerMap({ lat, lng, onChange }: Props) {
         className: '',
         html: `<div style="
           width:32px;height:32px;border-radius:50% 50% 50% 0;
-          background:#1B3079;border:3px solid #D5BA8C;
+          background:#111;border:3px solid rgba(255,255,255,0.25);
           transform:rotate(-45deg);box-shadow:0 2px 8px rgba(0,0,0,0.35);
         "></div>`,
         iconSize: [32, 32],
@@ -106,7 +106,7 @@ export default function LocationPickerMap({ lat, lng, onChange }: Props) {
       } else {
         const icon = L.divIcon({
           className: '',
-          html: `<div style="width:32px;height:32px;border-radius:50% 50% 50% 0;background:#1B3079;border:3px solid #D5BA8C;transform:rotate(-45deg);box-shadow:0 2px 8px rgba(0,0,0,0.35);"></div>`,
+          html: `<div style="width:32px;height:32px;border-radius:50% 50% 50% 0;background:#111;border:3px solid rgba(255,255,255,0.25);transform:rotate(-45deg);box-shadow:0 2px 8px rgba(0,0,0,0.35);"></div>`,
           iconSize: [32, 32], iconAnchor: [16, 32],
         })
         markerRef.current = L.marker([parsedLat, parsedLng], { icon, draggable: true }).addTo(mapRef.current)
@@ -167,7 +167,7 @@ export default function LocationPickerMap({ lat, lng, onChange }: Props) {
           disabled={searching}
           style={{
             fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600,
-            color: '#fff', background: '#1B3079', border: 'none',
+            color: '#fff', background: '#111', border: 'none',
             borderRadius: 6, padding: '9px 16px', cursor: searching ? 'wait' : 'pointer',
             whiteSpace: 'nowrap',
           }}

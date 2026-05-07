@@ -71,7 +71,7 @@ export default function ContactPage({ companyInfo }: Props) {
       <Nav />
 
       {/* Page Hero */}
-      <section style={{ background: 'var(--navy)', paddingTop: 72 + 56, paddingBottom: 56 }}>
+      <section style={{ background: '#111', paddingTop: 72 + 56, paddingBottom: 56 }}>
         <div className="container">
           <p style={{ fontSize: '0.8125rem', color: 'rgba(255,255,255,0.5)', marginBottom: 8 }}>
             <Link href="/" style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none' }}>Home</Link> &nbsp;/&nbsp; Contact Us
@@ -111,13 +111,13 @@ export default function ContactPage({ companyInfo }: Props) {
                     <div>
                       <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 600, color: 'var(--heading)', marginBottom: 6 }}>Full Name *</label>
                       <input value={name} onChange={e => setName(e.target.value)} placeholder="John Smith" required style={inputStyle}
-                        onFocus={e => (e.target.style.borderColor = 'var(--navy)')}
+                        onFocus={e => (e.target.style.borderColor = '#333')}
                         onBlur={e => (e.target.style.borderColor = 'var(--border)')} />
                     </div>
                     <div>
                       <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 600, color: 'var(--heading)', marginBottom: 6 }}>Email Address *</label>
                       <input value={email} onChange={e => setEmail(e.target.value)} type="email" placeholder="john@email.com" required style={inputStyle}
-                        onFocus={e => (e.target.style.borderColor = 'var(--navy)')}
+                        onFocus={e => (e.target.style.borderColor = '#333')}
                         onBlur={e => (e.target.style.borderColor = 'var(--border)')} />
                     </div>
                   </div>
@@ -125,13 +125,13 @@ export default function ContactPage({ companyInfo }: Props) {
                     <div>
                       <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 600, color: 'var(--heading)', marginBottom: 6 }}>Phone / WhatsApp *</label>
                       <input value={phone} onChange={e => setPhone(e.target.value)} type="tel" placeholder="+971 50 000 0000" required style={inputStyle}
-                        onFocus={e => (e.target.style.borderColor = 'var(--navy)')}
+                        onFocus={e => (e.target.style.borderColor = '#333')}
                         onBlur={e => (e.target.style.borderColor = 'var(--border)')} />
                     </div>
                     <div>
                       <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 600, color: 'var(--heading)', marginBottom: 6 }}>I&apos;m Interested In</label>
                       <select value={interest} onChange={e => setInterest(e.target.value)} style={{ ...inputStyle, cursor: 'pointer' }}
-                        onFocus={e => (e.target.style.borderColor = 'var(--navy)')}
+                        onFocus={e => (e.target.style.borderColor = '#333')}
                         onBlur={e => (e.target.style.borderColor = 'var(--border)')}>
                         {INTEREST_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
                       </select>
@@ -142,7 +142,7 @@ export default function ContactPage({ companyInfo }: Props) {
                     <textarea value={message} onChange={e => setMessage(e.target.value)} rows={4}
                       placeholder="Tell us about your property requirements, budget, preferred locations, or any questions…"
                       style={{ ...inputStyle, resize: 'vertical', minHeight: 110 }}
-                      onFocus={e => (e.target.style.borderColor = 'var(--navy)')}
+                      onFocus={e => (e.target.style.borderColor = '#333')}
                       onBlur={e => (e.target.style.borderColor = 'var(--border)')} />
                   </div>
                   {error && <p style={{ fontSize: '0.875rem', color: '#E8352B' }}>{error}</p>}
@@ -151,7 +151,7 @@ export default function ContactPage({ companyInfo }: Props) {
                     disabled={sending}
                     style={{
                       padding: '14px 32px',
-                      background: '#C9A96E',
+                      background: '#111',
                       color: '#fff',
                       fontFamily: 'var(--font)',
                       fontSize: '1rem',
@@ -179,22 +179,22 @@ export default function ContactPage({ companyInfo }: Props) {
                 </h2>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                   <a href={`tel:${info.phone}`} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, textDecoration: 'none', color: 'var(--body)', fontSize: '0.9375rem' }}>
-                    <Phone size={18} strokeWidth={1.5} color="var(--navy)" style={{ marginTop: 2, flexShrink: 0 }} />
+                    <Phone size={18} strokeWidth={1.5} color="#888" style={{ marginTop: 2, flexShrink: 0 }} />
                     <span>{info.phone}</span>
                   </a>
                   <a href={`mailto:${info.email}`} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, textDecoration: 'none', color: 'var(--body)', fontSize: '0.9375rem' }}>
-                    <Mail size={18} strokeWidth={1.5} color="var(--navy)" style={{ marginTop: 2, flexShrink: 0 }} />
+                    <Mail size={18} strokeWidth={1.5} color="#888" style={{ marginTop: 2, flexShrink: 0 }} />
                     <span>{info.email}</span>
                   </a>
                   <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                    <MapPin size={18} strokeWidth={1.5} color="var(--navy)" style={{ marginTop: 2, flexShrink: 0 }} />
+                    <MapPin size={18} strokeWidth={1.5} color="#888" style={{ marginTop: 2, flexShrink: 0 }} />
                     <div>
                       <p style={{ fontWeight: 600, color: 'var(--heading)', marginBottom: 2, fontSize: '0.875rem' }}>Dubai Office</p>
                       <p style={{ color: 'var(--muted)', fontSize: '0.875rem', lineHeight: 1.55 }}>{info.address_dubai}</p>
                     </div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                    <MapPin size={18} strokeWidth={1.5} color="var(--navy)" style={{ marginTop: 2, flexShrink: 0 }} />
+                    <MapPin size={18} strokeWidth={1.5} color="#888" style={{ marginTop: 2, flexShrink: 0 }} />
                     <div>
                       <p style={{ fontWeight: 600, color: 'var(--heading)', marginBottom: 2, fontSize: '0.875rem' }}>Abu Dhabi Office</p>
                       <p style={{ color: 'var(--muted)', fontSize: '0.875rem', lineHeight: 1.55 }}>{info.address_abudhabi}</p>
@@ -219,7 +219,7 @@ export default function ContactPage({ companyInfo }: Props) {
                         color: 'var(--heading)',
                         transition: 'background 0.2s, border-color 0.2s',
                       }}
-                      onMouseEnter={e => { e.currentTarget.style.background = 'var(--navy)'; e.currentTarget.style.borderColor = 'var(--navy)'; e.currentTarget.style.color = '#fff'; }}
+                      onMouseEnter={e => { e.currentTarget.style.background = '#111'; e.currentTarget.style.borderColor = '#111'; e.currentTarget.style.color = '#fff'; }}
                       onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--heading)'; }}
                     >
                       {svg}

@@ -95,7 +95,7 @@ export default function PropertyDetailPage({ listing }: Props) {
                 padding: '6px 14px', borderRadius: 6,
               }}>{listing.badge}</span>
               <span style={{
-                background: '#1B3079', color: '#D5BA8C',
+                background: 'rgba(0,0,0,0.55)', color: '#fff',
                 fontSize: '0.75rem', fontWeight: 700,
                 padding: '6px 14px', borderRadius: 6,
                 letterSpacing: '0.04em', textTransform: 'uppercase',
@@ -135,7 +135,7 @@ export default function PropertyDetailPage({ listing }: Props) {
                 <button key={i} onClick={() => setActiveImg(i)} style={{
                   flexShrink: 0, width: 80, height: 52, borderRadius: 6,
                   overflow: 'hidden', border: 'none', padding: 0, cursor: 'pointer',
-                  outline: i === activeImg ? '2px solid #D5BA8C' : '2px solid transparent',
+                  outline: i === activeImg ? '2px solid #fff' : '2px solid transparent',
                   outlineOffset: 2, transition: 'outline 0.2s',
                 }}>
                   <Image src={src} alt={`View ${i + 1}`} width={80} height={52}
@@ -154,12 +154,12 @@ export default function PropertyDetailPage({ listing }: Props) {
           {/* Breadcrumb */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24, fontSize: '0.8125rem', color: 'var(--muted)' }}>
             <Link href="/" style={{ color: 'var(--muted)', textDecoration: 'none' }}
-              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = 'var(--navy)')}
+              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = '#111')}
               onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = 'var(--muted)')}
             >Home</Link>
             <span>›</span>
             <Link href="/properties" style={{ color: 'var(--muted)', textDecoration: 'none' }}
-              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = 'var(--navy)')}
+              onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = '#111')}
               onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = 'var(--muted)')}
             >Properties</Link>
             <span>›</span>
@@ -237,7 +237,7 @@ export default function PropertyDetailPage({ listing }: Props) {
                         fontSize: '0.9375rem', color: 'var(--body)', lineHeight: 1.6,
                       }}>
                         <span style={{
-                          width: 6, height: 6, borderRadius: '50%', background: '#D5BA8C',
+                          width: 6, height: 6, borderRadius: '50%', background: '#bbb',
                           marginTop: 8, flexShrink: 0,
                         }} />
                         {h}
@@ -263,7 +263,7 @@ export default function PropertyDetailPage({ listing }: Props) {
                           borderRadius: 8, padding: '10px 14px',
                           fontSize: '0.875rem', color: 'var(--body)', fontWeight: 500,
                         }}>
-                          <AmenityIcon size={16} strokeWidth={1.5} style={{ flexShrink: 0, color: '#1B3079' }} />
+                          <AmenityIcon size={16} strokeWidth={1.5} style={{ flexShrink: 0, color: '#666' }} />
                           {amenity}
                         </div>
                       )
@@ -352,12 +352,12 @@ export default function PropertyDetailPage({ listing }: Props) {
                   style={{
                     width: '100%',
                     fontFamily: 'var(--font)', fontSize: '0.9375rem', fontWeight: 600,
-                    color: '#fff', background: '#1B3079',
+                    color: '#fff', background: '#111',
                     border: 'none', borderRadius: 8, padding: '14px',
-                    cursor: 'pointer', transition: 'background 0.2s', marginBottom: 10,
+                    cursor: 'pointer', transition: 'opacity 0.2s', marginBottom: 10,
                   }}
-                  onMouseEnter={e => (e.currentTarget.style.background = '#152567')}
-                  onMouseLeave={e => (e.currentTarget.style.background = '#1B3079')}
+                  onMouseEnter={e => ((e.currentTarget as HTMLElement).style.opacity = '0.85')}
+                  onMouseLeave={e => ((e.currentTarget as HTMLElement).style.opacity = '1')}
                 >
                   Enquire Now
                 </button>
@@ -430,7 +430,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
       borderBottom: '2px solid var(--border)',
       display: 'flex', alignItems: 'center', gap: 8,
     }}>
-      <span style={{ display: 'block', width: 3, height: 18, background: '#1B3079', borderRadius: 2, flexShrink: 0 }} />
+      <span style={{ display: 'block', width: 3, height: 18, background: '#111', borderRadius: 2, flexShrink: 0 }} />
       {children}
     </h2>
   )

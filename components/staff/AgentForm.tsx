@@ -203,8 +203,8 @@ export default function AgentForm({ onSave, onCancel, initial }: Props) {
         }}>Cancel</button>
         <button type="button" disabled={saving || !name.trim()} onClick={handleSave} style={{
           fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600,
-          color: '#fff', background: '#1B3079',
-          border: '1px solid #1B3079', borderRadius: 6, padding: '10px 20px',
+          color: '#fff', background: '#111',
+          border: '1px solid #111', borderRadius: 6, padding: '10px 20px',
           cursor: saving || !name.trim() ? 'not-allowed' : 'pointer',
           opacity: saving || !name.trim() ? 0.6 : 1,
         }}>

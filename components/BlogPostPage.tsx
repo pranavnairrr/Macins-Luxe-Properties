@@ -39,7 +39,7 @@ export default function BlogPostPage({ post, related }: { post: BlogPost; relate
       <Nav />
 
       {/* Article header */}
-      <section style={{ background: 'var(--navy)', padding: 'clamp(72px, 10vw, 100px) var(--gutter-lg) clamp(48px, 6vw, 64px)' }}>
+      <section style={{ background: '#111', padding: 'clamp(72px, 10vw, 100px) var(--gutter-lg) clamp(48px, 6vw, 64px)' }}>
         <div className="container" style={{ maxWidth: 760 }}>
           <nav style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.8125rem', color: 'rgba(255,255,255,0.50)', marginBottom: 24 }}>
             <Link href="/" style={{ color: 'rgba(255,255,255,0.50)', transition: 'color 0.2s' }} onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = '#fff')} onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.50)')}>Home</Link>
@@ -48,7 +48,7 @@ export default function BlogPostPage({ post, related }: { post: BlogPost; relate
             <span>/</span>
             <span style={{ color: 'rgba(255,255,255,0.75)' }}>{post.category}</span>
           </nav>
-          <span style={{ display: 'inline-block', fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--gold)', background: 'rgba(201,169,110,0.15)', borderRadius: 'var(--radius-pill)', padding: '4px 12px', marginBottom: 20 }}>
+          <span style={{ display: 'inline-block', fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.70)', background: 'rgba(255,255,255,0.12)', borderRadius: 'var(--radius-pill)', padding: '4px 12px', marginBottom: 20 }}>
             {post.category}
           </span>
           <h1 style={{ fontFamily: 'var(--font)', fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)', fontWeight: 700, lineHeight: 1.18, letterSpacing: '-0.025em', color: '#fff', marginBottom: 24 }}>
@@ -94,10 +94,10 @@ export default function BlogPostPage({ post, related }: { post: BlogPost; relate
                         display: 'block',
                         fontSize: '0.875rem',
                         lineHeight: 1.55,
-                        color: activeSection === item.id ? 'var(--navy)' : 'var(--body)',
+                        color: activeSection === item.id ? 'var(--heading)' : 'var(--body)',
                         fontWeight: activeSection === item.id ? 600 : 400,
                         paddingLeft: activeSection === item.id ? 12 : 0,
-                        borderLeft: activeSection === item.id ? '2px solid var(--navy)' : '2px solid transparent',
+                        borderLeft: activeSection === item.id ? '2px solid var(--heading)' : '2px solid transparent',
                         marginBottom: 10,
                         transition: 'all 0.2s ease',
                       }}
@@ -129,7 +129,7 @@ export default function BlogPostPage({ post, related }: { post: BlogPost; relate
       </section>
 
       {/* CTA */}
-      <section style={{ background: 'var(--navy)', padding: 'clamp(40px, 6vw, 64px) var(--gutter-lg)', textAlign: 'center' }}>
+      <section style={{ background: '#111', padding: 'clamp(40px, 6vw, 64px) var(--gutter-lg)', textAlign: 'center' }}>
         <div className="container" style={{ maxWidth: 560 }}>
           <h2 style={{ fontFamily: 'var(--font)', fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', fontWeight: 700, color: '#fff', marginBottom: 12 }}>
             Interested in Dubai Real Estate?
@@ -162,7 +162,7 @@ export default function BlogPostPage({ post, related }: { post: BlogPost; relate
                       <Image src={p.image} alt={p.title} fill sizes="33vw" style={{ objectFit: 'cover' }} />
                     </div>
                     <div style={{ padding: '16px 20px 20px' }}>
-                      <span style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--gold)', display: 'block', marginBottom: 8 }}>{p.category}</span>
+                      <span style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#999', display: 'block', marginBottom: 8 }}>{p.category}</span>
                       <h3 style={{ fontFamily: 'var(--font)', fontSize: '0.9375rem', fontWeight: 600, lineHeight: 1.45, color: 'var(--heading)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{p.title}</h3>
                     </div>
                   </article>
@@ -183,7 +183,7 @@ export default function BlogPostPage({ post, related }: { post: BlogPost; relate
         .article-body ul, .article-body ol { padding-left: 24px; margin-bottom: 20px; }
         .article-body li { margin-bottom: 8px; }
         .article-body strong { color: var(--heading); font-weight: 600; }
-        .article-body a { color: var(--navy); text-decoration: underline; }
+        .article-body a { color: var(--heading); text-decoration: underline; }
         @media (max-width: 900px) {
           .post-layout { grid-template-columns: 1fr !important; }
         }

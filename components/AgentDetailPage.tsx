@@ -68,8 +68,8 @@ export default function AgentDetailPage({ agent, listings }: { agent: Agent; lis
                 {agent.image ? (
                   <CinemaImage src={agent.image} alt={agent.name} fill sizes="360px" style={{ objectFit: 'cover' }} />
                 ) : (
-                  <div style={{ width: '100%', height: '100%', background: 'var(--navy)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <span style={{ fontFamily: 'var(--font)', fontSize: '4rem', fontWeight: 700, color: 'var(--gold)' }}>{getInitials(agent.name)}</span>
+                  <div style={{ width: '100%', height: '100%', background: '#333', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <span style={{ fontFamily: 'var(--font)', fontSize: '4rem', fontWeight: 700, color: '#fff' }}>{getInitials(agent.name)}</span>
                   </div>
                 )}
               </div>
@@ -78,7 +78,7 @@ export default function AgentDetailPage({ agent, listings }: { agent: Agent; lis
             {/* Info */}
             <div data-reveal>
               {agent.title && (
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--gold)', display: 'block', marginBottom: 12 }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: '#999', display: 'block', marginBottom: 12 }}>
                   {agent.title}
                 </span>
               )}
@@ -160,7 +160,7 @@ export default function AgentDetailPage({ agent, listings }: { agent: Agent; lis
                     <div style={{ padding: '16px 20px 20px' }}>
                       <h3 style={{ fontFamily: 'var(--font)', fontSize: '0.9375rem', fontWeight: 600, color: 'var(--heading)', marginBottom: 4 }}>{listing.title}</h3>
                       <div style={{ fontSize: '0.8125rem', color: 'var(--muted)', marginBottom: 12 }}>{listing.location}</div>
-                      <div style={{ fontFamily: 'var(--font)', fontSize: '1rem', fontWeight: 700, color: 'var(--navy)' }}>{listing.price}</div>
+                      <div style={{ fontFamily: 'var(--font)', fontSize: '1rem', fontWeight: 700, color: 'var(--heading)' }}>{listing.price}</div>
                     </div>
                   </article>
                 </Link>
@@ -173,7 +173,7 @@ export default function AgentDetailPage({ agent, listings }: { agent: Agent; lis
               </p>
               <button
                 onClick={() => { (window as Window & { __openEnquireModal?: () => void }).__openEnquireModal?.(); }}
-                style={{ fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600, color: '#fff', background: 'var(--navy)', borderRadius: 'var(--radius-btn)', padding: '12px 24px', border: 'none', cursor: 'pointer' }}
+                style={{ fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600, color: '#fff', background: '#111', borderRadius: 'var(--radius-btn)', padding: '12px 24px', border: 'none', cursor: 'pointer' }}
               >
                 Enquire Now
               </button>
@@ -183,7 +183,7 @@ export default function AgentDetailPage({ agent, listings }: { agent: Agent; lis
       </section>
 
       {/* CTA strip */}
-      <section style={{ background: 'var(--navy)', padding: 'clamp(40px, 6vw, 56px) var(--gutter-lg)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 24, flexWrap: 'wrap' }}>
+      <section style={{ background: '#111', padding: 'clamp(40px, 6vw, 56px) var(--gutter-lg)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 24, flexWrap: 'wrap' }}>
         {agent.whatsapp && (
           <a href={`https://wa.me/${agent.whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer"
             style={{ fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600, color: '#fff', background: '#25D366', borderRadius: 'var(--radius-btn)', padding: '14px 28px', textDecoration: 'none' }}>

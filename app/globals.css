@@ -2,13 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
 /* ============================================================
    MACINS LUXE — Global CSS
    Source: springfieldproperties.ae — 15 homepage screenshots
    Rule: Zero external memory. Only what is visible in screenshots.
    ============================================================ */
-
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
 /* ─────────────────────────────────────────────────────────────
    CSS CUSTOM PROPERTIES (DESIGN TOKENS)
@@ -37,6 +37,10 @@
   --border:           #DDE1E9;
   --border-card:      #E8EBF0;
   --border-on-dark:   rgba(255, 255, 255, 0.15);
+
+  --gold:             #D5BA8C;
+  --gold-subtle:      rgba(213, 186, 140, 0.12);
+  --footer-bg:        #03213d;
 
   --badge-bg:         rgba(0, 0, 0, 0.48);
   --star:             #F5A11E;
@@ -273,11 +277,87 @@ h1, h2, h3, h4, h5, h6 {
   transition: color var(--transition);
   display: block;
 }
-.text-footer-link:hover { color: #D5BA8C; }
+.text-footer-link:hover { color: var(--gold); }
+
+/* ─────────────────────────────────────────────────────────────
+   SITE LOADER  (#site-loader — server-rendered, removed by SiteLoader.tsx)
+───────────────────────────────────────────────────────────── */
+@keyframes pl-logo-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pl-bar-fill {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+@keyframes pl-overlay-out {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-20px); }
+}
+
+#site-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  animation: pl-overlay-out 0.28s cubic-bezier(0.4, 0, 0.2, 1) 0.60s both;
+}
+#site-loader .pl-logo {
+  animation: pl-logo-in 0.30s cubic-bezier(0.22, 1, 0.36, 1) 0.03s both;
+}
+#site-loader .pl-track {
+  width: 130px;
+  height: 1.5px;
+  background: rgba(26, 37, 53, 0.10);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 20px;
+}
+#site-loader .pl-bar {
+  height: 100%;
+  background: #1A2535;
+  border-radius: 2px;
+  transform-origin: left center;
+  transform: scaleX(0);
+  animation: pl-bar-fill 0.38s cubic-bezier(0.4, 0, 0.2, 1) 0.12s both;
+}
 
 /* ─────────────────────────────────────────────────────────────
    SCROLL REVEAL
 ───────────────────────────────────────────────────────────── */
+
+/* ── Waynere credit ── */
+.waynere-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  opacity: 0.45;
+  transition: opacity 0.2s ease;
+  text-decoration: none;
+}
+.waynere-link:hover { opacity: 0.85; }
+
+.waynere-built {
+  font-family: var(--font);
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.7);
+  white-space: nowrap;
+  max-width: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-width 0.3s ease, opacity 0.25s ease;
+}
+.waynere-link:hover .waynere-built {
+  max-width: 60px;
+  opacity: 1;
+}
+
 [data-reveal] {
   opacity: 0;
   transform: translateY(18px);

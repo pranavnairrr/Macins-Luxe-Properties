@@ -76,7 +76,7 @@ export default function AgentsView() {
         </div>
         <button onClick={() => setShowForm(true)} style={{
           fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600,
-          color: '#fff', background: '#1B3079', border: '1px solid #1B3079',
+          color: '#fff', background: '#111', border: '1px solid #111',
           borderRadius: 6, padding: '10px 18px', cursor: 'pointer',
           display: 'flex', alignItems: 'center', gap: 6,
         }}>
@@ -100,7 +100,7 @@ export default function AgentsView() {
           </p>
           <button onClick={() => setShowForm(true)} style={{
             fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600,
-            color: '#fff', background: '#1B3079', border: '1px solid #1B3079',
+            color: '#fff', background: '#111', border: '1px solid #111',
             borderRadius: 6, padding: '10px 20px', cursor: 'pointer',
           }}>Add First Agent</button>
         </div>
@@ -128,8 +128,8 @@ export default function AgentsView() {
                 ) : (
                   <div style={{
                     width: 56, height: 56, borderRadius: '50%', flexShrink: 0,
-                    background: '#1B3079', display: 'flex', alignItems: 'center',
-                    justifyContent: 'center', fontSize: '1.25rem', color: '#D5BA8C',
+                    background: '#333', display: 'flex', alignItems: 'center',
+                    justifyContent: 'center', fontSize: '1.25rem', color: '#fff',
                   }}>
                     {agent.name.charAt(0).toUpperCase()}
                   </div>
@@ -156,7 +156,7 @@ export default function AgentsView() {
                       <span style={{
                         fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.04em',
                         padding: '2px 7px', borderRadius: 4, fontFamily: 'var(--font)',
-                        background: '#1B3079', color: '#fff',
+                        background: '#333', color: '#fff',
                       }}>
                         Default PDF
                       </span>
@@ -199,8 +199,8 @@ export default function AgentsView() {
                 {!agent.is_default && (
                   <button onClick={() => handleSetDefault(agent)} style={{
                     flex: 1, fontFamily: 'var(--font)', fontSize: '0.8125rem', fontWeight: 500,
-                    color: '#1B3079', background: 'transparent',
-                    border: '1px solid #1B3079', borderRadius: 6,
+                    color: 'var(--heading)', background: 'transparent',
+                    border: '1px solid var(--border)', borderRadius: 6,
                     padding: '7px 0', cursor: 'pointer', minWidth: 60,
                   }}>Set Default</button>
                 )}

@@ -43,7 +43,7 @@ export default function PropertyMap({ lat, lng, name, location }: Props) {
         className: '',
         html: `
           <div style="
-            background: #1B3079;
+            background: #111;
             color: #fff;
             font-family: 'Poppins', sans-serif;
             font-size: 12px;
@@ -51,8 +51,8 @@ export default function PropertyMap({ lat, lng, name, location }: Props) {
             padding: 7px 12px;
             border-radius: 8px;
             white-space: nowrap;
-            box-shadow: 0 4px 16px rgba(27,48,121,0.35);
-            border: 2px solid #D5BA8C;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+            border: 2px solid rgba(255,255,255,0.20);
             position: relative;
           ">
             📍 ${name}
@@ -61,7 +61,7 @@ export default function PropertyMap({ lat, lng, name, location }: Props) {
               transform: translateX(-50%);
               border-left: 7px solid transparent;
               border-right: 7px solid transparent;
-              border-top: 8px solid #1B3079;
+              border-top: 8px solid #111;
             "></div>
           </div>`,
         iconAnchor: [60, 44],

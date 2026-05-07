@@ -40,9 +40,9 @@ export default function ReportsPage() {
       <Nav />
 
       {/* Hero */}
-      <section style={{ background: 'var(--navy)', padding: 'clamp(72px, 10vw, 100px) var(--gutter-lg) clamp(48px, 6vw, 64px)', textAlign: 'center' }}>
+      <section style={{ background: '#111', padding: 'clamp(72px, 10vw, 100px) var(--gutter-lg) clamp(48px, 6vw, 64px)', textAlign: 'center' }}>
         <div className="container" style={{ maxWidth: 640 }}>
-          <span style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--gold)', display: 'block', marginBottom: 16 }}>
+          <span style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)', display: 'block', marginBottom: 16 }}>
             Market Intelligence
           </span>
           <h1 style={{ fontFamily: 'var(--font)', fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 700, lineHeight: 1.15, letterSpacing: '-0.025em', color: '#fff', marginBottom: 16 }}>
@@ -72,15 +72,15 @@ export default function ReportsPage() {
           >
             <div style={{ position: 'relative', overflow: 'hidden', minHeight: 340 }}>
               <Image src={featured.image} alt={featured.title} fill sizes="50vw" style={{ objectFit: 'cover' }} />
-              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(3,33,61,0.70) 0%, rgba(3,33,61,0.30) 100%)' }} />
+              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.25) 100%)' }} />
               <div style={{ position: 'absolute', bottom: 24, left: 24 }}>
-                <span style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--gold)', background: 'rgba(201,169,110,0.18)', borderRadius: 'var(--radius-pill)', padding: '4px 12px', border: '1px solid rgba(201,169,110,0.30)' }}>
+                <span style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: '#fff', background: 'rgba(255,255,255,0.15)', borderRadius: 'var(--radius-pill)', padding: '4px 12px', border: '1px solid rgba(255,255,255,0.25)' }}>
                   Featured Report
                 </span>
               </div>
             </div>
             <div style={{ padding: 'clamp(28px, 4vw, 48px)', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--gold)', display: 'block', marginBottom: 12 }}>
+              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#999', display: 'block', marginBottom: 12 }}>
                 {featured.category} — {featured.year}
               </span>
               <h2 style={{ fontFamily: 'var(--font)', fontSize: 'clamp(1.25rem, 2vw, 1.75rem)', fontWeight: 700, lineHeight: 1.3, letterSpacing: '-0.02em', color: 'var(--heading)', marginBottom: 16 }}>
@@ -92,7 +92,7 @@ export default function ReportsPage() {
               <ul style={{ listStyle: 'none', padding: 0, marginBottom: 28, display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {featured.highlights.map(h => (
                   <li key={h} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: '0.875rem', color: 'var(--body)' }}>
-                    <CheckCircle2 size={16} strokeWidth={1.5} style={{ color: 'var(--gold)', flexShrink: 0, marginTop: 2 }} />
+                    <CheckCircle2 size={16} strokeWidth={1.5} style={{ color: '#555', flexShrink: 0, marginTop: 2 }} />
                     {h}
                   </li>
                 ))}
@@ -101,9 +101,9 @@ export default function ReportsPage() {
                 href={featured.pdf_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600, color: '#fff', background: 'var(--navy)', borderRadius: 'var(--radius-btn)', padding: '12px 24px', width: 'fit-content', transition: 'background 0.2s ease' }}
-                onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = '#1a3a5c')}
-                onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'var(--navy)')}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600, color: '#fff', background: '#111', borderRadius: 'var(--radius-btn)', padding: '12px 24px', width: 'fit-content', transition: 'opacity 0.2s ease' }}
+                onMouseEnter={e => ((e.currentTarget as HTMLElement).style.opacity = '0.85')}
+                onMouseLeave={e => ((e.currentTarget as HTMLElement).style.opacity = '1')}
               >
                 Download Report
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v7M3 5l3 3 3-3M1 10h10" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
@@ -115,7 +115,7 @@ export default function ReportsPage() {
           <div data-reveal className="stats-strip" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24, marginBottom: 64 }}>
             {STATS.map(s => (
               <div key={s.value} style={{ textAlign: 'center', padding: '28px 16px', background: 'var(--white-section)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
-                <div style={{ fontFamily: 'var(--font)', fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', fontWeight: 700, color: 'var(--navy)', letterSpacing: '-0.02em', marginBottom: 6 }}>{s.value}</div>
+                <div style={{ fontFamily: 'var(--font)', fontSize: 'clamp(1.5rem, 2.5vw, 2rem)', fontWeight: 700, color: 'var(--heading)', letterSpacing: '-0.02em', marginBottom: 6 }}>{s.value}</div>
                 <div style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--heading)', marginBottom: 4 }}>{s.label}</div>
                 <div style={{ fontSize: '0.8125rem', color: 'var(--muted)' }}>{s.desc}</div>
               </div>
@@ -126,7 +126,7 @@ export default function ReportsPage() {
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 32 }}>
             {FILTER_TABS.map(tab => (
               <button key={tab} onClick={() => setActiveFilter(tab)}
-                style={{ fontFamily: 'var(--font)', fontSize: '0.8125rem', fontWeight: 600, padding: '8px 18px', borderRadius: 'var(--radius-pill)', border: activeFilter === tab ? 'none' : '1px solid var(--border)', background: activeFilter === tab ? 'var(--navy)' : 'transparent', color: activeFilter === tab ? '#fff' : 'var(--heading)', cursor: 'pointer', transition: 'all 0.2s ease' }}
+                style={{ fontFamily: 'var(--font)', fontSize: '0.8125rem', fontWeight: 600, padding: '8px 18px', borderRadius: 'var(--radius-pill)', border: activeFilter === tab ? 'none' : '1px solid var(--border)', background: activeFilter === tab ? '#111' : 'transparent', color: activeFilter === tab ? '#fff' : 'var(--heading)', cursor: 'pointer', transition: 'all 0.2s ease' }}
               >{tab}</button>
             ))}
           </div>
@@ -152,7 +152,7 @@ export default function ReportsPage() {
           <p style={{ fontSize: '0.9375rem', color: 'var(--body)', marginBottom: 28 }}>
             Our research team can prepare custom market analysis for your specific requirements.
           </p>
-          <Link href="/contact" style={{ fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600, color: '#fff', background: 'var(--navy)', borderRadius: 'var(--radius-btn)', padding: '12px 28px', display: 'inline-block', transition: 'background 0.2s ease' }}>
+          <Link href="/contact" style={{ fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600, color: '#fff', background: '#111', borderRadius: 'var(--radius-btn)', padding: '12px 28px', display: 'inline-block', transition: 'opacity 0.2s ease' }}>
             Contact Our Research Team
           </Link>
         </div>
@@ -187,7 +187,7 @@ function ReportCard({ report }: { report: Report }) {
     >
       <div style={{ position: 'relative', aspectRatio: '4/3', overflow: 'hidden' }}>
         <Image src={report.image} alt={report.title} fill sizes="33vw" style={{ objectFit: 'cover' }} />
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 50%, rgba(3,33,61,0.65) 100%)' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.60) 100%)' }} />
         <div style={{ position: 'absolute', bottom: 12, left: 12 }}>
           <span style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#fff', background: 'rgba(0,0,0,0.40)', borderRadius: 4, padding: '3px 8px', backdropFilter: 'blur(4px)' }}>
             {report.year}{report.quarter ? ` · ${report.quarter}` : ''}
@@ -195,7 +195,7 @@ function ReportCard({ report }: { report: Report }) {
         </div>
       </div>
       <div style={{ padding: '20px 20px 24px', flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <span style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--gold)', display: 'block', marginBottom: 8 }}>
+        <span style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#999', display: 'block', marginBottom: 8 }}>
           {report.category}
         </span>
         <h3 style={{ fontFamily: 'var(--font)', fontSize: '1rem', fontWeight: 600, lineHeight: 1.45, color: 'var(--heading)', marginBottom: 12, flex: 1 }}>
@@ -205,9 +205,9 @@ function ReportCard({ report }: { report: Report }) {
           href={report.pdf_url}
           target="_blank"
           rel="noopener noreferrer"
-          style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font)', fontSize: '0.8125rem', fontWeight: 600, color: 'var(--navy)', transition: 'color 0.2s ease' }}
-          onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = 'var(--heading)')}
-          onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = 'var(--navy)')}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font)', fontSize: '0.8125rem', fontWeight: 600, color: 'var(--heading)', transition: 'opacity 0.2s ease' }}
+          onMouseEnter={e => ((e.currentTarget as HTMLElement).style.opacity = '0.70')}
+          onMouseLeave={e => ((e.currentTarget as HTMLElement).style.opacity = '1')}
         >
           Download PDF →
         </a>

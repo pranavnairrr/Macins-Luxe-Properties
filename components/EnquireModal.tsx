@@ -118,7 +118,7 @@ export default function EnquireModal() {
         {sent ? (
           <div style={{ textAlign: 'center', padding: '24px 0' }}>
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
-              <CheckCircle2 size={48} strokeWidth={1.4} color="#D5BA8C" />
+              <CheckCircle2 size={48} strokeWidth={1.4} color="rgba(255,255,255,0.80)" />
             </div>
             <h3 style={{ fontFamily: 'var(--font)', fontSize: '1.25rem', fontWeight: 700, color: '#fff', marginBottom: 10 }}>
               Thank you!
@@ -146,7 +146,7 @@ export default function EnquireModal() {
                   value={name}
                   onChange={e => setName(e.target.value)}
                   style={inputStyle}
-                  onFocus={e => (e.currentTarget.style.borderColor = 'rgba(213,186,140,0.70)')}
+                  onFocus={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.60)')}
                   onBlur={e  => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.20)')}
                 />
               </div>
@@ -160,7 +160,7 @@ export default function EnquireModal() {
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   style={inputStyle}
-                  onFocus={e => (e.currentTarget.style.borderColor = 'rgba(213,186,140,0.70)')}
+                  onFocus={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.60)')}
                   onBlur={e  => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.20)')}
                 />
               </div>
@@ -174,7 +174,7 @@ export default function EnquireModal() {
                   value={phone}
                   onChange={e => setPhone(e.target.value)}
                   style={inputStyle}
-                  onFocus={e => (e.currentTarget.style.borderColor = 'rgba(213,186,140,0.70)')}
+                  onFocus={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.60)')}
                   onBlur={e  => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.20)')}
                 />
               </div>
@@ -186,12 +186,12 @@ export default function EnquireModal() {
                   value={propertyType}
                   onChange={e => setPropertyType(e.target.value)}
                   style={{ ...inputStyle, cursor: 'pointer' }}
-                  onFocus={e => (e.currentTarget.style.borderColor = 'rgba(213,186,140,0.70)')}
+                  onFocus={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.60)')}
                   onBlur={e  => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.20)')}
                 >
                   <option value="" disabled>Select type</option>
                   {PROPERTY_TYPES.map(t => (
-                    <option key={t} value={t} style={{ background: '#152140', color: '#fff' }}>{t}</option>
+                    <option key={t} value={t} style={{ background: '#1a1815', color: '#fff' }}>{t}</option>
                   ))}
                 </select>
               </div>
@@ -210,8 +210,8 @@ export default function EnquireModal() {
                   fontFamily: 'var(--font)',
                   fontSize: '0.9375rem',
                   fontWeight: 600,
-                  color: '#1D3159',
-                  background: '#D5BA8C',
+                  color: '#fff',
+                  background: '#111',
                   border: 'none',
                   borderRadius: 6,
                   padding: '13px',
@@ -219,8 +219,8 @@ export default function EnquireModal() {
                   opacity: sending ? 0.7 : 1,
                   transition: 'opacity 0.2s ease, background 0.2s ease',
                 }}
-                onMouseEnter={e => { if (!sending) e.currentTarget.style.background = '#c8aa79' }}
-                onMouseLeave={e => { e.currentTarget.style.background = '#D5BA8C' }}
+                onMouseEnter={e => { if (!sending) (e.currentTarget as HTMLElement).style.opacity = '0.85' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '1' }}
               >
                 {sending ? 'Sending…' : 'Submit Enquiry'}
               </button>

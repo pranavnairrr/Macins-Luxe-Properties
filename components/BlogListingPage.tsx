@@ -32,9 +32,9 @@ export default function BlogListingPage() {
       <Nav />
 
       {/* Hero */}
-      <section style={{ background: 'var(--navy)', padding: 'clamp(72px, 10vw, 100px) var(--gutter-lg) clamp(48px, 6vw, 64px)', textAlign: 'center' }}>
+      <section style={{ background: '#111', padding: 'clamp(72px, 10vw, 100px) var(--gutter-lg) clamp(48px, 6vw, 64px)', textAlign: 'center' }}>
         <div className="container" style={{ maxWidth: 640 }}>
-          <span style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--gold)', display: 'block', marginBottom: 16 }}>
+          <span style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)', display: 'block', marginBottom: 16 }}>
             Macins Luxe Insights
           </span>
           <h1 style={{ fontFamily: 'var(--font)', fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 700, lineHeight: 1.15, letterSpacing: '-0.025em', color: '#fff', marginBottom: 16 }}>
@@ -72,7 +72,7 @@ export default function BlogListingPage() {
               <div style={{ padding: 'clamp(28px, 4vw, 48px)', display: 'flex', flexDirection: 'column', justifyContent: 'center', background: 'var(--white)' }}>
                 <span style={{
                   display: 'inline-block', fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.08em',
-                  textTransform: 'uppercase', color: 'var(--gold)', background: 'rgba(201,169,110,0.12)',
+                  textTransform: 'uppercase', color: '#777', background: '#f0ede8',
                   borderRadius: 'var(--radius-pill)', padding: '4px 12px', marginBottom: 16, width: 'fit-content',
                 }}>
                   {featured.category}
@@ -87,7 +87,7 @@ export default function BlogListingPage() {
                   <span>{featured.date}</span>
                   <span>·</span>
                   <span>{featured.readTime}</span>
-                  <span style={{ marginLeft: 'auto', fontWeight: 600, color: 'var(--navy)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <span style={{ marginLeft: 'auto', fontWeight: 600, color: 'var(--heading)', display: 'flex', alignItems: 'center', gap: 4 }}>
                     Read Article →
                   </span>
                 </div>
@@ -105,7 +105,7 @@ export default function BlogListingPage() {
                   fontFamily: 'var(--font)', fontSize: '0.8125rem', fontWeight: 600,
                   padding: '8px 18px', borderRadius: 'var(--radius-pill)',
                   border: activeCategory === cat ? 'none' : '1px solid var(--border)',
-                  background: activeCategory === cat ? 'var(--navy)' : 'transparent',
+                  background: activeCategory === cat ? '#111' : 'transparent',
                   color: activeCategory === cat ? '#fff' : 'var(--heading)',
                   cursor: 'pointer', transition: 'all 0.2s ease',
                 }}
@@ -167,7 +167,7 @@ function BlogCard({ post }: { post: BlogPost }) {
           />
         </div>
         <div style={{ padding: '20px 20px 24px' }}>
-          <span style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--gold)', display: 'block', marginBottom: 10 }}>
+          <span style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#999', display: 'block', marginBottom: 10 }}>
             {post.category}
           </span>
           <h3 style={{ fontFamily: 'var(--font)', fontSize: '1.0625rem', fontWeight: 600, lineHeight: 1.45, color: 'var(--heading)', marginBottom: 10, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>

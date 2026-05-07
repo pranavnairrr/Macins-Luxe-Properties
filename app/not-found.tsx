@@ -4,7 +4,7 @@ export default function NotFound() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #021a30 0%, #03213d 100%)',
+      background: '#111',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -13,7 +13,7 @@ export default function NotFound() {
       textAlign: 'center',
     }}>
       <div>
-        <div style={{ fontSize: '5rem', fontWeight: 700, color: '#D5BA8C', lineHeight: 1, marginBottom: 8 }}>404</div>
+        <div style={{ fontSize: '5rem', fontWeight: 700, color: '#fff', lineHeight: 1, marginBottom: 8 }}>404</div>
         <h1 style={{ fontSize: '1.375rem', fontWeight: 600, color: '#fff', marginBottom: 12 }}>Page Not Found</h1>
         <p style={{ color: 'rgba(255,255,255,0.60)', fontSize: '0.9375rem', marginBottom: 32 }}>
           The page you&apos;re looking for doesn&apos;t exist or has been moved.
@@ -25,8 +25,8 @@ export default function NotFound() {
             fontFamily: 'var(--font)',
             fontSize: '0.9375rem',
             fontWeight: 600,
-            color: '#03213d',
-            background: '#D5BA8C',
+            color: '#111',
+            background: '#fff',
             borderRadius: 8,
             padding: '12px 28px',
             textDecoration: 'none',

@@ -24,7 +24,7 @@ export default function ScrollProgressBar() {
         zIndex: 51,
         height: 3,
         width: `${pct}%`,
-        background: '#C9A96E',
+        background: '#111',
         transition: 'width 0.1s linear',
         pointerEvents: 'none',
       }}

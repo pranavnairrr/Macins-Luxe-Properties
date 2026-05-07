@@ -1,16 +1,11 @@
 'use client';
 
-import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 
-const videos = [
-  { thumb: '/images/properties/7c21bee256ef0219ac3bb7297ba9b8f26edb599f1f48d4ab5e0f6eb71cd56ee0.avif', label: 'AED 35,000,000' },
-  { thumb: '/images/properties/0363bcd81373d842e3736d5901a18e1cc8d1ca44aa7575ff44201a8f2f086424.avif', label: 'AED 12,500,000' },
-  { thumb: '/images/properties/3(1)_1771865424.avif', label: 'AED 8,750,000' },
-];
+const YT_ID = 'I8T2asYxfss';
 
 export default function CEOVideoSection() {
-  const [active, setActive] = useState(0);
+  const [playing, setPlaying] = useState(false);
   const textRef  = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLDivElement>(null);
 
@@ -23,12 +18,6 @@ export default function CEOVideoSection() {
     );
     els.forEach(el => observer.observe(el));
     return () => observer.disconnect();
-  }, []);
-
-  /* Auto-advance videos every 4 s */
-  useEffect(() => {
-    const t = setInterval(() => setActive(a => (a + 1) % videos.length), 4000);
-    return () => clearInterval(t);
   }, []);
 
   return (
@@ -82,16 +71,14 @@ export default function CEOVideoSection() {
                     borderBottom: '1px solid var(--border)',
                   }}
                 >
-                  {/* Accent dash */}
                   <div style={{
                     width: 18,
                     height: 2,
-                    background: 'var(--navy)',
+                    background: '#ccc',
                     borderRadius: 1,
                     marginTop: 10,
                     flexShrink: 0,
                   }} />
-                  {/* Label + desc in one block so wrapping is natural */}
                   <p style={{ fontSize: '0.9375rem', lineHeight: 1.65, color: 'var(--body)', margin: 0 }}>
                     <strong style={{ color: 'var(--heading)', fontWeight: 600 }}>{item.label}</strong>
                     {' — '}{item.desc}
@@ -102,7 +89,9 @@ export default function CEOVideoSection() {
 
             {/* YouTube button */}
             <a
-              href="#"
+              href="https://youtu.be/I8T2asYxfss?si=Zmhl-S0kVF3OI7JB"
+              target="_blank"
+              rel="noopener noreferrer"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -120,7 +109,6 @@ export default function CEOVideoSection() {
               onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--heading)')}
               onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
             >
-              {/* YouTube icon */}
               <svg width="20" height="14" viewBox="0 0 20 14" fill="none" aria-hidden="true">
                 <rect width="20" height="14" rx="3" fill="#FF0000"/>
                 <path d="M8 4.5l5 2.5-5 2.5V4.5z" fill="#fff"/>
@@ -129,77 +117,61 @@ export default function CEOVideoSection() {
             </a>
           </div>
 
-          {/* ── Right: video carousel ── */}
+          {/* ── Right: YouTube embed ── */}
           <div ref={videoRef} className="ceo-reveal ceo-reveal--right">
             <div style={{
-              position: 'relative',
               borderRadius: 'var(--radius-lg)',
               overflow: 'hidden',
               aspectRatio: '16/9',
-              background: 'var(--heading)',
+              background: '#000',
+              boxShadow: '0 8px 40px rgba(0,0,0,0.18)',
+              position: 'relative',
+              cursor: playing ? 'default' : 'pointer',
             }}>
-              <Image
-                src={videos[active].thumb}
-                alt="Video thumbnail"
-                fill
-                sizes="50vw"
-                style={{ objectFit: 'cover' }}
-              />
-              {/* Dark overlay */}
-              <div style={{
-                position: 'absolute', inset: 0,
-                background: 'rgba(10,18,40,0.45)',
-              }} />
-              {/* Price label */}
-              <div style={{
-                position: 'absolute', top: 16, left: 16,
-                fontFamily: 'var(--font)',
-                fontSize: 'clamp(1rem, 2.5vw, 1.5rem)',
-                fontWeight: 700,
-                color: '#fff',
-                letterSpacing: '-0.01em',
-              }}>
-                {videos[active].label}
-              </div>
-              {/* Play button */}
-              <button
-                aria-label="Play video"
-                style={{
-                  position: 'absolute', top: '50%', left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  width: 56, height: 56,
-                  borderRadius: '50%',
-                  background: 'rgba(255,255,255,0.92)',
-                  border: 'none', cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  transition: 'background var(--transition), transform var(--transition)',
-                }}
-                onMouseEnter={e => { (e.currentTarget.style.background = '#fff'); (e.currentTarget.style.transform = 'translate(-50%,-50%) scale(1.08)'); }}
-                onMouseLeave={e => { (e.currentTarget.style.background = 'rgba(255,255,255,0.92)'); (e.currentTarget.style.transform = 'translate(-50%,-50%) scale(1)'); }}
-              >
-                <svg width="18" height="20" viewBox="0 0 18 20" fill="none" aria-hidden="true">
-                  <path d="M2 2l14 8-14 8V2z" fill="var(--navy)" />
-                </svg>
-              </button>
-            </div>
-
-            {/* Dots */}
-            <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginTop: 16 }}>
-              {videos.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setActive(i)}
-                  aria-label={`Video ${i + 1}`}
-                  style={{
-                    width: i === active ? 24 : 8,
-                    height: 8,
-                    borderRadius: 'var(--radius-pill)',
-                    background: i === active ? 'var(--heading)' : 'var(--border)',
-                    border: 'none', cursor: 'pointer', padding: 0,
-                    transition: 'width var(--transition), background var(--transition)',
-                  }}
+              {playing ? (
+                <iframe
+                  src={`https://www.youtube.com/embed/${YT_ID}?autoplay=1&rel=0`}
+                  title="From the CEO's Desk"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
                 />
-              ))}
+              ) : (
+                <>
+                  {/* High-res thumbnail */}
+                  <img
+                    src={`https://img.youtube.com/vi/${YT_ID}/maxresdefault.jpg`}
+                    alt="CEO video thumbnail"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                  />
+                  {/* Subtle dark gradient */}
+                  <div style={{
+                    position: 'absolute', inset: 0,
+                    background: 'linear-gradient(to top, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.1) 60%, transparent 100%)',
+                  }} />
+                  {/* Play button */}
+                  <button
+                    onClick={() => setPlaying(true)}
+                    aria-label="Play video"
+                    className="ceo-play-btn"
+                    style={{
+                      position: 'absolute', top: '50%', left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      width: 68, height: 68,
+                      borderRadius: '50%',
+                      background: 'rgba(255,255,255,0.95)',
+                      border: 'none', cursor: 'pointer',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      boxShadow: '0 4px 24px rgba(0,0,0,0.3)',
+                      transition: 'transform 0.2s ease, background 0.2s ease',
+                    }}
+                  >
+                    <svg width="22" height="24" viewBox="0 0 22 24" fill="none" aria-hidden="true">
+                      <path d="M2 2l18 10L2 22V2z" fill="#111" />
+                    </svg>
+                  </button>
+                </>
+              )}
             </div>
           </div>
 
@@ -207,7 +179,6 @@ export default function CEOVideoSection() {
       </div>
 
       <style jsx>{`
-        /* ── Scroll reveal ── */
         .ceo-reveal {
           opacity: 0;
           transition: opacity 0.7s ease, transform 0.7s ease;
@@ -217,6 +188,11 @@ export default function CEOVideoSection() {
         .ceo-reveal.ceo-revealed {
           opacity: 1;
           transform: translateX(0);
+        }
+
+        .ceo-play-btn:hover {
+          transform: translate(-50%, -50%) scale(1.1) !important;
+          background: #fff !important;
         }
 
         @media (max-width: 768px) {

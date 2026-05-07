@@ -25,12 +25,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
         {/* Top bar */}
         <header style={{
           height: 64,
-          background: '#152140',
+          background: '#1a1815',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '0 32px',
-          borderBottom: '1px solid rgba(213,186,140,0.15)',
+          borderBottom: '1px solid rgba(255,255,255,0.08)',
           flexShrink: 0,
         }}>
           <Image
@@ -44,7 +44,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: '0.875rem', fontWeight: 600, color: '#D5BA8C', fontFamily: 'var(--font)' }}>
+              <div style={{ fontSize: '0.875rem', fontWeight: 600, color: 'rgba(255,255,255,0.85)', fontFamily: 'var(--font)' }}>
                 Admin
               </div>
               <div style={{ fontSize: '0.6875rem', color: 'rgba(255,255,255,0.40)', fontFamily: 'var(--font)' }}>
@@ -55,10 +55,17 @@ export default async function DashboardLayout({ children }: { children: React.Re
           </div>
         </header>
 
-        <main style={{ flex: 1, overflow: 'auto', padding: '32px' }}>
+        <main className="dash-main" style={{ flex: 1, overflow: 'auto', padding: '32px' }}>
           {children}
         </main>
       </div>
+
+      <style>{`
+        @media (max-width: 768px) {
+          .dash-main { padding: 20px 16px !important; }
+          header { padding: 0 16px 0 72px !important; }
+        }
+      `}</style>
     </div>
   )
 }

@@ -334,13 +334,13 @@ export default function PropertyListingForm({ onSave, onCancel, initial }: Props
               {highlights.map((h, i) => (
                 <span key={i} style={{
                   display: 'flex', alignItems: 'center', gap: 6,
-                  background: '#EEF1FB', color: '#1B3079',
+                  background: '#f0f0f0', color: '#333',
                   fontSize: '0.8125rem', fontWeight: 500, fontFamily: 'var(--font)',
                   padding: '5px 10px', borderRadius: 20,
                 }}>
                   {h}
                   <button type="button" onClick={() => setHighlights(prev => prev.filter((_, j) => j !== i))} style={{
-                    background: 'none', border: 'none', cursor: 'pointer', color: '#1B3079',
+                    background: 'none', border: 'none', cursor: 'pointer', color: '#555',
                     fontSize: 11, fontWeight: 700, padding: 0, lineHeight: 1,
                   }}>✕</button>
                 </span>
@@ -360,9 +360,9 @@ export default function PropertyListingForm({ onSave, onCancel, initial }: Props
                 } style={{
                   fontFamily: 'var(--font)', fontSize: '0.8125rem', fontWeight: 500,
                   padding: '6px 12px', borderRadius: 6, cursor: 'pointer',
-                  background: selected ? '#1B3079' : 'var(--white-section)',
+                  background: selected ? '#111' : 'var(--white-section)',
                   color: selected ? '#fff' : 'var(--body)',
-                  border: selected ? '1px solid #1B3079' : '1px solid var(--border)',
+                  border: selected ? '1px solid #111' : '1px solid var(--border)',
                   transition: 'all 0.15s',
                 }}>
                   {a}
@@ -411,7 +411,7 @@ export default function PropertyListingForm({ onSave, onCancel, initial }: Props
             </button>
             {(brochureUrl || brochureFile) && !brochureFile && (
               <a href={brochureUrl!} target="_blank" rel="noopener noreferrer"
-                style={{ fontSize: '0.8125rem', color: '#1B3079', fontFamily: 'var(--font)' }}>
+                style={{ fontSize: '0.8125rem', color: 'var(--heading)', fontFamily: 'var(--font)' }}>
                 View current brochure ↗
               </a>
             )}
@@ -456,7 +456,7 @@ export default function PropertyListingForm({ onSave, onCancel, initial }: Props
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   transition: 'border-color 0.2s',
                 }}
-                onMouseEnter={e => (e.currentTarget.style.borderColor = '#1B3079')}
+                onMouseEnter={e => (e.currentTarget.style.borderColor = '#333')}
                 onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
               >
                 {uploading ? '…' : '+'}
@@ -541,8 +541,8 @@ export default function PropertyListingForm({ onSave, onCancel, initial }: Props
         </button>
         <button type="button" disabled={saving || !name.trim()} onClick={() => handleSave('published')} style={{
           fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600,
-          color: '#fff', background: '#1B3079',
-          border: '1px solid #1B3079', borderRadius: 6,
+          color: '#fff', background: '#111',
+          border: '1px solid #111', borderRadius: 6,
           padding: '10px 20px', cursor: saving || !name.trim() ? 'not-allowed' : 'pointer',
           opacity: saving || !name.trim() ? 0.6 : 1,
         }}>

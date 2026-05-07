@@ -106,7 +106,7 @@ export default function LeadsView() {
                 padding: '9px 12px 9px 32px',
                 outline: 'none', width: 240,
               }}
-              onFocus={e => (e.currentTarget.style.borderColor = '#1B3079')}
+              onFocus={e => (e.currentTarget.style.borderColor = '#333')}
               onBlur={e => (e.currentTarget.style.borderColor = 'var(--border)')}
             />
           </div>
@@ -116,7 +116,7 @@ export default function LeadsView() {
             style={{
               display: 'flex', alignItems: 'center', gap: 6,
               fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600,
-              color: filtered.length === 0 ? 'var(--muted)' : '#1B3079',
+              color: filtered.length === 0 ? 'var(--muted)' : 'var(--heading)',
               background: '#fff', border: '1px solid var(--border)',
               borderRadius: 8, padding: '9px 16px',
               cursor: filtered.length === 0 ? 'not-allowed' : 'pointer',
@@ -170,8 +170,8 @@ export default function LeadsView() {
                       <span style={{
                         fontSize: '0.75rem', fontWeight: 600,
                         padding: '3px 8px', borderRadius: 4,
-                        background: l.source === 'brochure_download' ? 'rgba(27,48,121,0.08)' : 'rgba(213,186,140,0.20)',
-                        color: l.source === 'brochure_download' ? '#1B3079' : '#8B6914',
+                        background: l.source === 'brochure_download' ? '#f0f0f0' : '#f5f5f5',
+                        color: l.source === 'brochure_download' ? '#333' : '#666',
                       }}>
                         {fmtSource(l.source)}
                       </span>
