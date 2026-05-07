@@ -106,6 +106,16 @@ const IMAGES = [
 /* Fallback slides — image + cycling text content */
 const FALLBACK_SLIDES = IMAGES.map((image, i) => ({ image, cta_href: '#' as string, ...TEXTS[i % TEXTS.length] }));
 
+const RESIDENTIAL_TYPES = [
+  'Apartment', 'Townhouse', 'Villa Compound', 'Land', 'Building',
+  'Villa', 'Penthouse', 'Hotel Apartment', 'Floor',
+];
+const COMMERCIAL_TYPES = [
+  'Office', 'Shop', 'Warehouse', 'Labour Camp', 'Villa', 'Bulk Unit',
+  'Land', 'Floor', 'Building', 'Factory', 'Industrial Land',
+  'Mixed Use Land', 'Showroom', 'Other Commercial',
+];
+
 /* Ken Burns GSAP end-states — desktop (scale + pan) */
 const KB_VARIANTS = [
   { scale: 1.10, x: '-1.5%', y: '-1%'  },   // zoom-in drift up-left
@@ -117,7 +127,7 @@ const KB_VARIANTS = [
 
 const AUTO_MS  = 5000;   // ms per slide
 const FADE_MS  = 1400;   // cross-dissolve duration
-const SEARCH_H = 96;     // px — glass search bar height at bottom
+const SEARCH_H = 136;    // px — glass search bar height at bottom (tabs + bar)
 
 export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide[] }) {
   const slides = propSlides && propSlides.length > 0
@@ -129,6 +139,20 @@ export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide
   const slideRefs     = useRef<(HTMLDivElement | null)[]>([]);
   const prevActiveRef = useRef(0);
   const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  /* ── Search bar state ── */
+  const [searchTab, setSearchTab]           = useState<'All' | 'Ready' | 'Off-Plan'>('All');
+  const [typeOpen, setTypeOpen]             = useState(false);
+  const [areaOpen, setAreaOpen]             = useState(false);
+  const [priceOpen, setPriceOpen]           = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<'Residential' | 'Commercial' | ''>('');
+  const [selectedSubtype, setSelectedSubtype]   = useState('');
+  const [minArea, setMinArea]               = useState('');
+  const [maxArea, setMaxArea]               = useState('');
+  const [minPrice, setMinPrice]             = useState('');
+  const [maxPrice, setMaxPrice]             = useState('');
+  const [searchText, setSearchText]         = useState('');
+  const searchRef = useRef<HTMLDivElement>(null);
 
   /* GSAP refs — text elements */
   const badgeRef = useRef<HTMLSpanElement>(null);
@@ -206,6 +230,19 @@ export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide
       if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
     };
   }, [active, animateText, animateKenBurns]);
+
+  /* ── Close search dropdowns on outside click ── */
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setTypeOpen(false);
+        setAreaOpen(false);
+        setPriceOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   const slide = slides[active];
 
@@ -325,6 +362,7 @@ export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide
 
       {/* ── Glass search bar ── */}
       <div
+        ref={searchRef}
         className="hero-search-wrap"
         style={{
           position: 'absolute',
@@ -336,19 +374,172 @@ export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide
           gap: 10,
         }}
       >
-        <p style={{ fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600, color: '#fff', letterSpacing: '0.01em' }}>
-          Find Your Dream Off-Plan Property
-        </p>
+        {/* Label + status tabs */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+          <p style={{ fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600, color: '#fff', letterSpacing: '0.01em', margin: 0 }}>
+            Find Your Dream Property
+          </p>
+          <div style={{ display: 'flex', gap: 4 }}>
+            {(['All', 'Ready', 'Off-Plan'] as const).map(tab => (
+              <button
+                key={tab}
+                onClick={() => setSearchTab(tab)}
+                style={{
+                  fontFamily: 'var(--font)', fontSize: '0.75rem', fontWeight: 600,
+                  padding: '5px 14px', borderRadius: 'var(--radius-pill)',
+                  border: searchTab === tab ? '1px solid rgba(213,186,140,0.80)' : '1px solid rgba(255,255,255,0.25)',
+                  background: searchTab === tab ? 'rgba(213,186,140,0.20)' : 'transparent',
+                  color: searchTab === tab ? '#D5BA8C' : 'rgba(255,255,255,0.70)',
+                  cursor: 'pointer', transition: 'all 0.2s ease',
+                }}
+              >{tab}</button>
+            ))}
+          </div>
+        </div>
+
+        {/* Main search row */}
         <div style={{
           display: 'flex', alignItems: 'stretch',
           background: 'rgba(255,255,255,0.10)',
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
+          backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
           border: '1px solid rgba(255,255,255,0.20)',
           borderRadius: 'var(--radius-btn)',
-          overflow: 'hidden', height: 50,
+          height: 50, position: 'relative',
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', paddingLeft: 16, flexShrink: 0 }}>
+
+          {/* ── Property Type dropdown ── */}
+          <div style={{ position: 'relative', flexShrink: 0 }}>
+            <button
+              onClick={() => { setTypeOpen(o => !o); setAreaOpen(false); setPriceOpen(false); }}
+              style={{
+                height: '100%', display: 'flex', alignItems: 'center', gap: 6,
+                padding: '0 16px', fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 500,
+                color: selectedSubtype ? '#fff' : 'rgba(255,255,255,0.65)',
+                background: 'transparent', border: 'none',
+                borderRight: '1px solid rgba(255,255,255,0.15)', cursor: 'pointer', whiteSpace: 'nowrap',
+              }}
+            >
+              {selectedSubtype ? `${selectedCategory}: ${selectedSubtype}` : selectedCategory || 'Property Type'}
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ transform: typeOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease', opacity: 0.65 }}>
+                <path d="M2 4l4 4 4-4" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+
+            {typeOpen && (
+              <div style={{
+                position: 'absolute', bottom: 'calc(100% + 8px)', left: 0, width: 460,
+                background: 'rgba(12,20,46,0.98)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
+                border: '1px solid rgba(213,186,140,0.20)', borderRadius: 10,
+                boxShadow: '0 -12px 40px rgba(0,0,0,0.5)', overflow: 'hidden', zIndex: 20,
+              }}>
+                <div style={{ padding: '10px 16px 8px', fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(213,186,140,0.55)', fontFamily: 'var(--font)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                  Property Type
+                </div>
+                <div style={{ display: 'flex' }}>
+                  {/* Residential */}
+                  <div style={{ flex: 1, padding: '10px 0', borderRight: '1px solid rgba(255,255,255,0.08)' }}>
+                    <div style={{ padding: '2px 16px 8px', fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'rgba(213,186,140,0.70)', fontFamily: 'var(--font)' }}>Residential</div>
+                    {RESIDENTIAL_TYPES.map(type => (
+                      <button key={type} onClick={() => { setSelectedCategory('Residential'); setSelectedSubtype(type); setTypeOpen(false); }}
+                        style={{ display: 'block', width: '100%', textAlign: 'left', padding: '7px 16px', fontFamily: 'var(--font)', fontSize: '0.875rem', color: (selectedSubtype === type && selectedCategory === 'Residential') ? '#D5BA8C' : 'rgba(255,255,255,0.82)', background: (selectedSubtype === type && selectedCategory === 'Residential') ? 'rgba(213,186,140,0.10)' : 'transparent', border: 'none', cursor: 'pointer', transition: 'background 0.15s ease, color 0.15s ease' }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(213,186,140,0.08)'; (e.currentTarget as HTMLElement).style.color = '#D5BA8C'; }}
+                        onMouseLeave={e => { const a = selectedSubtype === type && selectedCategory === 'Residential'; (e.currentTarget as HTMLElement).style.background = a ? 'rgba(213,186,140,0.10)' : 'transparent'; (e.currentTarget as HTMLElement).style.color = a ? '#D5BA8C' : 'rgba(255,255,255,0.82)'; }}
+                      >{type}</button>
+                    ))}
+                  </div>
+                  {/* Commercial */}
+                  <div style={{ flex: 1, padding: '10px 0' }}>
+                    <div style={{ padding: '2px 16px 8px', fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'rgba(213,186,140,0.70)', fontFamily: 'var(--font)' }}>Commercial</div>
+                    {COMMERCIAL_TYPES.map(type => (
+                      <button key={type} onClick={() => { setSelectedCategory('Commercial'); setSelectedSubtype(type); setTypeOpen(false); }}
+                        style={{ display: 'block', width: '100%', textAlign: 'left', padding: '7px 16px', fontFamily: 'var(--font)', fontSize: '0.875rem', color: (selectedSubtype === type && selectedCategory === 'Commercial') ? '#D5BA8C' : 'rgba(255,255,255,0.82)', background: (selectedSubtype === type && selectedCategory === 'Commercial') ? 'rgba(213,186,140,0.10)' : 'transparent', border: 'none', cursor: 'pointer', transition: 'background 0.15s ease, color 0.15s ease' }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(213,186,140,0.08)'; (e.currentTarget as HTMLElement).style.color = '#D5BA8C'; }}
+                        onMouseLeave={e => { const a = selectedSubtype === type && selectedCategory === 'Commercial'; (e.currentTarget as HTMLElement).style.background = a ? 'rgba(213,186,140,0.10)' : 'transparent'; (e.currentTarget as HTMLElement).style.color = a ? '#D5BA8C' : 'rgba(255,255,255,0.82)'; }}
+                      >{type}</button>
+                    ))}
+                  </div>
+                </div>
+                {(selectedSubtype) && (
+                  <div style={{ padding: '8px 16px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                    <button onClick={() => { setSelectedCategory(''); setSelectedSubtype(''); setTypeOpen(false); }} style={{ fontFamily: 'var(--font)', fontSize: '0.75rem', color: 'rgba(255,255,255,0.40)', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>Clear selection</button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* ── Area (sq ft) ── */}
+          <div style={{ position: 'relative', flexShrink: 0 }}>
+            <button
+              onClick={() => { setAreaOpen(o => !o); setTypeOpen(false); setPriceOpen(false); }}
+              style={{
+                height: '100%', display: 'flex', alignItems: 'center', gap: 6,
+                padding: '0 16px', fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 500,
+                color: (minArea || maxArea) ? '#fff' : 'rgba(255,255,255,0.65)',
+                background: 'transparent', border: 'none',
+                borderRight: '1px solid rgba(255,255,255,0.15)', cursor: 'pointer', whiteSpace: 'nowrap',
+              }}
+            >
+              {(minArea || maxArea) ? `${minArea || '0'} – ${maxArea || '∞'} sqft` : 'Area (sq ft)'}
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ transform: areaOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease', opacity: 0.65 }}>
+                <path d="M2 4l4 4 4-4" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+            {areaOpen && (
+              <div style={{ position: 'absolute', bottom: 'calc(100% + 8px)', left: 0, width: 280, background: 'rgba(12,20,46,0.98)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', border: '1px solid rgba(213,186,140,0.20)', borderRadius: 10, boxShadow: '0 -12px 40px rgba(0,0,0,0.5)', padding: 16, zIndex: 20 }}>
+                <div style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(213,186,140,0.55)', fontFamily: 'var(--font)', marginBottom: 12 }}>Area (sq ft)</div>
+                <div style={{ display: 'flex', gap: 10 }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.45)', fontFamily: 'var(--font)', display: 'block', marginBottom: 6 }}>Minimum</label>
+                    <input type="number" placeholder="Min sq ft" value={minArea} onChange={e => setMinArea(e.target.value)} className="hero-range-input" style={{ width: '100%', padding: '8px 10px', fontFamily: 'var(--font)', fontSize: '0.875rem', color: '#fff', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 6, outline: 'none', boxSizing: 'border-box' }} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.45)', fontFamily: 'var(--font)', display: 'block', marginBottom: 6 }}>Maximum</label>
+                    <input type="number" placeholder="Max sq ft" value={maxArea} onChange={e => setMaxArea(e.target.value)} className="hero-range-input" style={{ width: '100%', padding: '8px 10px', fontFamily: 'var(--font)', fontSize: '0.875rem', color: '#fff', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 6, outline: 'none', boxSizing: 'border-box' }} />
+                  </div>
+                </div>
+                <button onClick={() => setAreaOpen(false)} style={{ marginTop: 12, width: '100%', padding: '8px', fontFamily: 'var(--font)', fontSize: '0.8125rem', fontWeight: 600, color: '#fff', background: 'var(--navy)', border: 'none', borderRadius: 6, cursor: 'pointer' }}>Done</button>
+              </div>
+            )}
+          </div>
+
+          {/* ── Price (AED) ── */}
+          <div style={{ position: 'relative', flexShrink: 0 }}>
+            <button
+              onClick={() => { setPriceOpen(o => !o); setTypeOpen(false); setAreaOpen(false); }}
+              style={{
+                height: '100%', display: 'flex', alignItems: 'center', gap: 6,
+                padding: '0 16px', fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 500,
+                color: (minPrice || maxPrice) ? '#fff' : 'rgba(255,255,255,0.65)',
+                background: 'transparent', border: 'none',
+                borderRight: '1px solid rgba(255,255,255,0.15)', cursor: 'pointer', whiteSpace: 'nowrap',
+              }}
+            >
+              {(minPrice || maxPrice) ? `AED ${minPrice || '0'} – ${maxPrice || '∞'}` : 'Price (AED)'}
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ transform: priceOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease', opacity: 0.65 }}>
+                <path d="M2 4l4 4 4-4" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+            {priceOpen && (
+              <div style={{ position: 'absolute', bottom: 'calc(100% + 8px)', left: 0, width: 280, background: 'rgba(12,20,46,0.98)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', border: '1px solid rgba(213,186,140,0.20)', borderRadius: 10, boxShadow: '0 -12px 40px rgba(0,0,0,0.5)', padding: 16, zIndex: 20 }}>
+                <div style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(213,186,140,0.55)', fontFamily: 'var(--font)', marginBottom: 12 }}>Price (AED)</div>
+                <div style={{ display: 'flex', gap: 10 }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.45)', fontFamily: 'var(--font)', display: 'block', marginBottom: 6 }}>Minimum</label>
+                    <input type="number" placeholder="Min AED" value={minPrice} onChange={e => setMinPrice(e.target.value)} className="hero-range-input" style={{ width: '100%', padding: '8px 10px', fontFamily: 'var(--font)', fontSize: '0.875rem', color: '#fff', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 6, outline: 'none', boxSizing: 'border-box' }} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.45)', fontFamily: 'var(--font)', display: 'block', marginBottom: 6 }}>Maximum</label>
+                    <input type="number" placeholder="Max AED" value={maxPrice} onChange={e => setMaxPrice(e.target.value)} className="hero-range-input" style={{ width: '100%', padding: '8px 10px', fontFamily: 'var(--font)', fontSize: '0.875rem', color: '#fff', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 6, outline: 'none', boxSizing: 'border-box' }} />
+                  </div>
+                </div>
+                <button onClick={() => setPriceOpen(false)} style={{ marginTop: 12, width: '100%', padding: '8px', fontFamily: 'var(--font)', fontSize: '0.8125rem', fontWeight: 600, color: '#fff', background: 'var(--navy)', border: 'none', borderRadius: 6, cursor: 'pointer' }}>Done</button>
+              </div>
+            )}
+          </div>
+
+          {/* ── Text search ── */}
+          <div style={{ display: 'flex', alignItems: 'center', paddingLeft: 14, flexShrink: 0 }}>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
               <circle cx="7" cy="7" r="5.5" stroke="rgba(255,255,255,0.65)" strokeWidth="1.4"/>
               <path d="M11 11l3 3" stroke="rgba(255,255,255,0.65)" strokeWidth="1.4" strokeLinecap="round"/>
@@ -356,12 +547,16 @@ export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide
           </div>
           <input
             type="text"
-            placeholder="Search off-plan"
-            style={{ flex: 1, fontFamily: 'var(--font)', fontSize: '0.9375rem', color: '#fff', background: 'transparent', border: 'none', outline: 'none', padding: '0 16px' }}
+            placeholder="Search by location, developer..."
+            value={searchText}
+            onChange={e => setSearchText(e.target.value)}
+            style={{ flex: 1, fontFamily: 'var(--font)', fontSize: '0.9375rem', color: '#fff', background: 'transparent', border: 'none', outline: 'none', padding: '0 12px' }}
           />
+
+          {/* ── Search button ── */}
           <button
-            style={{ fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600, color: '#fff', background: 'var(--navy)', border: 'none', borderLeft: '1px solid rgba(255,255,255,0.15)', padding: '0 32px', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0, transition: 'background 0.2s ease' }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'var(--navy-dark)')}
+            style={{ fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600, color: '#fff', background: 'var(--navy)', border: 'none', borderLeft: '1px solid rgba(255,255,255,0.15)', padding: '0 28px', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0, transition: 'background 0.2s ease', borderRadius: '0 var(--radius-btn) var(--radius-btn) 0' }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--navy-dark, #0f1e3d)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'var(--navy)')}
           >
             Search
@@ -371,6 +566,10 @@ export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide
 
       <style jsx>{`
         input::placeholder { color: rgba(255,255,255,0.50); }
+        .hero-range-input::placeholder { color: rgba(255,255,255,0.30) !important; }
+        .hero-range-input::-webkit-outer-spin-button,
+        .hero-range-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .hero-range-input { -moz-appearance: textfield; }
 
         /* ── Hero text ── */
         .hero-badge {
@@ -428,7 +627,7 @@ export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide
         /* ── Nav arrows — sit above the search bar in the clear bottom space ── */
         .hero-arrow {
           position: absolute;
-          bottom: 116px;   /* above search bar (96px) + gap */
+          bottom: 152px;   /* above search bar (136px) + gap */
           z-index: 4;
           width: 46px; height: 46px;
           border-radius: 50%;
@@ -462,7 +661,7 @@ export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide
           .hero-title { font-size: clamp(1.45rem, 6.5vw, 2.2rem) !important; white-space: normal !important; }
           .hero-sub { font-size: 0.8125rem !important; margin-bottom: 12px !important; line-height: 1.6 !important; }
           .hero-search-wrap { padding-inline: 16px !important; padding-bottom: 12px !important; }
-          .hero-arrow { width: 28px !important; height: 28px !important; bottom: 68px !important; }
+          .hero-arrow { width: 28px !important; height: 28px !important; bottom: 80px !important; }
           .hero-counter { display: none !important; }
         }
       `}</style>
