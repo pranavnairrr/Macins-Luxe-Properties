@@ -116,6 +116,37 @@ const KB_VARIANTS = [
   { scale: 1.07, x:  '1%',   y:  '1%'  },   // subtle zoom drift down-right
 ];
 
+/* Mobile Ken Burns — 3–4% zoom only; HiDPI screens (2×+) have ample resolution headroom */
+const KB_VARIANTS_MOBILE = [
+  { scale: 1.03, x: '-1%',  y: '-0.5%' },
+  { scale: 1.03, x:  '1%',  y:  '0.5%' },
+  { scale: 1.04, x: '-1%',  y: '-0.5%' },
+  { scale: 1.03, x:  '1%',  y:  '1%'  },
+];
+
+const QUESTIONS = [
+  'Which JVC apartments are currently hitting a 9% net rental yield?',
+  'Show me villas in Dubai Hills priced below the Q1 area average.',
+  'Find properties where the last transaction price was 15% lower than asking.',
+  'Show me undervalued 2-bedrooms near the new Dubai Metro Blue Line.',
+  'List buildings in Business Bay with the lowest service charges per sq. ft.',
+  'Find me a penthouse with a private infinity pool and Burj Khalifa views.',
+  'Show me Biophilic mansions with floor-to-ceiling glass in Al Barari.',
+  'Where can I find a villa with a 10-car underground gallery?',
+  'Show me ultra-private beachfront estates on Palm Jebel Ali.',
+  'Find me a loft with double-height ceilings and an industrial aesthetic.',
+  'What can I afford in Tilal Al Ghaf with a 40k monthly salary?',
+  'Show me properties with a 5-year post-handover payment plan.',
+  'Show me Distressed Sale opportunities in Dubai Marina.',
+  'Is it cheaper to rent or buy a 3-bedroom in Town Square right now?',
+  'Which areas saw the highest price appreciation in the last 30 days?',
+  'Show me villas that have had a price drop in the last 48 hours.',
+  'Find off-plan projects launching in Dubai Islands this month.',
+  'Show me Move-in Ready units in Emaar Beachfront.',
+  'What are the most liquid neighborhoods for secondary market flips?',
+  'Show me properties with a 5-year post-handover payment plan in Creek Harbour.',
+];
+
 
 const AUTO_MS  = 5000;   // ms per slide
 const FADE_MS  = 1400;   // cross-dissolve duration
@@ -149,7 +180,12 @@ export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide
   const [minPrice, setMinPrice]                 = useState('');
   const [maxPrice, setMaxPrice]                 = useState('');
   const [searchText, setSearchText]             = useState('');
-  const searchRef = useRef<HTMLDivElement>(null);
+  const [displayText, setDisplayText]           = useState('');
+  const [inputFocused, setInputFocused]         = useState(false);
+  const searchRef      = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const typeStateRef   = useRef({ qIdx: 0, isDeleting: false, displayLen: 0 });
+  const typeTimerRef   = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   /* GSAP refs — text elements */
   const badgeRef = useRef<HTMLSpanElement>(null);
@@ -166,13 +202,13 @@ export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide
       .fromTo(btnRef.current,   { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.55 }, '-=0.5');
   }, []);
 
-  /* ── GSAP: Ken Burns drift on active slide (desktop only) ── */
+  /* ── GSAP: Ken Burns drift on active slide ── */
   const animateKenBurns = useCallback((idx: number) => {
-    /* Skip on mobile — zoom upscales the pixel grid causing visible blur */
-    if (typeof window !== 'undefined' && window.innerWidth <= 640) return;
     const el = slideRefs.current[idx];
     if (!el) return;
-    const kb = KB_VARIANTS[idx % KB_VARIANTS.length];
+    const isMobile = typeof window !== 'undefined' && window.innerWidth <= 640;
+    const variants = isMobile ? KB_VARIANTS_MOBILE : KB_VARIANTS;
+    const kb = variants[idx % variants.length];
     gsap.killTweensOf(el);
     gsap.fromTo(el,
       { scale: 1.0, x: 0, y: 0 },
@@ -238,6 +274,37 @@ export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  /* ── AI oracle: typewriter cycling ── */
+  useEffect(() => {
+    const tick = () => {
+      const s = typeStateRef.current;
+      const full = QUESTIONS[s.qIdx];
+
+      if (!s.isDeleting) {
+        if (s.displayLen < full.length) {
+          s.displayLen++;
+          setDisplayText(full.slice(0, s.displayLen));
+          typeTimerRef.current = setTimeout(tick, 36);
+        } else {
+          typeTimerRef.current = setTimeout(() => { s.isDeleting = true; tick(); }, 2800);
+        }
+      } else {
+        if (s.displayLen > 0) {
+          s.displayLen--;
+          setDisplayText(full.slice(0, s.displayLen));
+          typeTimerRef.current = setTimeout(tick, 18);
+        } else {
+          s.isDeleting = false;
+          s.qIdx = (s.qIdx + 1) % QUESTIONS.length;
+          typeTimerRef.current = setTimeout(tick, 300);
+        }
+      }
+    };
+
+    typeTimerRef.current = setTimeout(tick, 800);
+    return () => { if (typeTimerRef.current) clearTimeout(typeTimerRef.current); };
   }, []);
 
   const slide = slides[active];
@@ -398,7 +465,7 @@ export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide
         </div>
 
         {/* Glass container — expands to reveal shelf below */}
-        <div style={{
+        <div className="hero-search-glass" style={{
           display: 'flex', flexDirection: 'column',
           background: 'rgba(255,255,255,0.10)',
           backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
@@ -411,25 +478,51 @@ export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide
         }}>
 
           {/* ── Main bar row ── */}
-          <div style={{ display: 'flex', alignItems: 'stretch', height: 50, flexShrink: 0 }}>
+          <div className="hero-search-bar-row" style={{ display: 'flex', alignItems: 'stretch', height: 50, flexShrink: 0 }}>
 
-            {/* Search icon + input — leftmost, dominant */}
-            <div style={{ display: 'flex', alignItems: 'center', paddingLeft: 14, flexShrink: 0 }}>
-              <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            {/* Search icon + input + animated oracle overlay */}
+            <div style={{ flex: 1, position: 'relative', display: 'flex', alignItems: 'center', paddingLeft: 14, minWidth: 0 }}>
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true" style={{ flexShrink: 0 }}>
                 <circle cx="7" cy="7" r="5.5" stroke="rgba(255,255,255,0.55)" strokeWidth="1.4"/>
                 <path d="M11 11l3 3" stroke="rgba(255,255,255,0.55)" strokeWidth="1.4" strokeLinecap="round"/>
               </svg>
+              <input
+                ref={searchInputRef}
+                type="text"
+                placeholder=""
+                value={searchText}
+                onChange={e => setSearchText(e.target.value)}
+                onFocus={() => setInputFocused(true)}
+                onBlur={() => setInputFocused(false)}
+                style={{ flex: 1, fontFamily: 'var(--font)', fontSize: '0.875rem', color: '#fff', background: 'transparent', border: 'none', outline: 'none', padding: '0 10px', minWidth: 0 }}
+              />
+              {/* AI oracle typewriter placeholder — hidden when user is typing or focused */}
+              {!searchText && !inputFocused && (
+                <div
+                  className="oracle-overlay"
+                  onClick={() => {
+                    setSearchText(QUESTIONS[typeStateRef.current.qIdx]);
+                    setTimeout(() => searchInputRef.current?.focus(), 0);
+                  }}
+                  style={{
+                    position: 'absolute', left: 38, right: 0, top: 0, bottom: 0,
+                    display: 'flex', alignItems: 'center',
+                    pointerEvents: 'all', cursor: 'text',
+                    fontFamily: 'var(--font)', fontSize: '0.875rem',
+                    color: 'rgba(255,255,255,0.50)',
+                    paddingRight: 6, userSelect: 'none',
+                  }}
+                >
+                  <span className="oracle-text" style={{ whiteSpace: 'nowrap', overflow: 'hidden', flex: '0 1 auto', minWidth: 0 }}>
+                    {displayText}
+                  </span>
+                  <span className="oracle-cursor" style={{ flexShrink: 0 }}>|</span>
+                </div>
+              )}
             </div>
-            <input
-              type="text"
-              placeholder="Search by location, developer..."
-              value={searchText}
-              onChange={e => setSearchText(e.target.value)}
-              style={{ flex: 1, fontFamily: 'var(--font)', fontSize: '0.875rem', color: '#fff', background: 'transparent', border: 'none', outline: 'none', padding: '0 10px' }}
-            />
 
             {/* Segmented pill — Residential | Commercial */}
-            <div className="hero-filter-group" style={{
+            <div className="hero-filter-group search-filter-pill" style={{
               display: 'flex', alignItems: 'stretch', flexShrink: 0,
               borderLeft: '1px solid rgba(255,255,255,0.15)',
               borderRight: '1px solid rgba(255,255,255,0.15)',
@@ -455,7 +548,7 @@ export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide
 
             {/* Area (sq ft) */}
             <button
-              className="hero-filter-btn"
+              className="hero-filter-btn search-filter-area"
               onClick={() => { setAreaOpen(o => !o); setPriceOpen(false); }}
               style={{
                 height: '100%', display: 'flex', alignItems: 'center', gap: 5,
@@ -475,7 +568,7 @@ export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide
 
             {/* Price (AED) */}
             <button
-              className="hero-filter-btn"
+              className="hero-filter-btn search-filter-price"
               onClick={() => { setPriceOpen(o => !o); setAreaOpen(false); }}
               style={{
                 height: '100%', display: 'flex', alignItems: 'center', gap: 5,
@@ -600,6 +693,18 @@ export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide
         .hero-range-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         .hero-range-input { -moz-appearance: textfield; }
 
+        /* ── Oracle cursor blink ── */
+        @keyframes oracleBlink {
+          0%, 100% { opacity: 1; }
+          50%       { opacity: 0; }
+        }
+        .oracle-cursor {
+          margin-left: 1px;
+          animation: oracleBlink 1s step-end infinite;
+          color: var(--gold, #D5BA8C);
+          font-weight: 300;
+        }
+
         /* ── Hero text ── */
         .hero-badge {
           display: inline-block;
@@ -678,9 +783,8 @@ export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide
         /* ── Mobile ── */
         @media (max-width: 640px) {
           .hero-section {
-            height: 100vh !important;
-            height: 100svh !important;
-            min-height: 560px !important;
+            height: 58vh !important;
+            min-height: 220px !important;
           }
           .hero-content-wrap {
             padding-inline: 20px !important;
@@ -689,18 +793,17 @@ export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide
             transform: translateY(-58%) !important;
           }
           .hero-badge { margin-bottom: 14px !important; }
-          .hero-title {
-            font-size: clamp(1.75rem, 7.5vw, 2.5rem) !important;
-            white-space: normal !important;
-            margin-bottom: 16px !important;
-          }
-          .hero-sub { display: none !important; }
+          .hero-title { font-size: clamp(1.45rem, 6.5vw, 2.2rem) !important; white-space: normal !important; }
+          .hero-sub { font-size: 0.8125rem !important; margin-bottom: 12px !important; line-height: 1.6 !important; }
           .hero-cta { padding: 12px 24px !important; font-size: 0.8125rem !important; }
-          .hero-search-wrap { padding-inline: 16px !important; padding-bottom: 20px !important; gap: 8px !important; }
-          .hero-filter-group { display: none !important; }
-          .hero-filter-btn { display: none !important; }
+          .hero-search-wrap { padding-inline: 16px !important; padding-bottom: 14px !important; gap: 6px !important; }
+          .hero-search-wrap > div:first-child { display: none !important; }
+          .hero-filter-group, .search-filter-pill,
+          .hero-filter-btn, .search-filter-area, .search-filter-price { display: none !important; }
           .hero-shelf { display: none !important; }
-          .hero-arrow { width: 32px !important; height: 32px !important; bottom: 120px !important; }
+          .oracle-overlay { font-size: 0.75rem !important; }
+          .oracle-text { white-space: normal !important; line-height: 1.35 !important; }
+          .hero-arrow { display: none !important; }
           .hero-counter { display: none !important; }
         }
       `}</style>
