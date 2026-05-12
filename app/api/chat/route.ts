@@ -12,8 +12,27 @@ const db = createDirectClient(
 
 export const maxDuration = 30;
 
+/* Intercept every request to Google's API and inject thinkingConfig into
+   the raw JSON body. @ai-sdk/google@1.2.22 doesn't know about thinkingConfig,
+   so we can't rely on experimental_providerMetadata — the SDK silently ignores it.
+   Without this, gemini-2.5-flash emits thinking chunks that break stream parsing. */
+async function fetchWithNoThinking(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
+  if (init?.body && typeof init.body === 'string') {
+    try {
+      const body = JSON.parse(init.body);
+      body.generationConfig = {
+        ...body.generationConfig,
+        thinkingConfig: { thinkingBudget: 0 },
+      };
+      return globalThis.fetch(input, { ...init, body: JSON.stringify(body) });
+    } catch { /* fall through if parse fails */ }
+  }
+  return globalThis.fetch(input, init);
+}
+
 const google = createGoogleGenerativeAI({
   apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY ?? '',
+  fetch: fetchWithNoThinking,
 });
 
 const SYSTEM_PROMPT = `You are Layla, the AI Concierge for Macins Luxe — a premium real estate agency in Dubai, UAE.
@@ -146,13 +165,6 @@ export async function POST(req: Request) {
     messages: convertToCoreMessages(messages),
     maxSteps: 5,
     experimental_telemetry: { isEnabled: false },
-    /* Disable thinking tokens — gemini-2.5-flash thinks by default and the thinking
-       chunks break stream parsing in @ai-sdk/google@1.x */
-    experimental_providerMetadata: {
-      google: {
-        thinkingConfig: { thinkingBudget: 0 },
-      },
-    },
     onError: (err) => {
       console.error('[chat] streamText error:', err);
     },
