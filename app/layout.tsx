@@ -1,9 +1,12 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
+import dynamic from 'next/dynamic';
 import './globals.css';
 import SiteLoader from '@/components/SiteLoader';
 import WhatsAppFloat from '@/components/WhatsAppFloat';
 import BackToTop from '@/components/BackToTop';
+
+const ChatWidget = dynamic(() => import('@/components/ChatWidget'), { ssr: false });
 
 export const metadata: Metadata = {
   title: 'Macins Luxe — Premium Real Estate',
@@ -33,6 +36,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {children}
         <WhatsAppFloat />
         <BackToTop />
+        <ChatWidget />
       </body>
     </html>
   );

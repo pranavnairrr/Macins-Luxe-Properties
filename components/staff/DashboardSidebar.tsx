@@ -12,6 +12,7 @@ import {
   LogOut,
   Menu,
   X,
+  MessageSquare,
 } from 'lucide-react'
 
 const NAV_ITEMS = [
@@ -19,6 +20,7 @@ const NAV_ITEMS = [
   { id: 'listings',  label: 'Property Listings',    Icon: List },
   { id: 'agents',    label: 'Team & Agents',        Icon: Users },
   { id: 'leads',     label: 'Leads & Enquiries',    Icon: Inbox },
+  { id: 'chats',     label: 'AI Chats',             Icon: MessageSquare },
   { id: 'settings',  label: 'Site Settings',        Icon: Settings },
 ] as const
 

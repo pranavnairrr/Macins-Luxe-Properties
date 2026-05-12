@@ -2,16 +2,18 @@
 
 import { Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { LayoutDashboard, List, Users, Inbox, Settings } from 'lucide-react'
+import { LayoutDashboard, List, Users, Inbox, Settings, MessageSquare } from 'lucide-react'
 import PropertyListingsView from '@/components/staff/PropertyListingsView'
 import AgentsView from '@/components/staff/AgentsView'
 import LeadsView from '@/components/staff/LeadsView'
 import SiteSettingsView from '@/components/staff/SiteSettingsView'
+import ChatsTab from '@/components/staff/ChatsTab'
 
 const OVERVIEW_CARDS = [
   { label: 'Property Listings', desc: 'Add, edit, and publish properties',      Icon: List,            tab: 'listings'  },
   { label: 'Team & Agents',     desc: 'Manage agents assigned to brochures',    Icon: Users,           tab: 'agents'    },
   { label: 'Leads & Enquiries', desc: 'View enquiries and brochure downloads',  Icon: Inbox,           tab: 'leads'     },
+  { label: 'AI Chats',          desc: 'View all AI concierge conversations',     Icon: MessageSquare,   tab: 'chats'     },
   { label: 'Site Settings',     desc: 'Update hero images, stats, and content', Icon: Settings,        tab: 'settings'  },
 ]
 
@@ -81,6 +83,7 @@ function DashboardContent() {
     case 'listings':  return <PropertyListingsView />
     case 'agents':    return <AgentsView />
     case 'leads':     return <LeadsView />
+    case 'chats':     return <ChatsTab />
     case 'settings':  return <SiteSettingsView />
     default:          return <OverviewPanel />
   }

@@ -252,6 +252,7 @@ export default function Nav() {
 
               {/* CTA */}
               <button
+                onClick={() => window.dispatchEvent(new CustomEvent('macins-chat-open', { detail: { fullscreen: true } }))}
                 style={{
                   fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600,
                   color: scrolled ? 'var(--gold)' : 'var(--heading)',
@@ -359,7 +360,10 @@ export default function Nav() {
           </div>
         </div>
 
-        <button style={{ marginTop: 20, width: '100%', fontFamily: 'var(--font)', fontSize: '0.9375rem', fontWeight: 600, color: 'var(--gold)', background: 'rgba(213,186,140,0.10)', border: '1px solid rgba(213,186,140,0.40)', borderRadius: 'var(--radius-btn)', padding: '14px', cursor: 'pointer' }}>
+        <button
+          onClick={() => { setMenuOpen(false); window.dispatchEvent(new CustomEvent('macins-chat-open', { detail: { fullscreen: true } })); }}
+          style={{ marginTop: 20, width: '100%', fontFamily: 'var(--font)', fontSize: '0.9375rem', fontWeight: 600, color: 'var(--gold)', background: 'rgba(213,186,140,0.10)', border: '1px solid rgba(213,186,140,0.40)', borderRadius: 'var(--radius-btn)', padding: '14px', cursor: 'pointer' }}
+        >
           Macins AI
         </button>
       </div>

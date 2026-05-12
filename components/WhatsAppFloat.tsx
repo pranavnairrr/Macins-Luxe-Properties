@@ -17,21 +17,24 @@ export default function WhatsAppFloat() {
         style={{
           position: 'fixed',
           bottom: 28,
-          right: 28,
+          right: 20,
           zIndex: 998,
-          width: 56,
-          height: 56,
-          borderRadius: '50%',
-          background: '#25D366',
+          width: 168,
+          height: 46,
+          paddingLeft: 16,
+          paddingRight: 16,
+          borderRadius: 100,
+          background: hovered ? '#20c05c' : '#25D366',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center',
+          gap: 9,
           boxShadow: hovered
-            ? '0 6px 24px rgba(37,211,102,0.6)'
-            : '0 4px 16px rgba(37,211,102,0.45)',
-          transform: hovered ? 'scale(1.12)' : 'scale(1)',
-          transition: 'transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s ease',
+            ? '0 8px 28px rgba(37,211,102,0.55)'
+            : '0 4px 18px rgba(37,211,102,0.40)',
+          transform: hovered ? 'translateY(-2px)' : 'translateY(0)',
+          transition: 'transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease',
           textDecoration: 'none',
+          overflow: 'hidden',
         }}
       >
         {/* Pulse ring */}
@@ -40,29 +43,47 @@ export default function WhatsAppFloat() {
           style={{
             position: 'absolute',
             inset: 0,
-            borderRadius: '50%',
+            borderRadius: 100,
             background: '#25D366',
-            animation: 'wa-pulse 2s ease-out infinite',
+            animation: 'wa-pulse 2.6s ease-out infinite',
+            zIndex: 0,
           }}
         />
-        {/* WhatsApp icon */}
+
+        {/* WhatsApp SVG icon */}
         <svg
-          width="28"
-          height="28"
+          width="18"
+          height="18"
           viewBox="0 0 24 24"
           fill="white"
           xmlns="http://www.w3.org/2000/svg"
-          style={{ position: 'relative', zIndex: 1 }}
+          style={{ position: 'relative', zIndex: 1, flexShrink: 0 }}
           aria-hidden="true"
         >
           <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
         </svg>
+
+        {/* Label */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 0, position: 'relative', zIndex: 1 }}>
+          <span style={{
+            fontFamily: 'var(--font)', fontSize: 13, fontWeight: 700,
+            color: '#fff', lineHeight: 1.2, letterSpacing: '0.01em',
+          }}>
+            WhatsApp
+          </span>
+          <span style={{
+            fontFamily: 'var(--font)', fontSize: 10, fontWeight: 400,
+            color: 'rgba(255,255,255,0.80)', lineHeight: 1.2,
+          }}>
+            Chat with us
+          </span>
+        </div>
       </a>
 
       <style jsx global>{`
         @keyframes wa-pulse {
-          0% { transform: scale(1); opacity: 0.6; }
-          100% { transform: scale(1.65); opacity: 0; }
+          0%   { transform: scale(1);    opacity: 0.5; }
+          100% { transform: scale(1.55); opacity: 0;   }
         }
       `}</style>
     </>

@@ -599,6 +599,15 @@ export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide
                 if (maxArea) params.set('maxArea', maxArea);
                 if (searchText.trim()) params.set('q', searchText.trim());
                 router.push('/properties' + (params.toString() ? '?' + params.toString() : ''));
+
+                // Sync query to AI Concierge chat widget
+                const chatQuery = [searchText.trim(), selectedType, selectedCategory]
+                  .filter(Boolean).join(' ');
+                if (chatQuery) {
+                  window.dispatchEvent(new CustomEvent('macins-chat-search', {
+                    detail: { query: chatQuery, minPrice, maxPrice, tab: searchTab },
+                  }));
+                }
               }}
               style={{ fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600, color: '#fff', background: 'rgba(0,0,0,0.55)', border: 'none', borderLeft: '1px solid rgba(255,255,255,0.15)', padding: '0 26px', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0, transition: 'background 0.2s ease' }}
               onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.80)')}
