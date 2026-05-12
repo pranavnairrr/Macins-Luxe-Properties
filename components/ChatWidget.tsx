@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { useChat } from 'ai/react';
+import { useChat } from '@ai-sdk/react';
 import { X, Send, Loader2, Maximize2, Minimize2, Sparkles, Building2, PhoneCall, TrendingUp, Landmark } from 'lucide-react';
 import ChatPropertyCard from '@/components/ChatPropertyCard';
 

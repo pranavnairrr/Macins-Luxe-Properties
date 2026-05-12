@@ -13,7 +13,7 @@ const db = createDirectClient(
 export const maxDuration = 30;
 
 const google = createGoogleGenerativeAI({
-  apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY!,
+  apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY ?? '',
 });
 
 const SYSTEM_PROMPT = `You are the AI Concierge for Macins Luxe, a premium real estate agency in the UAE.
@@ -81,9 +81,8 @@ async function updateContact(sessionId: string, fields: { name?: string; phone?:
 }
 
 export async function POST(req: Request) {
-  // Surface missing env vars immediately so Vercel function logs are useful
   if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
-    console.error('[chat] GOOGLE_GENERATIVE_AI_API_KEY is not set — add it to Vercel Environment Variables');
+    console.error('[chat] GOOGLE_GENERATIVE_AI_API_KEY is not set');
     return new Response(JSON.stringify({ error: 'AI service not configured' }), { status: 503 });
   }
 
@@ -96,7 +95,6 @@ export async function POST(req: Request) {
 
   const referer = req.headers.get('referer') ?? '';
 
-  // Ensure session exists and save user's latest message
   if (sessionId) {
     const lastMsg = messages[messages.length - 1];
     await ensureSession(sessionId, referer);
@@ -111,6 +109,13 @@ export async function POST(req: Request) {
     messages: convertToCoreMessages(messages),
     maxSteps: 5,
     experimental_telemetry: { isEnabled: false },
+    /* Disable thinking tokens — gemini-2.5-flash thinks by default and the thinking
+       chunks break stream parsing in @ai-sdk/google@1.x */
+    experimental_providerMetadata: {
+      google: {
+        thinkingConfig: { thinkingBudget: 0 },
+      },
+    },
     onError: (err) => {
       console.error('[chat] streamText error:', err);
     },
