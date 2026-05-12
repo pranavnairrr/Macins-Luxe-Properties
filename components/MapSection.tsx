@@ -1,10 +1,31 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import { useEffect, useRef, useState } from 'react';
+import { Hand } from 'lucide-react';
 
 const MapView = dynamic(() => import('./MapView'), { ssr: false });
 
 export default function MapSection() {
+  const [mapLocked, setMapLocked] = useState(true);
+  const lockTimer = useRef<ReturnType<typeof setTimeout>>();
+
+  // Re-lock whenever the user scrolls the page
+  useEffect(() => {
+    const onScroll = () => {
+      setMapLocked(true);
+      clearTimeout(lockTimer.current);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const unlockMap = () => {
+    setMapLocked(false);
+    clearTimeout(lockTimer.current);
+    lockTimer.current = setTimeout(() => setMapLocked(true), 6000);
+  };
+
   return (
     <section className="section" style={{ background: 'var(--white)' }}>
       <div className="container">
@@ -54,14 +75,20 @@ export default function MapSection() {
         </div>
 
         {/* Map */}
-        <div style={{
-          borderRadius: 'var(--radius-lg)',
-          overflow: 'hidden',
-          height: 520,
-          border: '1px solid var(--border)',
-          boxShadow: '0 4px 24px rgba(26,37,53,0.08)',
-          position: 'relative',
-        }}>
+        <div
+          className="map-container"
+          style={{
+            borderRadius: 'var(--radius-lg)',
+            overflow: 'hidden',
+            height: 520,
+            border: '1px solid var(--border)',
+            boxShadow: '0 4px 24px rgba(26,37,53,0.08)',
+            position: 'relative',
+            /* Contain all Leaflet z-indices inside this stacking context
+               so map panes (z-index 400-700) never bleed above the nav (z-index 50) */
+            isolation: 'isolate',
+          }}
+        >
           {/* Property count badge */}
           <div style={{
             position: 'absolute',
@@ -81,7 +108,6 @@ export default function MapSection() {
             alignItems: 'center',
             gap: 6,
           }}>
-            {/* Dot */}
             <span style={{
               width: 7,
               height: 7,
@@ -93,16 +119,65 @@ export default function MapSection() {
           </div>
 
           <MapView />
+
+          {/* Mobile-only: tap-to-interact overlay
+              Blocks accidental map pan when user intends to scroll the page.
+              Hidden on desktop via CSS. */}
+          {mapLocked && (
+            <div
+              className="map-gesture-overlay"
+              onClick={unlockMap}
+              style={{
+                position: 'absolute',
+                inset: 0,
+                zIndex: 1001,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: 'rgba(3,26,50,0.18)',
+                cursor: 'pointer',
+              }}
+            >
+              <div style={{
+                background: 'rgba(3,26,50,0.78)',
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)',
+                borderRadius: 10,
+                padding: '10px 18px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                border: '1px solid rgba(213,186,140,0.25)',
+                pointerEvents: 'none',
+              }}>
+                <Hand size={16} strokeWidth={1.5} color="rgba(213,186,140,0.9)" />
+                <span style={{
+                  color: '#fff',
+                  fontFamily: 'var(--font)',
+                  fontSize: '0.8125rem',
+                  fontWeight: 500,
+                }}>
+                  Tap to interact with map
+                </span>
+              </div>
+            </div>
+          )}
         </div>
 
       </div>
 
       <style jsx>{`
+        /* Overlay only shows on touch/mobile — hidden on desktop */
+        .map-gesture-overlay { display: none; }
+
+        @media (max-width: 1024px) {
+          .map-gesture-overlay { display: flex !important; }
+        }
         @media (max-width: 768px) {
-          div[style*="height: 520px"] { height: 320px !important; }
+          .map-container { height: 320px !important; }
         }
         @media (max-width: 480px) {
-          div[style*="height: 520px"] { height: 260px !important; }
+          .map-container { height: 260px !important; }
         }
       `}</style>
     </section>

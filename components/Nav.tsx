@@ -306,33 +306,18 @@ export default function Nav() {
         </div>
       </header>
 
-      {/* Mobile drawer — backdrop */}
-      {menuOpen && (
-        <div
-          onClick={() => setMenuOpen(false)}
-          style={{
-            position: 'fixed', inset: 0, zIndex: 48,
-            background: 'rgba(2,16,30,0.55)',
-            backdropFilter: 'blur(4px)',
-            WebkitBackdropFilter: 'blur(4px)',
-          }}
-        />
-      )}
-
-      {/* Mobile drawer — right panel */}
+      {/* Mobile drawer — full screen */}
       <div
         aria-hidden={!menuOpen}
         style={{
-          position: 'fixed', top: 0, right: 0, bottom: 0, zIndex: 49,
-          width: '82%', maxWidth: 320,
-          background: 'rgba(3,26,50,0.82)',
+          position: 'fixed', inset: 0, zIndex: 49,
+          background: 'rgba(3,26,50,0.97)',
           backdropFilter: 'blur(36px) saturate(1.8)',
           WebkitBackdropFilter: 'blur(36px) saturate(1.8)',
-          borderLeft: '1px solid rgba(213,186,140,0.14)',
           transform: menuOpen ? 'translateX(0)' : 'translateX(100%)',
           transition: 'transform 0.32s var(--ease)',
           overflowY: 'auto',
-          padding: '80px 24px 32px',
+          padding: '88px 32px 48px',
           display: 'flex', flexDirection: 'column',
         }}
       >

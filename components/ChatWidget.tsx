@@ -72,6 +72,7 @@ export default function ChatWidget() {
   const [heroScrolled, setHeroScrolled] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const isMobileRef = useRef(false);
 
   const [sessionId] = useState<string>(() => {
     if (typeof window === 'undefined') return '';
@@ -91,34 +92,13 @@ export default function ChatWidget() {
 
   const isLoading = status === 'submitted' || status === 'streaming';
 
-  /* Visual viewport height + keyboard offset (keeps header visible when keyboard opens) */
-  const [vpHeight, setVpHeight] = useState<number>(0);
-  const [vpOffset, setVpOffset] = useState<number>(0);
-
+  /* Detect mobile — also kept in a ref so event-handler closures can read it */
   useEffect(() => {
-    const vp = window.visualViewport;
-    setVpHeight(vp ? vp.height : window.innerHeight);
-    if (!vp) return;
-    let raf = 0;
-    const update = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        setVpHeight(vp.height);
-        setVpOffset(Math.max(0, window.innerHeight - vp.height - vp.offsetTop));
-      });
+    const check = () => {
+      const m = window.innerWidth <= 640;
+      isMobileRef.current = m;
+      setIsMobile(m);
     };
-    vp.addEventListener('resize', update);
-    vp.addEventListener('scroll', update);
-    return () => {
-      vp.removeEventListener('resize', update);
-      vp.removeEventListener('scroll', update);
-      cancelAnimationFrame(raf);
-    };
-  }, []);
-
-  /* Detect mobile */
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth <= 640);
     check();
     window.addEventListener('resize', check);
     return () => window.removeEventListener('resize', check);
@@ -163,7 +143,7 @@ export default function ChatWidget() {
       const detail = (e as CustomEvent).detail as { fullscreen?: boolean };
       setIsOpen(true);
       if (detail?.fullscreen) setIsExpanded(true);
-      setTimeout(() => inputRef.current?.focus(), 320);
+      if (!isMobileRef.current) setTimeout(() => inputRef.current?.focus(), 320);
     };
     window.addEventListener('macins-chat-open', handler);
     return () => window.removeEventListener('macins-chat-open', handler);
@@ -179,11 +159,11 @@ export default function ChatWidget() {
     return () => clearTimeout(t);
   }, []);
 
-  /* Focus input when opening, clear any stale error */
+  /* Focus input when opening (desktop only — mobile auto-focus triggers keyboard flicker) */
   useEffect(() => {
     if (isOpen) {
       setErrorVisible(false);
-      setTimeout(() => inputRef.current?.focus(), 300);
+      if (!isMobileRef.current) setTimeout(() => inputRef.current?.focus(), 300);
     }
   }, [isOpen]);
 
@@ -195,19 +175,17 @@ export default function ChatWidget() {
     }
   }, [input, handleSubmit]);
 
-  /* Panel positioning — three modes */
+  /* Panel positioning — three modes.
+     Mobile: inset:0 full-screen + transform slide — no JS height/bottom math so
+     keyboard open/close never triggers a re-render or layout jump. */
   const panelStyle: React.CSSProperties = isMobile
     ? {
         position: 'fixed',
-        /* sit above keyboard: bottom = keyboard height when open, off-screen when closed */
-        bottom: isOpen ? vpOffset : -(vpHeight + 20),
-        left: 0,
-        right: 0,
-        /* height = visible area above keyboard, capped at 88% so there's always a gap */
-        height: Math.max(Math.floor(vpHeight * 0.88), 320),
+        inset: 0,
         borderRadius: '20px 20px 0 0',
         zIndex: 1001,
-        transition: 'bottom 320ms cubic-bezier(0.4,0,0.2,1)',
+        transform: isOpen ? 'translateY(0)' : 'translateY(105%)',
+        transition: 'transform 320ms cubic-bezier(0.4,0,0.2,1)',
       }
     : isExpanded
     ? {
@@ -263,19 +241,20 @@ export default function ChatWidget() {
         .chat-carousel::-webkit-scrollbar-thumb { background: rgba(213,186,140,0.2); border-radius: 3px; }
       `}</style>
 
-      {/* Backdrop — mobile always, desktop when expanded */}
-      {isOpen && (isMobile || isExpanded) && (
-        <div
-          onClick={() => { setIsOpen(false); setIsExpanded(false); }}
-          style={{
-            position: 'fixed', inset: 0,
-            background: 'rgba(0,0,0,0.55)',
-            zIndex: 1000,
-            backdropFilter: 'blur(6px)',
-            WebkitBackdropFilter: 'blur(6px)',
-          }}
-        />
-      )}
+      {/* Backdrop — fades in on mobile / desktop-expanded; always mounted so transition works */}
+      <div
+        onClick={() => { setIsOpen(false); setIsExpanded(false); }}
+        style={{
+          position: 'fixed', inset: 0,
+          background: 'rgba(0,0,0,0.55)',
+          zIndex: 1000,
+          backdropFilter: 'blur(6px)',
+          WebkitBackdropFilter: 'blur(6px)',
+          opacity: isOpen && (isMobile || isExpanded) ? 1 : 0,
+          pointerEvents: isOpen && (isMobile || isExpanded) ? 'auto' : 'none',
+          transition: 'opacity 280ms ease',
+        }}
+      />
 
       {/* Chat panel */}
       <div style={{

@@ -124,7 +124,7 @@ export default function MapView() {
       mapInstance = L.map(container, {
         center: [25.11, 55.22],
         zoom: 11,
-        scrollWheelZoom: true,
+        scrollWheelZoom: false,
         dragging: true,
         zoomControl: true,
       });

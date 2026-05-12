@@ -81,6 +81,12 @@ async function updateContact(sessionId: string, fields: { name?: string; phone?:
 }
 
 export async function POST(req: Request) {
+  // Surface missing env vars immediately so Vercel function logs are useful
+  if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+    console.error('[chat] GOOGLE_GENERATIVE_AI_API_KEY is not set — add it to Vercel Environment Variables');
+    return new Response(JSON.stringify({ error: 'AI service not configured' }), { status: 503 });
+  }
+
   let messages: Message[], sessionId: string;
   try {
     ({ messages, sessionId } = await req.json());
