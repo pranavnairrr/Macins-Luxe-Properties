@@ -1,6 +1,5 @@
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { generateText } from 'ai';
-// ai@6 compat
 
 export const runtime = 'nodejs';
 export const maxDuration = 15;
@@ -32,7 +31,7 @@ export async function GET() {
     const { text } = await generateText({
       model: google('gemini-2.5-flash'),
       prompt: 'Reply with exactly: ok',
-      maxOutputTokens: 5,
+      maxTokens: 5,
     });
 
     return Response.json({ ...result, gemini: 'ok', response: text });
