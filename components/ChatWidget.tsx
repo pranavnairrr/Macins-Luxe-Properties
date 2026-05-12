@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { useChat } from 'ai/react';
+import { useChat } from '@ai-sdk/react';
+import { DefaultChatTransport } from 'ai';
 import { X, Send, Loader2, Maximize2, Minimize2, Sparkles, Building2, PhoneCall, TrendingUp, Landmark } from 'lucide-react';
 import ChatPropertyCard from '@/components/ChatPropertyCard';
 
@@ -33,6 +34,14 @@ interface SearchResult {
   noExactMatch?: boolean;
 }
 
+interface ToolInvocation {
+  toolCallId: string;
+  toolName: string;
+  state: string;
+  input?: Record<string, unknown>;
+  output?: unknown;
+}
+
 function SkeletonLoader() {
   return (
     <div style={{ padding: '10px 0', display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -52,24 +61,14 @@ function SkeletonLoader() {
   );
 }
 
-function formatMsgTime(date?: Date): string {
-  if (!date) return '';
-  const d = new Date(date);
-  const now = new Date();
-  const isToday = d.toDateString() === now.toDateString();
-  const isYesterday = new Date(now.getTime() - 86400000).toDateString() === d.toDateString();
-  const time = d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-  if (isToday) return time;
-  if (isYesterday) return `Yesterday ${time}`;
-  return `${d.getDate()} ${d.toLocaleString('en', { month: 'short' })} ${time}`;
-}
-
 export default function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [oracleIdx, setOracleIdx] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const [heroScrolled, setHeroScrolled] = useState(false);
+  const [input, setInput] = useState('');
+  const [errorVisible, setErrorVisible] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const isMobileRef = useRef(false);
@@ -82,15 +81,20 @@ export default function ChatWidget() {
     return id;
   });
 
-  const { messages, input, setInput, handleSubmit, status, append, error } = useChat({
-    api: '/api/chat',
-    body: { sessionId },
-    maxSteps: 5,
+  const { messages, status, error, sendMessage } = useChat({
+    transport: new DefaultChatTransport({ api: '/api/chat', body: { sessionId } }),
   });
-  const [errorVisible, setErrorVisible] = useState(false);
+
   useEffect(() => { if (error) setErrorVisible(true); }, [error]);
 
   const isLoading = status === 'submitted' || status === 'streaming';
+
+  const doSend = useCallback(() => {
+    if (!input.trim() || isLoading) return;
+    setErrorVisible(false);
+    sendMessage({ text: input });
+    setInput('');
+  }, [input, isLoading, sendMessage]);
 
   /* Detect mobile — also kept in a ref so event-handler closures can read it */
   useEffect(() => {
@@ -130,12 +134,12 @@ export default function ChatWidget() {
       if (!detail?.query?.trim()) return;
       setIsOpen(true);
       setTimeout(() => {
-        append({ role: 'user', content: detail.query });
+        sendMessage({ text: detail.query });
       }, 150);
     };
     window.addEventListener('macins-chat-search', handler);
     return () => window.removeEventListener('macins-chat-search', handler);
-  }, [append]);
+  }, [sendMessage]);
 
   /* Listen for Macins AI nav button — open fullscreen */
   useEffect(() => {
@@ -170,10 +174,9 @@ export default function ChatWidget() {
   const onKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey && input.trim()) {
       e.preventDefault();
-      setErrorVisible(false);
-      handleSubmit(e as unknown as React.FormEvent);
+      doSend();
     }
-  }, [input, handleSubmit]);
+  }, [input, doSend]);
 
   /* Panel positioning — three modes.
      Mobile: inset:0 full-screen + transform slide — no JS height/bottom math so
@@ -379,7 +382,7 @@ export default function ChatWidget() {
                 ].map(({ Icon, label, query }) => (
                   <button
                     key={query}
-                    onClick={() => append({ role: 'user', content: query })}
+                    onClick={() => sendMessage({ text: query })}
                     style={{
                       background: 'rgba(255,255,255,0.06)',
                       backdropFilter: 'blur(8px)',
@@ -417,9 +420,23 @@ export default function ChatWidget() {
 
           {messages.map((message, msgIdx) => {
             const isLastMsg = msgIdx === messages.length - 1;
-            const hadContactSave = message.toolInvocations?.some(
-              inv => inv.toolName === 'saveContactInfo' && inv.state === 'result'
-            ) ?? false;
+
+            /* Extract text content from parts */
+            const textContent = message.parts
+              .filter((p): p is { type: 'text'; text: string } => p.type === 'text')
+              .map(p => p.text)
+              .join('');
+
+            /* Extract tool invocations from parts */
+            const toolParts = (message.parts as unknown[])
+              .filter((p): p is { type: 'tool-invocation'; toolInvocation: ToolInvocation } =>
+                typeof p === 'object' && p !== null && (p as { type: string }).type === 'tool-invocation'
+              );
+
+            const hadContactSave = toolParts.some(p =>
+              p.toolInvocation.toolName === 'saveContactInfo' &&
+              p.toolInvocation.state === 'output-available'
+            );
 
             return (
             <div
@@ -432,7 +449,7 @@ export default function ChatWidget() {
               }}
             >
               {/* Text bubble */}
-              {message.content && (
+              {textContent && (
                 <div style={{ maxWidth: '88%', display: 'flex', flexDirection: 'column', alignItems: message.role === 'user' ? 'flex-end' : 'flex-start', gap: 3 }}>
                   <div style={{
                     background: message.role === 'user'
@@ -453,21 +470,18 @@ export default function ChatWidget() {
                     lineHeight: 1.6,
                     whiteSpace: 'pre-wrap',
                   }}>
-                    {message.content}
-                  </div>
-                  <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.28)', fontFamily: 'var(--font)', paddingLeft: 2, paddingRight: 2 }}>
-                    {formatMsgTime(message.createdAt)}
+                    {textContent}
                   </div>
                 </div>
               )}
 
               {/* Tool invocations — property carousel */}
-              {message.toolInvocations?.map(invocation => {
-                if (invocation.toolName !== 'searchListings') return null;
+              {toolParts.map(({ toolInvocation: inv }) => {
+                if (inv.toolName !== 'searchListings') return null;
 
-                if (invocation.state === 'call' || invocation.state === 'partial-call') {
+                if (inv.state === 'input-available' || inv.state === 'input-streaming') {
                   return (
-                    <div key={invocation.toolCallId} style={{
+                    <div key={inv.toolCallId} style={{
                       background: 'rgba(255,255,255,0.04)',
                       border: '1px solid rgba(255,255,255,0.07)',
                       borderRadius: 'var(--radius-md)',
@@ -485,14 +499,14 @@ export default function ChatWidget() {
                   );
                 }
 
-                if (invocation.state === 'result') {
-                  const result = invocation.result as SearchResult;
+                if (inv.state === 'output-available') {
+                  const result = inv.output as SearchResult;
                   const listings = result?.listings ?? [];
                   const noExactMatch = result?.noExactMatch ?? false;
 
                   if (listings.length === 0) {
                     return (
-                      <div key={invocation.toolCallId} style={{
+                      <div key={inv.toolCallId} style={{
                         background: 'rgba(255,255,255,0.04)',
                         border: '1px solid rgba(255,255,255,0.07)',
                         borderRadius: 'var(--radius-md)',
@@ -508,10 +522,10 @@ export default function ChatWidget() {
 
                   const shown = listings.slice(0, 2);
                   const hasMore = listings.length > 2;
-                  const viewMoreQuery = (invocation as { args?: { query?: string } }).args?.query ?? '';
+                  const viewMoreQuery = (inv.input as { query?: string })?.query ?? '';
 
                   return (
-                    <div key={invocation.toolCallId} style={{ width: '100%' }}>
+                    <div key={inv.toolCallId} style={{ width: '100%' }}>
                       <div style={{
                         fontFamily: 'var(--font)',
                         fontSize: 11,
@@ -587,7 +601,7 @@ export default function ChatWidget() {
                   ].map(({ Icon, label, query }) => (
                     <button
                       key={query}
-                      onClick={() => append({ role: 'user', content: query })}
+                      onClick={() => sendMessage({ text: query })}
                       style={{
                         background: 'rgba(255,255,255,0.06)',
                         backdropFilter: 'blur(8px)',
@@ -713,7 +727,7 @@ export default function ChatWidget() {
             onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.13)')}
           />
           <button
-            onClick={e => { if (input.trim()) { setErrorVisible(false); handleSubmit(e as unknown as React.FormEvent); } }}
+            onClick={doSend}
             disabled={isLoading || !input.trim()}
             style={{
               width: 38, height: 38,

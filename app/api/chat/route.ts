@@ -1,5 +1,5 @@
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
-import { streamText, tool, convertToCoreMessages, type Message } from 'ai';
+import { streamText, tool, convertToModelMessages, type UIMessage, stepCountIs } from 'ai';
 import { z } from 'zod';
 import { randomUUID } from 'crypto';
 import { createClient as createDirectClient } from '@supabase/supabase-js';
@@ -12,27 +12,8 @@ const db = createDirectClient(
 
 export const maxDuration = 30;
 
-/* Intercept every request to Google's API and inject thinkingConfig into
-   the raw JSON body. @ai-sdk/google@1.2.22 doesn't know about thinkingConfig,
-   so we can't rely on experimental_providerMetadata — the SDK silently ignores it.
-   Without this, gemini-2.5-flash emits thinking chunks that break stream parsing. */
-async function fetchWithNoThinking(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
-  if (init?.body && typeof init.body === 'string') {
-    try {
-      const body = JSON.parse(init.body);
-      body.generationConfig = {
-        ...body.generationConfig,
-        thinkingConfig: { thinkingBudget: 0 },
-      };
-      return globalThis.fetch(input, { ...init, body: JSON.stringify(body) });
-    } catch { /* fall through if parse fails */ }
-  }
-  return globalThis.fetch(input, init);
-}
-
 const google = createGoogleGenerativeAI({
   apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY ?? '',
-  fetch: fetchWithNoThinking,
 });
 
 const SYSTEM_PROMPT = `You are Layla, the AI Concierge for Macins Luxe — a premium real estate agency in Dubai, UAE.
@@ -136,13 +117,27 @@ async function updateContact(sessionId: string, fields: { name?: string; phone?:
   if (error) console.error('[chat] contact update:', error.message, error.code);
 }
 
+const searchListingsSchema = z.object({
+  query: z.string().describe('Search keywords: location, property name, or developer'),
+  maxPrice: z.string().optional().describe('Maximum price in AED, e.g. "5000000"'),
+  propertyType: z.string().optional().describe('Type: apartment, villa, penthouse, townhouse, office'),
+  beds: z.string().optional().describe('Number of bedrooms, e.g. "3", "Studio", "4+"'),
+  category: z.enum(['premium', 'offplan']).optional().describe('premium = ready properties, offplan = under construction'),
+});
+
+const saveContactSchema = z.object({
+  name:  z.string().optional().describe('Full name of the user'),
+  phone: z.string().optional().describe('Phone number'),
+  email: z.string().optional().describe('Email address'),
+});
+
 export async function POST(req: Request) {
   if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
     console.error('[chat] GOOGLE_GENERATIVE_AI_API_KEY is not set');
     return new Response(JSON.stringify({ error: 'AI service not configured' }), { status: 503 });
   }
 
-  let messages: Message[], sessionId: string;
+  let messages: UIMessage[], sessionId: string;
   try {
     ({ messages, sessionId } = await req.json());
   } catch {
@@ -155,16 +150,27 @@ export async function POST(req: Request) {
     const lastMsg = messages[messages.length - 1];
     await ensureSession(sessionId, referer);
     if (lastMsg?.role === 'user') {
-      await saveMessage(sessionId, 'user', lastMsg.content ?? '');
+      const text = (lastMsg.parts ?? [])
+        .filter((p: { type: string }) => p.type === 'text')
+        .map((p: { type: string; text?: string }) => p.text ?? '')
+        .join('');
+      await saveMessage(sessionId, 'user', text);
     }
   }
+
+  const modelMessages = await convertToModelMessages(messages);
 
   const result = streamText({
     model: google('gemini-2.5-flash'),
     system: SYSTEM_PROMPT,
-    messages: convertToCoreMessages(messages),
-    maxSteps: 5,
+    messages: modelMessages,
+    stopWhen: stepCountIs(5),
     experimental_telemetry: { isEnabled: false },
+    providerOptions: {
+      google: {
+        thinkingConfig: { thinkingBudget: 0 },
+      },
+    },
     onError: (err) => {
       console.error('[chat] streamText error:', err);
     },
@@ -176,14 +182,8 @@ export async function POST(req: Request) {
     tools: {
       searchListings: tool({
         description: 'Search Macins Luxe property listings from the database. Always call this before answering any property search query.',
-        parameters: z.object({
-          query: z.string().describe('Search keywords: location, property name, or developer'),
-          maxPrice: z.string().optional().describe('Maximum price in AED, e.g. "5000000"'),
-          propertyType: z.string().optional().describe('Type: apartment, villa, penthouse, townhouse, office'),
-          beds: z.string().optional().describe('Number of bedrooms, e.g. "3", "Studio", "4+"'),
-          category: z.enum(['premium', 'offplan']).optional().describe('premium = ready properties, offplan = under construction'),
-        }),
-        execute: async ({ query, maxPrice, propertyType, beds, category }) => {
+        inputSchema: searchListingsSchema,
+        execute: async ({ query, maxPrice, propertyType, beds, category }: z.infer<typeof searchListingsSchema>) => {
           try {
             let q = db
               .from('listings')
@@ -259,12 +259,8 @@ export async function POST(req: Request) {
 
       saveContactInfo: tool({
         description: 'Save contact information when a user shares their name, phone number, or email address.',
-        parameters: z.object({
-          name:  z.string().optional().describe('Full name of the user'),
-          phone: z.string().optional().describe('Phone number'),
-          email: z.string().optional().describe('Email address'),
-        }),
-        execute: async ({ name, phone, email }) => {
+        inputSchema: saveContactSchema,
+        execute: async ({ name, phone, email }: z.infer<typeof saveContactSchema>) => {
           await updateContact(sessionId, { name, phone, email });
           return { saved: true };
         },
@@ -272,5 +268,5 @@ export async function POST(req: Request) {
     },
   });
 
-  return result.toDataStreamResponse();
+  return result.toUIMessageStreamResponse();
 }

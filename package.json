@@ -9,14 +9,15 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@ai-sdk/google": "^1.2.22",
+    "@ai-sdk/google": "^3.0.73",
+    "@ai-sdk/react": "^3.0.182",
     "@sparticuz/chromium-min": "^148.0.0",
     "@supabase/ssr": "^0.10.2",
     "@supabase/supabase-js": "^2.105.1",
     "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tailwindcss/typography": "^0.5.19",
     "@types/leaflet": "^1.9.21",
-    "ai": "^4.3.19",
+    "ai": "^6.0.180",
     "gsap": "^3.12.5",
     "leaflet": "^1.9.4",
     "lucide-react": "^1.14.0",

@@ -31,7 +31,6 @@ export async function GET() {
     const { text } = await generateText({
       model: google('gemini-2.5-flash'),
       prompt: 'Reply with exactly: ok',
-      maxTokens: 5,
     });
 
     return Response.json({ ...result, gemini: 'ok', response: text });
