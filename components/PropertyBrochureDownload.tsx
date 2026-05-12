@@ -45,8 +45,10 @@ export default function PropertyBrochureDownload({ listingId, listingName, broch
       link.download = `${listingName.replace(/\s+/g, '-')}-Macins-Luxe.pdf`
       document.body.appendChild(link)
       link.click()
-      document.body.removeChild(link)
-      URL.revokeObjectURL(url)
+      setTimeout(() => {
+        if (document.body.contains(link)) document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 100)
 
       setDone(true)
     } catch {

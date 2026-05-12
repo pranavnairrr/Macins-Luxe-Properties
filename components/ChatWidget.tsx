@@ -89,11 +89,12 @@ export default function ChatWidget() {
   const isLoading = status === 'submitted' || status === 'streaming';
 
   /* Visual viewport height + keyboard offset (keeps header visible when keyboard opens) */
-  const [vpHeight, setVpHeight] = useState<number>(() => window.innerHeight);
+  const [vpHeight, setVpHeight] = useState<number>(0);
   const [vpOffset, setVpOffset] = useState<number>(0);
 
   useEffect(() => {
     const vp = window.visualViewport;
+    setVpHeight(vp ? vp.height : window.innerHeight);
     if (!vp) return;
     let raf = 0;
     const update = () => {
@@ -105,7 +106,6 @@ export default function ChatWidget() {
     };
     vp.addEventListener('resize', update);
     vp.addEventListener('scroll', update);
-    update();
     return () => {
       vp.removeEventListener('resize', update);
       vp.removeEventListener('scroll', update);
