@@ -95,9 +95,13 @@ export default function ChatWidget() {
   useEffect(() => {
     const vp = window.visualViewport;
     if (!vp) return;
+    let raf = 0;
     const update = () => {
-      setVpHeight(vp.height);
-      setVpOffset(Math.max(0, window.innerHeight - vp.height - vp.offsetTop));
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        setVpHeight(vp.height);
+        setVpOffset(Math.max(0, window.innerHeight - vp.height - vp.offsetTop));
+      });
     };
     vp.addEventListener('resize', update);
     vp.addEventListener('scroll', update);
@@ -105,6 +109,7 @@ export default function ChatWidget() {
     return () => {
       vp.removeEventListener('resize', update);
       vp.removeEventListener('scroll', update);
+      cancelAnimationFrame(raf);
     };
   }, []);
 

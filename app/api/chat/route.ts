@@ -2,7 +2,6 @@ import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { streamText, tool, convertToCoreMessages } from 'ai';
 import { z } from 'zod';
 import { randomUUID } from 'crypto';
-import { createClient } from '@/utils/supabase/server';
 import { createClient as createDirectClient } from '@supabase/supabase-js';
 
 // Direct client (no cookies) — safe to use in onFinish + tool closures outside request context
@@ -115,9 +114,7 @@ export async function POST(req: Request) {
           category: z.enum(['premium', 'offplan']).optional().describe('premium = ready properties, offplan = under construction'),
         }),
         execute: async ({ query, maxPrice, propertyType, beds, category }) => {
-          const supabase = createClient();
-
-          let q = supabase
+          let q = db
             .from('listings')
             .select('id, name, price, location, beds, badge, developer, images, category, status')
             .eq('status', 'published')
@@ -133,7 +130,7 @@ export async function POST(req: Request) {
           const { data, error } = await q;
 
           if (error || !data || data.length === 0) {
-            const { data: fallback } = await supabase
+            const { data: fallback } = await db
               .from('listings')
               .select('id, name, price, location, beds, badge, developer, images, category, status')
               .eq('status', 'published')
