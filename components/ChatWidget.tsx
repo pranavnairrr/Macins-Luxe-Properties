@@ -80,13 +80,33 @@ export default function ChatWidget() {
     return id;
   });
 
-  const { messages, input, setInput, handleSubmit, status, append } = useChat({
+  const { messages, input, setInput, handleSubmit, status, append, error } = useChat({
     api: '/api/chat',
     body: { sessionId },
     maxSteps: 5,
   });
 
   const isLoading = status === 'submitted' || status === 'streaming';
+
+  /* Visual viewport height + keyboard offset (keeps header visible when keyboard opens) */
+  const [vpHeight, setVpHeight] = useState<number>(() => window.innerHeight);
+  const [vpOffset, setVpOffset] = useState<number>(0);
+
+  useEffect(() => {
+    const vp = window.visualViewport;
+    if (!vp) return;
+    const update = () => {
+      setVpHeight(vp.height);
+      setVpOffset(Math.max(0, window.innerHeight - vp.height - vp.offsetTop));
+    };
+    vp.addEventListener('resize', update);
+    vp.addEventListener('scroll', update);
+    update();
+    return () => {
+      vp.removeEventListener('resize', update);
+      vp.removeEventListener('scroll', update);
+    };
+  }, []);
 
   /* Detect mobile */
   useEffect(() => {
@@ -161,13 +181,15 @@ export default function ChatWidget() {
   const panelStyle: React.CSSProperties = isMobile
     ? {
         position: 'fixed',
-        bottom: isOpen ? 0 : '-100%',
+        /* sit above keyboard: bottom = keyboard height when open, off-screen when closed */
+        bottom: isOpen ? vpOffset : -(vpHeight + 20),
         left: 0,
         right: 0,
-        height: '82vh',
+        /* height = visible area above keyboard, capped at 88% so there's always a gap */
+        height: Math.max(Math.floor(vpHeight * 0.88), 320),
         borderRadius: '20px 20px 0 0',
         zIndex: 1001,
-        transition: 'bottom 360ms cubic-bezier(0.4,0,0.2,1)',
+        transition: 'bottom 320ms cubic-bezier(0.4,0,0.2,1)',
       }
     : isExpanded
     ? {
@@ -605,6 +627,23 @@ export default function ChatWidget() {
             </div>
             );
           })}
+
+          {/* API error */}
+          {error && !isLoading && (
+            <div style={{
+              alignSelf: 'flex-start',
+              background: 'rgba(255,80,80,0.08)',
+              border: '1px solid rgba(255,100,100,0.20)',
+              borderRadius: '12px 12px 12px 2px',
+              padding: '10px 14px',
+              fontFamily: 'var(--font)',
+              fontSize: 12,
+              color: 'rgba(255,160,160,0.90)',
+              maxWidth: '88%',
+            }}>
+              Something went wrong. Please try again.
+            </div>
+          )}
 
           {/* Streaming skeleton */}
           {isLoading && messages[messages.length - 1]?.role === 'user' && (
