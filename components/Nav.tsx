@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { KeyRound, UserCircle, ChevronRight } from 'lucide-react';
+import { KeyRound, UserCircle, ChevronRight, Sparkles } from 'lucide-react';
 
 const dropdownGroups = [
   {
@@ -117,7 +117,6 @@ export default function Nav() {
           onMouseLeave={closeDrop}
           style={{ ...panelBase(open), left: 0, minWidth: 200 }}
         >
-          <div style={panelLabel}>{group.label}</div>
           {group.items.map((item, i) => (
             <Link
               key={item.label}
@@ -168,13 +167,19 @@ export default function Nav() {
         <div className="container" style={{ height: '100%' }}>
           <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
 
-            {/* Logo */}
-            <Link href="/" style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+            {/* Logo — crossfade between dark (white nav) and gold (navy nav) */}
+            <Link href="/" style={{ display: 'block', flexShrink: 0, position: 'relative', width: 120, height: 36 }}>
               <Image
-                src={scrolled ? '/images/logo-gold-luxe.svg' : '/images/logo-black.png'}
-                alt="Macins Luxe" height={36} width={130}
-                style={{ height: 36, width: 'auto', objectFit: 'contain', transition: 'opacity 0.35s ease' }}
-                priority unoptimized={scrolled}
+                src="/images/logo-black.png"
+                alt="Macins Luxe" height={36} width={120}
+                style={{ position: 'absolute', top: 0, left: 0, height: 36, width: 'auto', objectFit: 'contain', opacity: scrolled ? 0 : 1, transition: 'opacity 0.45s ease' }}
+                priority
+              />
+              <Image
+                src="/images/logo-gold-luxe.svg"
+                alt="Macins Luxe" height={36} width={120}
+                style={{ position: 'absolute', top: 0, left: 0, height: 36, width: 'auto', objectFit: 'contain', opacity: scrolled ? 1 : 0, transition: 'opacity 0.45s ease' }}
+                priority unoptimized
               />
             </Link>
 
@@ -254,16 +259,28 @@ export default function Nav() {
               <button
                 onClick={() => window.dispatchEvent(new CustomEvent('macins-chat-open', { detail: { fullscreen: true } }))}
                 style={{
-                  fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600,
-                  color: scrolled ? 'var(--gold)' : 'var(--heading)',
-                  background: scrolled ? 'rgba(213,186,140,0.10)' : 'var(--white-section)',
-                  border: scrolled ? '1px solid rgba(213,186,140,0.45)' : '1px solid var(--border)',
-                  borderRadius: 'var(--radius-btn)', padding: '8px 18px', cursor: 'pointer',
-                  transition: 'background 0.25s ease, color 0.25s ease, border-color 0.25s ease',
+                  fontFamily: 'var(--font)', fontSize: '0.75rem', fontWeight: 700,
+                  letterSpacing: '0.04em',
+                  color: 'var(--gold)',
+                  background: 'linear-gradient(135deg, rgba(3,33,61,0.92) 0%, rgba(10,58,92,0.92) 100%)',
+                  border: '1px solid rgba(213,186,140,0.55)',
+                  borderRadius: 100,
+                  padding: '7px 14px 7px 10px',
+                  cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', gap: 6,
+                  boxShadow: '0 0 0 0 rgba(213,186,140,0.3)',
+                  transition: 'box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.background = scrolled ? 'rgba(213,186,140,0.22)' : 'var(--border)'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = scrolled ? 'rgba(213,186,140,0.10)' : 'var(--white-section)'; }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(213,186,140,0.15)';
+                  e.currentTarget.style.borderColor = 'rgba(213,186,140,0.85)';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.boxShadow = '0 0 0 0 rgba(213,186,140,0.3)';
+                  e.currentTarget.style.borderColor = 'rgba(213,186,140,0.55)';
+                }}
               >
+                <Sparkles size={12} color="var(--gold)" strokeWidth={1.5} />
                 Macins AI
               </button>
             </div>
@@ -289,15 +306,33 @@ export default function Nav() {
         </div>
       </header>
 
-      {/* Mobile drawer */}
+      {/* Mobile drawer — backdrop */}
+      {menuOpen && (
+        <div
+          onClick={() => setMenuOpen(false)}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 48,
+            background: 'rgba(2,16,30,0.55)',
+            backdropFilter: 'blur(4px)',
+            WebkitBackdropFilter: 'blur(4px)',
+          }}
+        />
+      )}
+
+      {/* Mobile drawer — right panel */}
       <div
         aria-hidden={!menuOpen}
         style={{
-          position: 'fixed', inset: '68px 0 0 0', zIndex: 49,
-          background: 'rgba(3,33,61,0.97)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
+          position: 'fixed', top: 0, right: 0, bottom: 0, zIndex: 49,
+          width: '82%', maxWidth: 320,
+          background: 'rgba(3,26,50,0.82)',
+          backdropFilter: 'blur(36px) saturate(1.8)',
+          WebkitBackdropFilter: 'blur(36px) saturate(1.8)',
+          borderLeft: '1px solid rgba(213,186,140,0.14)',
           transform: menuOpen ? 'translateX(0)' : 'translateX(100%)',
           transition: 'transform 0.32s var(--ease)',
-          overflowY: 'auto', padding: '32px var(--gutter)',
+          overflowY: 'auto',
+          padding: '80px 24px 32px',
           display: 'flex', flexDirection: 'column',
         }}
       >
@@ -362,8 +397,19 @@ export default function Nav() {
 
         <button
           onClick={() => { setMenuOpen(false); window.dispatchEvent(new CustomEvent('macins-chat-open', { detail: { fullscreen: true } })); }}
-          style={{ marginTop: 20, width: '100%', fontFamily: 'var(--font)', fontSize: '0.9375rem', fontWeight: 600, color: 'var(--gold)', background: 'rgba(213,186,140,0.10)', border: '1px solid rgba(213,186,140,0.40)', borderRadius: 'var(--radius-btn)', padding: '14px', cursor: 'pointer' }}
+          style={{
+            marginTop: 20, width: '100%',
+            fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 700,
+            letterSpacing: '0.04em',
+            color: 'var(--gold)',
+            background: 'linear-gradient(135deg, rgba(3,33,61,0.95) 0%, rgba(10,58,92,0.95) 100%)',
+            border: '1px solid rgba(213,186,140,0.50)',
+            borderRadius: 100, padding: '13px',
+            cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+          }}
         >
+          <Sparkles size={14} color="var(--gold)" strokeWidth={1.5} />
           Macins AI
         </button>
       </div>

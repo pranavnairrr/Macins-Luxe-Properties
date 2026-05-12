@@ -1,5 +1,5 @@
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
-import { streamText, tool, convertToCoreMessages } from 'ai';
+import { streamText, tool, convertToCoreMessages, type Message } from 'ai';
 import { z } from 'zod';
 import { randomUUID } from 'crypto';
 import { createClient as createDirectClient } from '@supabase/supabase-js';
@@ -81,7 +81,7 @@ async function updateContact(sessionId: string, fields: { name?: string; phone?:
 }
 
 export async function POST(req: Request) {
-  let messages: unknown[], sessionId: string;
+  let messages: Message[], sessionId: string;
   try {
     ({ messages, sessionId } = await req.json());
   } catch {
@@ -92,7 +92,7 @@ export async function POST(req: Request) {
 
   // Ensure session exists and save user's latest message
   if (sessionId) {
-    const lastMsg = (messages as { role: string; content: string }[])[messages.length - 1];
+    const lastMsg = messages[messages.length - 1];
     await ensureSession(sessionId, referer);
     if (lastMsg?.role === 'user') {
       await saveMessage(sessionId, 'user', lastMsg.content ?? '');

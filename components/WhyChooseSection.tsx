@@ -162,23 +162,21 @@ export default function WhyChooseSection() {
           .why-grid {
             display: flex !important;
             flex-direction: column !important;
-            gap: 32px !important;
+            gap: 28px !important;
           }
           .why-text { order: 1; }
           .why-photos {
             order: 2;
+            height: 220px !important;
+            overflow: hidden !important;
             grid-template-columns: 1fr !important;
-            grid-template-rows: 240px 180px !important;
+            grid-template-rows: 220px !important;
           }
           .why-photo-main {
             grid-column: 1 !important;
             grid-row: 1 !important;
           }
-          .why-photo-sm:nth-child(2) {
-            grid-column: 1 !important;
-            grid-row: 2 !important;
-          }
-          .why-photo-sm:nth-child(3) { display: none !important; }
+          .why-photo-sm { display: none !important; }
         }
       `}</style>
     </section>

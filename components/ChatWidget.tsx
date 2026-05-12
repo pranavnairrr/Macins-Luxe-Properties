@@ -69,6 +69,7 @@ export default function ChatWidget() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [oracleIdx, setOracleIdx] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+  const [heroScrolled, setHeroScrolled] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -80,11 +81,13 @@ export default function ChatWidget() {
     return id;
   });
 
-  const { messages, input, setInput, handleSubmit, status, append, error, setError } = useChat({
+  const { messages, input, setInput, handleSubmit, status, append, error } = useChat({
     api: '/api/chat',
     body: { sessionId },
     maxSteps: 5,
   });
+  const [errorVisible, setErrorVisible] = useState(false);
+  useEffect(() => { if (error) setErrorVisible(true); }, [error]);
 
   const isLoading = status === 'submitted' || status === 'streaming';
 
@@ -119,6 +122,14 @@ export default function ChatWidget() {
     check();
     window.addEventListener('resize', check);
     return () => window.removeEventListener('resize', check);
+  }, []);
+
+  /* Expand pill after scrolling past hero */
+  useEffect(() => {
+    const onScroll = () => setHeroScrolled(window.scrollY > window.innerHeight * 0.75);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   /* Oracle placeholder cycling */
@@ -171,18 +182,18 @@ export default function ChatWidget() {
   /* Focus input when opening, clear any stale error */
   useEffect(() => {
     if (isOpen) {
-      setError(undefined);
+      setErrorVisible(false);
       setTimeout(() => inputRef.current?.focus(), 300);
     }
-  }, [isOpen, setError]);
+  }, [isOpen]);
 
   const onKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey && input.trim()) {
       e.preventDefault();
-      setError(undefined);
+      setErrorVisible(false);
       handleSubmit(e as unknown as React.FormEvent);
     }
-  }, [input, handleSubmit, setError]);
+  }, [input, handleSubmit]);
 
   /* Panel positioning — three modes */
   const panelStyle: React.CSSProperties = isMobile
@@ -214,10 +225,10 @@ export default function ChatWidget() {
       }
     : {
         position: 'fixed',
-        bottom: 172,
-        right: 28,
-        width: 390,
-        height: 540,
+        bottom: 88,
+        right: 20,
+        width: 320,
+        height: 460,
         borderRadius: 'var(--radius-lg)',
         zIndex: 1001,
         opacity: isOpen ? 1 : 0,
@@ -283,22 +294,22 @@ export default function ChatWidget() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '14px 16px',
+          padding: '10px 13px',
           borderBottom: '1px solid rgba(255,255,255,0.07)',
           flexShrink: 0,
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <div style={{
-              width: 32, height: 32,
+              width: 26, height: 26,
               borderRadius: '50%',
               background: 'rgba(213,186,140,0.1)',
               border: '1px solid rgba(213,186,140,0.3)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <Sparkles size={16} color="var(--gold)" strokeWidth={1.5} />
+              <Sparkles size={13} color="var(--gold)" strokeWidth={1.5} />
             </div>
             <div>
-              <div style={{ fontFamily: 'var(--font)', fontSize: 14, fontWeight: 600, color: '#fff', lineHeight: 1.2 }}>
+              <div style={{ fontFamily: 'var(--font)', fontSize: 12, fontWeight: 600, color: '#fff', lineHeight: 1.2 }}>
                 AI Concierge
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 2 }}>
@@ -356,10 +367,10 @@ export default function ChatWidget() {
           style={{
             flex: 1,
             overflowY: 'auto',
-            padding: '16px 14px',
+            padding: '12px 12px',
             display: 'flex',
             flexDirection: 'column',
-            gap: 12,
+            gap: 10,
           }}
         >
           {/* Welcome + quick actions */}
@@ -371,9 +382,9 @@ export default function ChatWidget() {
                 WebkitBackdropFilter: 'blur(8px)',
                 border: '1px solid rgba(255,255,255,0.08)',
                 borderRadius: 'var(--radius-md)',
-                padding: '14px 16px',
+                padding: '11px 13px',
                 fontFamily: 'var(--font)',
-                fontSize: 13,
+                fontSize: 11,
                 color: 'rgba(255,255,255,0.82)',
                 lineHeight: 1.65,
               }}>
@@ -396,9 +407,9 @@ export default function ChatWidget() {
                       WebkitBackdropFilter: 'blur(8px)',
                       border: '1px solid rgba(213,186,140,0.22)',
                       borderRadius: 10,
-                      padding: '9px 13px',
+                      padding: '7px 11px',
                       fontFamily: 'var(--font)',
-                      fontSize: 12,
+                      fontSize: 11,
                       color: 'rgba(255,255,255,0.80)',
                       textAlign: 'left',
                       cursor: 'pointer',
@@ -456,9 +467,9 @@ export default function ChatWidget() {
                     borderRadius: message.role === 'user'
                       ? '14px 14px 3px 14px'
                       : '14px 14px 14px 3px',
-                    padding: '10px 14px',
+                    padding: '8px 12px',
                     fontFamily: 'var(--font)',
-                    fontSize: 13,
+                    fontSize: 11,
                     color: 'rgba(255,255,255,0.92)',
                     lineHeight: 1.6,
                     whiteSpace: 'pre-wrap',
@@ -636,7 +647,7 @@ export default function ChatWidget() {
           })}
 
           {/* API error */}
-          {error && !isLoading && (
+          {errorVisible && error && !isLoading && (
             <div style={{
               alignSelf: 'flex-start',
               background: 'rgba(255,80,80,0.08)',
@@ -653,7 +664,7 @@ export default function ChatWidget() {
             }}>
               <span>Something went wrong. Please try again.</span>
               <button
-                onClick={() => { setError(undefined); setTimeout(() => inputRef.current?.focus(), 50); }}
+                onClick={() => { setErrorVisible(false); setTimeout(() => inputRef.current?.focus(), 50); }}
                 style={{
                   background: 'rgba(255,100,100,0.15)',
                   border: '1px solid rgba(255,100,100,0.30)',
@@ -691,7 +702,7 @@ export default function ChatWidget() {
 
         {/* Input area */}
         <div style={{
-          padding: '10px 12px 14px',
+          padding: '8px 10px 12px',
           borderTop: '1px solid rgba(255,255,255,0.07)',
           display: 'flex',
           gap: 8,
@@ -702,7 +713,7 @@ export default function ChatWidget() {
             ref={inputRef}
             className="chat-input"
             value={input}
-            onChange={e => { setInput(e.target.value); if (error) setError(undefined); }}
+            onChange={e => { setInput(e.target.value); if (errorVisible) setErrorVisible(false); }}
             onKeyDown={onKeyDown}
             placeholder={ORACLE_QUESTIONS[oracleIdx]}
             disabled={isLoading}
@@ -713,9 +724,9 @@ export default function ChatWidget() {
               WebkitBackdropFilter: 'blur(8px)',
               border: '1px solid rgba(255,255,255,0.13)',
               borderRadius: 'var(--radius-md)',
-              padding: '10px 14px',
+              padding: '8px 12px',
               fontFamily: 'var(--font)',
-              fontSize: 13,
+              fontSize: 12,
               color: '#fff',
               transition: 'border-color 0.2s',
             }}
@@ -723,7 +734,7 @@ export default function ChatWidget() {
             onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.13)')}
           />
           <button
-            onClick={e => { if (input.trim()) { setError(undefined); handleSubmit(e as unknown as React.FormEvent); } }}
+            onClick={e => { if (input.trim()) { setErrorVisible(false); handleSubmit(e as unknown as React.FormEvent); } }}
             disabled={isLoading || !input.trim()}
             style={{
               width: 38, height: 38,
@@ -751,12 +762,12 @@ export default function ChatWidget() {
           onClick={() => { setIsOpen(false); setIsExpanded(false); }}
           aria-label="Close AI Concierge"
           style={{
-            position: 'fixed', bottom: 100, right: 28, zIndex: 999,
-            width: 44, height: 44, borderRadius: '50%',
-            background: 'rgba(6,18,42,0.88)',
-            backdropFilter: 'blur(10px)',
-            WebkitBackdropFilter: 'blur(10px)',
-            border: '1px solid rgba(213,186,140,0.35)',
+            position: 'fixed', bottom: 76, right: 20, zIndex: 999,
+            width: 40, height: 40, borderRadius: '50%',
+            background: 'rgba(3,33,61,0.65)',
+            backdropFilter: 'blur(16px) saturate(1.6)',
+            WebkitBackdropFilter: 'blur(16px) saturate(1.6)',
+            border: '1px solid rgba(213,186,140,0.40)',
             cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             boxShadow: '0 4px 16px rgba(0,0,0,0.30)',
@@ -768,38 +779,45 @@ export default function ChatWidget() {
           <X size={18} color="rgba(213,186,140,0.9)" strokeWidth={1.5} />
         </button>
       ) : (
-        /* When closed — pill with label */
+        /* When closed — icon circle → pill on scroll */
         <button
           onClick={() => setIsOpen(true)}
           aria-label="Open AI Concierge"
           style={{
-            position: 'fixed', bottom: 100, right: 20, zIndex: 999,
-            width: 168, height: 46,
-            paddingLeft: 16, paddingRight: 16,
+            position: 'fixed', bottom: 76, right: 20, zIndex: 999,
+            height: 40,
+            width: heroScrolled ? 144 : 40,
+            paddingLeft: heroScrolled ? 12 : 0,
+            paddingRight: heroScrolled ? 14 : 0,
             borderRadius: 100,
-            background: 'linear-gradient(135deg, #03213d 0%, #0a3a5c 100%)',
-            border: '1px solid rgba(213,186,140,0.50)',
+            background: 'rgba(3,33,61,0.70)',
+            backdropFilter: 'blur(16px) saturate(1.6)',
+            WebkitBackdropFilter: 'blur(16px) saturate(1.6)',
+            border: '1px solid rgba(213,186,140,0.45)',
             cursor: 'pointer',
-            display: 'flex', alignItems: 'center', gap: 9,
-            boxShadow: '0 6px 24px rgba(0,0,0,0.35), 0 0 0 0 rgba(213,186,140,0.4)',
-            animation: 'chat-pulse 2.8s ease-in-out infinite',
-            transition: 'transform 0.2s, box-shadow 0.2s',
+            display: 'flex', alignItems: 'center',
+            justifyContent: heroScrolled ? 'flex-start' : 'center',
+            gap: heroScrolled ? 7 : 0,
+            boxShadow: '0 4px 20px rgba(0,0,0,0.30)',
+            overflow: 'hidden',
+            transition: 'width 0.4s cubic-bezier(0.4,0,0.2,1), padding 0.4s cubic-bezier(0.4,0,0.2,1)',
           }}
           onMouseEnter={e => (e.currentTarget.style.transform = 'translateY(-2px)')}
           onMouseLeave={e => (e.currentTarget.style.transform = 'translateY(0)')}
         >
-          <Sparkles size={16} color="var(--gold)" strokeWidth={1.5} />
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 0 }}>
-            <span style={{
-              fontFamily: 'var(--font)', fontSize: 13, fontWeight: 700,
-              color: '#fff', lineHeight: 1.2, letterSpacing: '0.01em',
-            }}>
+          <Sparkles size={14} color="var(--gold)" strokeWidth={1.5} style={{ flexShrink: 0 }} />
+          <div style={{
+            display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 0,
+            opacity: heroScrolled ? 1 : 0,
+            maxWidth: heroScrolled ? 100 : 0,
+            overflow: 'hidden',
+            transition: 'opacity 0.3s ease 0.1s, max-width 0.4s cubic-bezier(0.4,0,0.2,1)',
+            whiteSpace: 'nowrap',
+          }}>
+            <span style={{ fontFamily: 'var(--font)', fontSize: 11, fontWeight: 700, color: '#fff', lineHeight: 1.2, letterSpacing: '0.01em' }}>
               Macins AI
             </span>
-            <span style={{
-              fontFamily: 'var(--font)', fontSize: 10, fontWeight: 400,
-              color: 'rgba(213,186,140,0.80)', lineHeight: 1.2, letterSpacing: '0.03em',
-            }}>
+            <span style={{ fontFamily: 'var(--font)', fontSize: 9, fontWeight: 400, color: 'rgba(213,186,140,0.82)', lineHeight: 1.2 }}>
               Ask me anything
             </span>
           </div>
