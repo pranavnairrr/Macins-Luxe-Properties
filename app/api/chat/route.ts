@@ -81,12 +81,18 @@ async function updateContact(sessionId: string, fields: { name?: string; phone?:
 }
 
 export async function POST(req: Request) {
-  const { messages, sessionId } = await req.json();
+  let messages: unknown[], sessionId: string;
+  try {
+    ({ messages, sessionId } = await req.json());
+  } catch {
+    return new Response(JSON.stringify({ error: 'Invalid request' }), { status: 400 });
+  }
+
   const referer = req.headers.get('referer') ?? '';
 
   // Ensure session exists and save user's latest message
   if (sessionId) {
-    const lastMsg = messages[messages.length - 1];
+    const lastMsg = (messages as { role: string; content: string }[])[messages.length - 1];
     await ensureSession(sessionId, referer);
     if (lastMsg?.role === 'user') {
       await saveMessage(sessionId, 'user', lastMsg.content ?? '');
@@ -98,6 +104,10 @@ export async function POST(req: Request) {
     system: SYSTEM_PROMPT,
     messages: convertToCoreMessages(messages),
     maxSteps: 5,
+    experimental_telemetry: { isEnabled: false },
+    onError: (err) => {
+      console.error('[chat] streamText error:', err);
+    },
     onFinish: async ({ text }) => {
       if (sessionId && text?.trim()) {
         await saveMessage(sessionId, 'assistant', text);

@@ -80,7 +80,7 @@ export default function ChatWidget() {
     return id;
   });
 
-  const { messages, input, setInput, handleSubmit, status, append, error } = useChat({
+  const { messages, input, setInput, handleSubmit, status, append, error, setError } = useChat({
     api: '/api/chat',
     body: { sessionId },
     maxSteps: 5,
@@ -168,19 +168,21 @@ export default function ChatWidget() {
     return () => clearTimeout(t);
   }, []);
 
-  /* Focus input when opening */
+  /* Focus input when opening, clear any stale error */
   useEffect(() => {
     if (isOpen) {
+      setError(undefined);
       setTimeout(() => inputRef.current?.focus(), 300);
     }
-  }, [isOpen]);
+  }, [isOpen, setError]);
 
   const onKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey && input.trim()) {
       e.preventDefault();
+      setError(undefined);
       handleSubmit(e as unknown as React.FormEvent);
     }
-  }, [input, handleSubmit]);
+  }, [input, handleSubmit, setError]);
 
   /* Panel positioning — three modes */
   const panelStyle: React.CSSProperties = isMobile
@@ -645,8 +647,28 @@ export default function ChatWidget() {
               fontSize: 12,
               color: 'rgba(255,160,160,0.90)',
               maxWidth: '88%',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
             }}>
-              Something went wrong. Please try again.
+              <span>Something went wrong. Please try again.</span>
+              <button
+                onClick={() => { setError(undefined); setTimeout(() => inputRef.current?.focus(), 50); }}
+                style={{
+                  background: 'rgba(255,100,100,0.15)',
+                  border: '1px solid rgba(255,100,100,0.30)',
+                  borderRadius: 6,
+                  padding: '3px 8px',
+                  fontFamily: 'var(--font)',
+                  fontSize: 11,
+                  color: 'rgba(255,180,180,0.95)',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  flexShrink: 0,
+                }}
+              >
+                Dismiss
+              </button>
             </div>
           )}
 
@@ -680,7 +702,7 @@ export default function ChatWidget() {
             ref={inputRef}
             className="chat-input"
             value={input}
-            onChange={e => setInput(e.target.value)}
+            onChange={e => { setInput(e.target.value); if (error) setError(undefined); }}
             onKeyDown={onKeyDown}
             placeholder={ORACLE_QUESTIONS[oracleIdx]}
             disabled={isLoading}
@@ -701,7 +723,7 @@ export default function ChatWidget() {
             onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.13)')}
           />
           <button
-            onClick={e => input.trim() && handleSubmit(e as unknown as React.FormEvent)}
+            onClick={e => { if (input.trim()) { setError(undefined); handleSubmit(e as unknown as React.FormEvent); } }}
             disabled={isLoading || !input.trim()}
             style={{
               width: 38, height: 38,
