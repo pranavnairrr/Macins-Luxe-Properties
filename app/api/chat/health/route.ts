@@ -8,7 +8,7 @@ export async function GET() {
   const result: Record<string, unknown> = {
     env: {
       GOOGLE_GENERATIVE_AI_API_KEY: process.env.GOOGLE_GENERATIVE_AI_API_KEY
-        ? `set (${process.env.GOOGLE_GENERATIVE_AI_API_KEY.slice(0, 8)}...)`
+        ? 'set'
         : 'MISSING',
       NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL
         ? `set`
