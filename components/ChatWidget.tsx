@@ -34,11 +34,13 @@ interface SearchResult {
   noExactMatch?: boolean;
 }
 
-interface ToolInvocation {
+// In ai@6, static tool parts use type 'tool-{toolName}' (not 'tool-invocation').
+// Fields are flat on the part — no nested .toolInvocation wrapper.
+interface ToolPart {
+  type: string;      // e.g. 'tool-searchListings', 'tool-saveContactInfo'
   toolCallId: string;
-  toolName: string;
   state: string;
-  input?: Record<string, unknown>;
+  input?: unknown;
   output?: unknown;
 }
 
@@ -178,13 +180,17 @@ export default function ChatWidget() {
     }
   }, [input, doSend]);
 
-  /* Panel positioning — three modes.
-     Mobile: inset:0 full-screen + transform slide — no JS height/bottom math so
-     keyboard open/close never triggers a re-render or layout jump. */
+  /* Panel positioning — three modes. */
   const panelStyle: React.CSSProperties = isMobile
     ? {
+        // Anchor from bottom + use dynamic viewport height so the panel
+        // shrinks naturally when the software keyboard opens, keeping
+        // the input bar visible just above the keyboard.
         position: 'fixed',
-        inset: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        height: '100dvh',
         borderRadius: '20px 20px 0 0',
         zIndex: 1001,
         transform: isOpen ? 'translateY(0)' : 'translateY(105%)',
@@ -427,15 +433,21 @@ export default function ChatWidget() {
               .map(p => p.text)
               .join('');
 
-            /* Extract tool invocations from parts */
-            const toolParts = (message.parts as unknown[])
-              .filter((p): p is { type: 'tool-invocation'; toolInvocation: ToolInvocation } =>
-                typeof p === 'object' && p !== null && (p as { type: string }).type === 'tool-invocation'
-              );
+            /* Extract tool invocations from parts (ai@6: type is 'tool-{name}') */
+            const toolParts = (message.parts as unknown[]).filter(
+              (p): p is ToolPart =>
+                typeof p === 'object' && p !== null &&
+                typeof (p as { type: string }).type === 'string' &&
+                (p as { type: string }).type.startsWith('tool-')
+            );
+
+            const getToolName = (p: ToolPart) =>
+              p.type === 'dynamic-tool'
+                ? (p as unknown as { toolName: string }).toolName
+                : p.type.slice(5); // 'tool-searchListings' → 'searchListings'
 
             const hadContactSave = toolParts.some(p =>
-              p.toolInvocation.toolName === 'saveContactInfo' &&
-              p.toolInvocation.state === 'output-available'
+              getToolName(p) === 'saveContactInfo' && p.state === 'output-available'
             );
 
             return (
@@ -476,12 +488,12 @@ export default function ChatWidget() {
               )}
 
               {/* Tool invocations — property carousel */}
-              {toolParts.map(({ toolInvocation: inv }) => {
-                if (inv.toolName !== 'searchListings') return null;
+              {toolParts.map((part) => {
+                if (getToolName(part) !== 'searchListings') return null;
 
-                if (inv.state === 'input-available' || inv.state === 'input-streaming') {
+                if (part.state === 'input-available' || part.state === 'input-streaming') {
                   return (
-                    <div key={inv.toolCallId} style={{
+                    <div key={part.toolCallId} style={{
                       background: 'rgba(255,255,255,0.04)',
                       border: '1px solid rgba(255,255,255,0.07)',
                       borderRadius: 'var(--radius-md)',
@@ -499,14 +511,14 @@ export default function ChatWidget() {
                   );
                 }
 
-                if (inv.state === 'output-available') {
-                  const result = inv.output as SearchResult;
+                if (part.state === 'output-available') {
+                  const result = part.output as SearchResult;
                   const listings = result?.listings ?? [];
                   const noExactMatch = result?.noExactMatch ?? false;
 
                   if (listings.length === 0) {
                     return (
-                      <div key={inv.toolCallId} style={{
+                      <div key={part.toolCallId} style={{
                         background: 'rgba(255,255,255,0.04)',
                         border: '1px solid rgba(255,255,255,0.07)',
                         borderRadius: 'var(--radius-md)',
@@ -522,10 +534,10 @@ export default function ChatWidget() {
 
                   const shown = listings.slice(0, 2);
                   const hasMore = listings.length > 2;
-                  const viewMoreQuery = (inv.input as { query?: string })?.query ?? '';
+                  const viewMoreQuery = (part.input as { query?: string })?.query ?? '';
 
                   return (
-                    <div key={inv.toolCallId} style={{ width: '100%' }}>
+                    <div key={part.toolCallId} style={{ width: '100%' }}>
                       <div style={{
                         fontFamily: 'var(--font)',
                         fontSize: 11,
