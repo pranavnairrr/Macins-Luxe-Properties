@@ -114,69 +114,76 @@ export async function POST(req: Request) {
           category: z.enum(['premium', 'offplan']).optional().describe('premium = ready properties, offplan = under construction'),
         }),
         execute: async ({ query, maxPrice, propertyType, beds, category }) => {
-          let q = db
-            .from('listings')
-            .select('id, name, price, location, beds, badge, developer, images, category, status')
-            .eq('status', 'published')
-            .limit(6);
-
-          if (query && query.trim()) {
-            q = q.or(`name.ilike.%${query}%,location.ilike.%${query}%,developer.ilike.%${query}%`);
-          }
-          if (category) q = q.eq('category', category);
-          if (beds?.trim()) q = q.ilike('beds', `%${beds}%`);
-          if (propertyType?.trim()) q = q.or(`name.ilike.%${propertyType}%,beds.ilike.%${propertyType}%`);
-
-          const { data, error } = await q;
-
-          if (error || !data || data.length === 0) {
-            const { data: fallback } = await db
+          try {
+            let q = db
               .from('listings')
               .select('id, name, price, location, beds, badge, developer, images, category, status')
               .eq('status', 'published')
               .limit(6);
 
+            if (query && query.trim()) {
+              q = q.or(`name.ilike.%${query}%,location.ilike.%${query}%,developer.ilike.%${query}%`);
+            }
+            if (category) q = q.eq('category', category);
+            if (beds?.trim()) q = q.ilike('beds', `%${beds}%`);
+            if (propertyType?.trim()) q = q.or(`name.ilike.%${propertyType}%,beds.ilike.%${propertyType}%`);
+
+            const { data, error } = await q;
+            if (error) console.error('[searchListings] query error:', error.message, error.code);
+
+            if (error || !data || data.length === 0) {
+              const { data: fallback, error: fbErr } = await db
+                .from('listings')
+                .select('id, name, price, location, beds, badge, developer, images, category, status')
+                .eq('status', 'published')
+                .limit(6);
+              if (fbErr) console.error('[searchListings] fallback error:', fbErr.message, fbErr.code);
+
+              return {
+                listings: (fallback ?? []).map(l => ({
+                  id: l.id, name: l.name, price: l.price, location: l.location,
+                  beds: l.beds, badge: l.badge, developer: l.developer,
+                  imageUrl: Array.isArray(l.images) ? l.images[0] : null,
+                  category: l.category,
+                })),
+                noExactMatch: true,
+              };
+            }
+
+            const parseStoredPrice = (s: string): number => {
+              if (!s) return NaN;
+              const num = parseFloat(s.replace(/[^0-9.]/g, ''));
+              if (isNaN(num)) return NaN;
+              const u = s.toUpperCase();
+              if (u.includes('M')) return num * 1_000_000;
+              if (u.includes('K')) return num * 1_000;
+              return num;
+            };
+
+            let listings = data;
+            if (maxPrice) {
+              const max = parseFloat(maxPrice.replace(/[^0-9.]/g, ''));
+              if (!isNaN(max)) {
+                listings = listings.filter(l => {
+                  const p = parseStoredPrice(l.price ?? '');
+                  return isNaN(p) || p <= max;
+                });
+              }
+            }
+
             return {
-              listings: (fallback ?? []).map(l => ({
+              listings: listings.map(l => ({
                 id: l.id, name: l.name, price: l.price, location: l.location,
                 beds: l.beds, badge: l.badge, developer: l.developer,
                 imageUrl: Array.isArray(l.images) ? l.images[0] : null,
                 category: l.category,
               })),
-              noExactMatch: true,
+              noExactMatch: false,
             };
+          } catch (err) {
+            console.error('[searchListings] unexpected error:', err instanceof Error ? err.message : err);
+            return { listings: [], noExactMatch: true };
           }
-
-          const parseStoredPrice = (s: string): number => {
-            if (!s) return NaN;
-            const num = parseFloat(s.replace(/[^0-9.]/g, ''));
-            if (isNaN(num)) return NaN;
-            const u = s.toUpperCase();
-            if (u.includes('M')) return num * 1_000_000;
-            if (u.includes('K')) return num * 1_000;
-            return num;
-          };
-
-          let listings = data;
-          if (maxPrice) {
-            const max = parseFloat(maxPrice.replace(/[^0-9.]/g, ''));
-            if (!isNaN(max)) {
-              listings = listings.filter(l => {
-                const p = parseStoredPrice(l.price ?? '');
-                return isNaN(p) || p <= max;
-              });
-            }
-          }
-
-          return {
-            listings: listings.map(l => ({
-              id: l.id, name: l.name, price: l.price, location: l.location,
-              beds: l.beds, badge: l.badge, developer: l.developer,
-              imageUrl: Array.isArray(l.images) ? l.images[0] : null,
-              category: l.category,
-            })),
-            noExactMatch: false,
-          };
         },
       }),
 
