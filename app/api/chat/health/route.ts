@@ -29,7 +29,7 @@ export async function GET() {
     });
 
     const { text } = await generateText({
-      model: google('gemini-2.0-flash-lite'),
+      model: google('gemini-1.5-flash-8b'),
       prompt: 'Reply with exactly: ok',
       maxTokens: 5,
     });
