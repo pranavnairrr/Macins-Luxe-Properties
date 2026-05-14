@@ -10,9 +10,9 @@
 
 import { createClient } from '@supabase/supabase-js';
 import { config } from 'dotenv';
-import { blogPosts } from '../lib/blog-data';
-import { areas } from '../lib/areas-data';
-import { reports } from '../lib/reports-data';
+import { blogPosts } from '../lib/archived/blog-data';
+import { areas } from '../lib/archived/areas-data';
+import { reports } from '../lib/archived/reports-data';
 
 config({ path: '.env.local' });
 
