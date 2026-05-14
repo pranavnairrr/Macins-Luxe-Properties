@@ -13,6 +13,9 @@ import {
   Menu,
   X,
   MessageSquare,
+  FileText,
+  MapPin,
+  BarChart2,
 } from 'lucide-react'
 
 const NAV_ITEMS = [
@@ -21,6 +24,9 @@ const NAV_ITEMS = [
   { id: 'agents',    label: 'Team & Agents',        Icon: Users },
   { id: 'leads',     label: 'Leads & Enquiries',    Icon: Inbox },
   { id: 'chats',     label: 'AI Chats',             Icon: MessageSquare },
+  { id: 'blog',      label: 'Blog Posts',           Icon: FileText },
+  { id: 'areas',     label: 'Areas',                Icon: MapPin },
+  { id: 'reports',   label: 'Market Reports',       Icon: BarChart2 },
   { id: 'settings',  label: 'Site Settings',        Icon: Settings },
 ] as const
 

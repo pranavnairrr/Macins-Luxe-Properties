@@ -2,18 +2,24 @@
 
 import { Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { LayoutDashboard, List, Users, Inbox, Settings, MessageSquare } from 'lucide-react'
+import { LayoutDashboard, List, Users, Inbox, Settings, MessageSquare, FileText, MapPin, BarChart2 } from 'lucide-react'
 import PropertyListingsView from '@/components/staff/PropertyListingsView'
 import AgentsView from '@/components/staff/AgentsView'
 import LeadsView from '@/components/staff/LeadsView'
 import SiteSettingsView from '@/components/staff/SiteSettingsView'
 import ChatsTab from '@/components/staff/ChatsTab'
+import BlogsTab from '@/components/staff/BlogsTab'
+import AreasTab from '@/components/staff/AreasTab'
+import ReportsTab from '@/components/staff/ReportsTab'
 
 const OVERVIEW_CARDS = [
   { label: 'Property Listings', desc: 'Add, edit, and publish properties',      Icon: List,            tab: 'listings'  },
   { label: 'Team & Agents',     desc: 'Manage agents assigned to brochures',    Icon: Users,           tab: 'agents'    },
   { label: 'Leads & Enquiries', desc: 'View enquiries and brochure downloads',  Icon: Inbox,           tab: 'leads'     },
   { label: 'AI Chats',          desc: 'View all AI concierge conversations',     Icon: MessageSquare,   tab: 'chats'     },
+  { label: 'Blog Posts',        desc: 'Write and manage blog content',           Icon: FileText,        tab: 'blog'      },
+  { label: 'Areas',             desc: 'Manage area guides and market data',      Icon: MapPin,          tab: 'areas'     },
+  { label: 'Market Reports',    desc: 'Publish research and PDF reports',        Icon: BarChart2,       tab: 'reports'   },
   { label: 'Site Settings',     desc: 'Update hero images, stats, and content', Icon: Settings,        tab: 'settings'  },
 ]
 
@@ -84,6 +90,9 @@ function DashboardContent() {
     case 'agents':    return <AgentsView />
     case 'leads':     return <LeadsView />
     case 'chats':     return <ChatsTab />
+    case 'blog':      return <BlogsTab />
+    case 'areas':     return <AreasTab />
+    case 'reports':   return <ReportsTab />
     case 'settings':  return <SiteSettingsView />
     default:          return <OverviewPanel />
   }
