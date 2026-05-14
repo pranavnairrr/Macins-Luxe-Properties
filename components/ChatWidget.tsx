@@ -75,8 +75,7 @@ interface ToolPart {
   output?: unknown;
 }
 
-// Update to the actual WhatsApp number (digits only, country code prefix, no '+')
-const WHATSAPP_NUMBER = '971501234567';
+const WHATSAPP_NUMBER = '971554560554';
 
 function fmtChatAED(n: number): string {
   if (n >= 1_000_000) return `AED ${(n / 1_000_000).toFixed(2)}M`;
