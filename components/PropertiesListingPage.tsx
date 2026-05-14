@@ -5,16 +5,17 @@ import { useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Search, Grid3X3, Map, ChevronDown, X, Phone, MessageCircle } from 'lucide-react';
+import {
+  Search, Grid3X3, Map, ChevronDown, X,
+  Phone, MessageCircle, SlidersHorizontal, ArrowUpDown,
+} from 'lucide-react';
 import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
 import type { ListingRecord } from '@/components/staff/PropertyListingForm';
 
 const PropertiesMapView = dynamic(() => import('@/components/PropertiesMapView'), { ssr: false });
 
-interface Props {
-  listings: ListingRecord[];
-}
+interface Props { listings: ListingRecord[] }
 
 function parsePrice(s: string): number {
   const n = s.replace(/AED\s*/i, '').trim();
@@ -24,16 +25,23 @@ function parsePrice(s: string): number {
 }
 
 const PRICE_RANGES = [
-  { label: 'Any Price', min: 0, max: Infinity },
-  { label: 'Under AED 1M', min: 0, max: 1_000_000 },
-  { label: 'AED 1M – 3M', min: 1_000_000, max: 3_000_000 },
-  { label: 'AED 3M – 5M', min: 3_000_000, max: 5_000_000 },
-  { label: 'AED 5M – 10M', min: 5_000_000, max: 10_000_000 },
-  { label: 'AED 10M+', min: 10_000_000, max: Infinity },
+  { label: 'Any Price',      min: 0,          max: Infinity   },
+  { label: 'Under AED 1M',   min: 0,          max: 1_000_000  },
+  { label: 'AED 1M – 3M',    min: 1_000_000,  max: 3_000_000  },
+  { label: 'AED 3M – 5M',    min: 3_000_000,  max: 5_000_000  },
+  { label: 'AED 5M – 10M',   min: 5_000_000,  max: 10_000_000 },
+  { label: 'AED 10M+',       min: 10_000_000, max: Infinity   },
 ];
 
 const BEDS_OPTIONS = ['Any', 'Studio', '1 BR', '2 BR', '3 BR', '4 BR', '5+ BR'];
 const TABS = ['All', 'Ready', 'Off-Plan', 'Residential', 'Commercial'] as const;
+type SortOrder = 'default' | 'price-asc' | 'price-desc';
+
+const SORT_OPTIONS: { value: SortOrder; label: string }[] = [
+  { value: 'default',    label: 'Default'          },
+  { value: 'price-asc',  label: 'Price: Low → High' },
+  { value: 'price-desc', label: 'Price: High → Low' },
+];
 
 function BedIcon() {
   return (
@@ -45,7 +53,6 @@ function BedIcon() {
     </svg>
   );
 }
-
 function PinIcon() {
   return (
     <svg width="11" height="14" viewBox="0 0 11 14" fill="none" aria-hidden="true" style={{ flexShrink: 0 }}>
@@ -55,47 +62,83 @@ function PinIcon() {
   );
 }
 
+const dropdownStyle = {
+  position: 'absolute' as const,
+  top: 'calc(100% + 6px)',
+  left: 0,
+  background: '#fff',
+  border: '1px solid var(--border)',
+  borderRadius: 'var(--radius-md)',
+  boxShadow: 'var(--shadow-card-hover)',
+  zIndex: 100,
+  minWidth: 200,
+  padding: '6px 0',
+};
+const dropItem = (active: boolean) => ({
+  display: 'block' as const,
+  width: '100%',
+  textAlign: 'left' as const,
+  padding: '10px 16px',
+  background: active ? 'var(--white-section)' : 'transparent',
+  fontFamily: 'var(--font)',
+  fontSize: '0.875rem',
+  color: active ? 'var(--heading)' : 'var(--body)',
+  fontWeight: active ? 600 : 400,
+  border: 'none',
+  cursor: 'pointer',
+});
+
 function PropertiesInner({ listings }: Props) {
   const params = useSearchParams();
 
-  const [activeTab, setActiveTab] = useState<typeof TABS[number]>('All');
-  const [selectedArea, setSelectedArea] = useState('');
-  const [priceRangeIdx, setPriceRangeIdx] = useState(0);
-  const [selectedBeds, setSelectedBeds] = useState('Any');
-  const [searchText, setSearchText] = useState('');
-  const [viewMode, setViewMode] = useState<'grid' | 'map'>('grid');
-  const [visibleCount, setVisibleCount] = useState(9);
-  const [areaOpen, setAreaOpen] = useState(false);
+  const [activeTab,      setActiveTab]      = useState<typeof TABS[number]>('All');
+  const [selectedArea,   setSelectedArea]   = useState('');
+  const [priceRangeIdx,  setPriceRangeIdx]  = useState(0);
+  const [selectedBeds,   setSelectedBeds]   = useState('Any');
+  const [searchText,     setSearchText]     = useState('');
+  const [viewMode,       setViewMode]       = useState<'grid' | 'map'>('grid');
+  const [sortOrder,      setSortOrder]      = useState<SortOrder>('default');
+  const [visibleCount,   setVisibleCount]   = useState(9);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+
+  // Dropdowns
+  const [areaOpen,  setAreaOpen]  = useState(false);
   const [priceOpen, setPriceOpen] = useState(false);
-  const [bedsOpen, setBedsOpen] = useState(false);
+  const [bedsOpen,  setBedsOpen]  = useState(false);
+  const [sortOpen,  setSortOpen]  = useState(false);
 
-  // Mini enquiry form state
-  const [miniName, setMiniName] = useState('');
+  // Mini enquiry form
+  const [miniName,  setMiniName]  = useState('');
   const [miniPhone, setMiniPhone] = useState('');
-  const [miniSent, setMiniSent] = useState(false);
+  const [miniSent,  setMiniSent]  = useState(false);
 
-  const areaRef = useRef<HTMLDivElement>(null);
+  const areaRef  = useRef<HTMLDivElement>(null);
   const priceRef = useRef<HTMLDivElement>(null);
-  const bedsRef = useRef<HTMLDivElement>(null);
+  const bedsRef  = useRef<HTMLDivElement>(null);
+  const sortRef  = useRef<HTMLDivElement>(null);
 
-  // Pre-populate from URL params (from hero search)
+  // URL param pre-population
   useEffect(() => {
     const tab = params.get('tab');
     if (tab && TABS.includes(tab as typeof TABS[number])) setActiveTab(tab as typeof TABS[number]);
     const area = params.get('area');
-    if (area) { setSearchText(area); }
+    if (area) setSearchText(area);
   }, [params]);
 
   // Close dropdowns on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (areaRef.current && !areaRef.current.contains(e.target as Node)) setAreaOpen(false);
+      if (areaRef.current  && !areaRef.current.contains(e.target as Node))  setAreaOpen(false);
       if (priceRef.current && !priceRef.current.contains(e.target as Node)) setPriceOpen(false);
-      if (bedsRef.current && !bedsRef.current.contains(e.target as Node)) setBedsOpen(false);
+      if (bedsRef.current  && !bedsRef.current.contains(e.target as Node))  setBedsOpen(false);
+      if (sortRef.current  && !sortRef.current.contains(e.target as Node))  setSortOpen(false);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, []);
+
+  // Reset visible count when filters change
+  useEffect(() => { setVisibleCount(9); }, [activeTab, selectedArea, priceRangeIdx, selectedBeds, searchText, sortOrder]);
 
   const uniqueAreas = useMemo(() => {
     const set = new Set<string>();
@@ -104,44 +147,54 @@ function PropertiesInner({ listings }: Props) {
   }, [listings]);
 
   const filtered = useMemo(() => {
-    return listings.filter(l => {
-      // Tab filter
-      if (activeTab === 'Ready' && l.category !== 'premium') return false;
-      if (activeTab === 'Off-Plan' && l.category !== 'offplan') return false;
+    const base = listings.filter(l => {
+      if (activeTab === 'Ready'      && l.category !== 'premium') return false;
+      if (activeTab === 'Off-Plan'   && l.category !== 'offplan') return false;
       if (activeTab === 'Commercial') {
-        const name = l.name.toLowerCase();
-        const loc = l.location.toLowerCase();
-        if (!name.includes('commercial') && !name.includes('office') && !loc.includes('commercial')) return false;
+        const t = (l.name + l.location).toLowerCase();
+        if (!t.includes('commercial') && !t.includes('office')) return false;
       }
-      // Area filter
       if (selectedArea && selectedArea !== 'All Areas') {
         if (!l.location.toLowerCase().includes(selectedArea.toLowerCase())) return false;
       }
-      // Price filter
       const range = PRICE_RANGES[priceRangeIdx];
       if (range.max !== Infinity || range.min !== 0) {
-        const price = parsePrice(l.price);
-        if (price < range.min || price > range.max) return false;
+        const p = parsePrice(l.price);
+        if (p < range.min || p > range.max) return false;
       }
-      // Beds filter
       if (selectedBeds !== 'Any') {
-        const bedsLower = l.beds.toLowerCase();
-        const filterLower = selectedBeds.toLowerCase();
-        if (!bedsLower.includes(filterLower.replace(' br', '').replace('studio', 'studio'))) return false;
+        if (!l.beds.toLowerCase().includes(selectedBeds.toLowerCase().replace(' br', '').replace('studio', 'studio'))) return false;
       }
-      // Search text
       if (searchText) {
         const q = searchText.toLowerCase();
-        const match = l.name.toLowerCase().includes(q) ||
-          l.location.toLowerCase().includes(q) ||
-          l.developer.toLowerCase().includes(q);
-        if (!match) return false;
+        if (!l.name.toLowerCase().includes(q) && !l.location.toLowerCase().includes(q) && !l.developer.toLowerCase().includes(q)) return false;
       }
       return true;
     });
-  }, [listings, activeTab, selectedArea, priceRangeIdx, selectedBeds, searchText]);
 
-  const hasActiveFilters = activeTab !== 'All' || selectedArea !== '' || priceRangeIdx !== 0 || selectedBeds !== 'Any' || searchText !== '';
+    if (sortOrder === 'price-asc')  return [...base].sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
+    if (sortOrder === 'price-desc') return [...base].sort((a, b) => parsePrice(b.price) - parsePrice(a.price));
+    return base;
+  }, [listings, activeTab, selectedArea, priceRangeIdx, selectedBeds, searchText, sortOrder]);
+
+  // Active filter chips
+  const chips = useMemo(() => {
+    const c: { label: string; clear: () => void }[] = [];
+    if (activeTab !== 'All')                          c.push({ label: activeTab,                      clear: () => setActiveTab('All')      });
+    if (selectedArea && selectedArea !== 'All Areas') c.push({ label: selectedArea,                   clear: () => setSelectedArea('')      });
+    if (priceRangeIdx !== 0)                          c.push({ label: PRICE_RANGES[priceRangeIdx].label, clear: () => setPriceRangeIdx(0)   });
+    if (selectedBeds !== 'Any')                       c.push({ label: selectedBeds,                   clear: () => setSelectedBeds('Any')   });
+    if (searchText)                                   c.push({ label: `"${searchText}"`,              clear: () => setSearchText('')        });
+    if (sortOrder !== 'default')                      c.push({ label: SORT_OPTIONS.find(s => s.value === sortOrder)!.label, clear: () => setSortOrder('default') });
+    return c;
+  }, [activeTab, selectedArea, priceRangeIdx, selectedBeds, searchText, sortOrder]);
+
+  const hasActiveFilters = chips.length > 0;
+
+  function clearAll() {
+    setActiveTab('All'); setSelectedArea(''); setPriceRangeIdx(0);
+    setSelectedBeds('Any'); setSearchText(''); setSortOrder('default');
+  }
 
   const handleMiniSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -155,31 +208,19 @@ function PropertiesInner({ listings }: Props) {
     } catch { /* silent */ }
   };
 
-  const dropdownStyle = {
-    position: 'absolute' as const,
-    top: 'calc(100% + 6px)',
-    left: 0,
-    background: '#fff',
-    border: '1px solid var(--border)',
-    borderRadius: 'var(--radius-md)',
-    boxShadow: 'var(--shadow-card-hover)',
-    zIndex: 100,
-    minWidth: 200,
-    padding: '6px 0',
-  };
-
-  const dropItemStyle = (active: boolean) => ({
-    display: 'block',
-    width: '100%',
-    textAlign: 'left' as const,
-    padding: '10px 16px',
-    background: active ? 'var(--white-section)' : 'transparent',
+  const filterBtnBase = (active: boolean) => ({
+    display: 'flex' as const, alignItems: 'center' as const, gap: 6,
+    padding: '9px 14px',
+    border: `1px solid ${active ? 'var(--heading)' : 'var(--border)'}`,
+    borderRadius: 'var(--radius-btn)' as const,
+    background: active ? 'var(--white-section)' : '#fff',
     fontFamily: 'var(--font)',
     fontSize: '0.875rem',
-    color: active ? 'var(--heading)' : 'var(--body)',
+    color: 'var(--heading)',
+    cursor: 'pointer' as const,
+    whiteSpace: 'nowrap' as const,
     fontWeight: active ? 600 : 400,
-    border: 'none',
-    cursor: 'pointer',
+    transition: 'all 0.15s ease',
   });
 
   return (
@@ -187,23 +228,15 @@ function PropertiesInner({ listings }: Props) {
       <Nav />
 
       {/* Page Hero */}
-      <section style={{
-        background: '#111',
-        paddingTop: 72 + 56,
-        paddingBottom: 56,
-      }}>
+      <section style={{ background: '#111', paddingTop: 72 + 56, paddingBottom: 56 }}>
         <div className="container">
           <p style={{ fontSize: '0.8125rem', color: 'rgba(255,255,255,0.5)', marginBottom: 8 }}>
             Home &nbsp;/&nbsp; Properties
           </p>
           <h1 style={{
-            fontFamily: 'var(--font)',
-            fontSize: 'clamp(2rem, 3.5vw, 3rem)',
-            fontWeight: 700,
-            color: '#fff',
-            lineHeight: 1.15,
-            letterSpacing: '-0.02em',
-            marginBottom: 12,
+            fontFamily: 'var(--font)', fontSize: 'clamp(2rem, 3.5vw, 3rem)',
+            fontWeight: 700, color: '#fff', lineHeight: 1.15,
+            letterSpacing: '-0.02em', marginBottom: 12,
           }}>
             Find Your Perfect Property
           </h1>
@@ -213,34 +246,30 @@ function PropertiesInner({ listings }: Props) {
         </div>
       </section>
 
-      {/* Sticky Filter Bar */}
+      {/* ── Sticky Filter Bar ── */}
       <div className="filter-bar" style={{
-        position: 'sticky',
-        top: 72,
-        zIndex: 40,
-        background: '#fff',
-        borderBottom: '1px solid var(--border)',
+        position: 'sticky', top: 72, zIndex: 40,
+        background: '#fff', borderBottom: '1px solid var(--border)',
         boxShadow: '0 2px 12px rgba(27,48,121,0.06)',
       }}>
         <div className="container" style={{ paddingTop: 0, paddingBottom: 0 }}>
+
           {/* Tab row */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4, paddingBlock: 12, overflowX: 'auto', scrollbarWidth: 'none' }}>
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 4,
+            paddingBlock: 12, overflowX: 'auto', scrollbarWidth: 'none',
+          }}>
             {TABS.map(tab => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 style={{
-                  padding: '7px 16px',
-                  borderRadius: 'var(--radius-pill)',
+                  padding: '7px 16px', borderRadius: 'var(--radius-pill)',
                   border: activeTab === tab ? 'none' : '1px solid var(--border)',
                   background: activeTab === tab ? 'var(--heading)' : 'transparent',
                   color: activeTab === tab ? '#fff' : 'var(--body)',
-                  fontFamily: 'var(--font)',
-                  fontSize: '0.875rem',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                  transition: 'all 0.2s ease',
+                  fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600,
+                  cursor: 'pointer', whiteSpace: 'nowrap', transition: 'all 0.2s ease',
                 }}
               >
                 {tab}
@@ -248,155 +277,152 @@ function PropertiesInner({ listings }: Props) {
             ))}
           </div>
 
-          {/* Controls row */}
-          <div className="filter-row" style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            paddingBottom: 12,
-            flexWrap: 'wrap',
-          }}>
-            {/* Search input */}
-            <div style={{ position: 'relative', flex: '1 1 200px', minWidth: 160 }}>
-              <Search size={15} strokeWidth={1.5} color="var(--muted)" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+          {/* ── Always-visible row: search + mobile trigger + view toggle ── */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingBottom: 12 }}>
+
+            {/* Search */}
+            <div style={{ position: 'relative', flex: '1 1 180px', minWidth: 140 }}>
+              <Search size={15} strokeWidth={1.5} color="var(--muted)"
+                style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
               <input
                 value={searchText}
                 onChange={e => setSearchText(e.target.value)}
                 placeholder="Search by name, area or developer…"
                 style={{
-                  width: '100%',
-                  paddingLeft: 36,
-                  paddingRight: 12,
-                  paddingBlock: 9,
-                  border: '1px solid var(--border)',
-                  borderRadius: 'var(--radius-btn)',
-                  fontFamily: 'var(--font)',
-                  fontSize: '0.875rem',
-                  color: 'var(--heading)',
-                  background: '#fff',
-                  outline: 'none',
+                  width: '100%', paddingLeft: 36, paddingRight: 12, paddingBlock: 9,
+                  border: '1px solid var(--border)', borderRadius: 'var(--radius-btn)',
+                  fontFamily: 'var(--font)', fontSize: '0.875rem',
+                  color: 'var(--heading)', background: '#fff', outline: 'none',
+                  boxSizing: 'border-box',
                 }}
               />
             </div>
 
-            {/* Area dropdown */}
-            <div ref={areaRef} style={{ position: 'relative' }}>
-              <button
-                onClick={() => { setAreaOpen(o => !o); setPriceOpen(false); setBedsOpen(false); }}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 6,
-                  padding: '9px 14px',
-                  border: '1px solid var(--border)',
-                  borderRadius: 'var(--radius-btn)',
-                  background: selectedArea && selectedArea !== 'All Areas' ? 'var(--white-section)' : '#fff',
-                  fontFamily: 'var(--font)',
-                  fontSize: '0.875rem',
-                  color: 'var(--heading)',
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {selectedArea && selectedArea !== 'All Areas' ? selectedArea : 'Area'}
-                <ChevronDown size={14} strokeWidth={1.5} style={{ transform: areaOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
-              </button>
-              {areaOpen && (
-                <div style={{ ...dropdownStyle, maxHeight: 280, overflowY: 'auto' }}>
-                  {uniqueAreas.map(a => (
-                    <button key={a} onClick={() => { setSelectedArea(a === 'All Areas' ? '' : a); setAreaOpen(false); }}
-                      style={dropItemStyle(selectedArea === a || (a === 'All Areas' && !selectedArea))}>
-                      {a}
-                    </button>
-                  ))}
-                </div>
+            {/* Mobile-only filter trigger */}
+            <button
+              className="mobile-filter-btn"
+              onClick={() => setMobileFiltersOpen(o => !o)}
+              style={{
+                display: 'none', alignItems: 'center', gap: 6,
+                padding: '9px 14px',
+                border: `1px solid ${(hasActiveFilters || mobileFiltersOpen) ? 'var(--heading)' : 'var(--border)'}`,
+                borderRadius: 'var(--radius-btn)',
+                background: (hasActiveFilters || mobileFiltersOpen) ? 'var(--white-section)' : '#fff',
+                fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600,
+                color: 'var(--heading)', cursor: 'pointer', whiteSpace: 'nowrap',
+              }}
+            >
+              <SlidersHorizontal size={14} strokeWidth={1.5} />
+              Filters{chips.length > 0 ? ` (${chips.length})` : ''}
+            </button>
+
+            {/* Desktop filter controls */}
+            <div className="desktop-filters" style={{
+              display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap',
+            }}>
+              {/* Area */}
+              <div ref={areaRef} style={{ position: 'relative' }}>
+                <button
+                  onClick={() => { setAreaOpen(o => !o); setPriceOpen(false); setBedsOpen(false); setSortOpen(false); }}
+                  style={filterBtnBase(!!selectedArea && selectedArea !== 'All Areas')}
+                >
+                  {selectedArea && selectedArea !== 'All Areas' ? selectedArea : 'Area'}
+                  <ChevronDown size={14} strokeWidth={1.5} style={{ transform: areaOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+                </button>
+                {areaOpen && (
+                  <div style={{ ...dropdownStyle, maxHeight: 280, overflowY: 'auto' }}>
+                    {uniqueAreas.map(a => (
+                      <button key={a} onClick={() => { setSelectedArea(a === 'All Areas' ? '' : a); setAreaOpen(false); }}
+                        style={dropItem(selectedArea === a || (a === 'All Areas' && !selectedArea))}>
+                        {a}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Price */}
+              <div ref={priceRef} style={{ position: 'relative' }}>
+                <button
+                  onClick={() => { setPriceOpen(o => !o); setAreaOpen(false); setBedsOpen(false); setSortOpen(false); }}
+                  style={filterBtnBase(priceRangeIdx !== 0)}
+                >
+                  {priceRangeIdx === 0 ? 'Price' : PRICE_RANGES[priceRangeIdx].label}
+                  <ChevronDown size={14} strokeWidth={1.5} style={{ transform: priceOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+                </button>
+                {priceOpen && (
+                  <div style={dropdownStyle}>
+                    {PRICE_RANGES.map((r, i) => (
+                      <button key={r.label} onClick={() => { setPriceRangeIdx(i); setPriceOpen(false); }}
+                        style={dropItem(priceRangeIdx === i)}>
+                        {r.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Beds */}
+              <div ref={bedsRef} style={{ position: 'relative' }}>
+                <button
+                  onClick={() => { setBedsOpen(o => !o); setAreaOpen(false); setPriceOpen(false); setSortOpen(false); }}
+                  style={filterBtnBase(selectedBeds !== 'Any')}
+                >
+                  {selectedBeds === 'Any' ? 'Bedrooms' : selectedBeds}
+                  <ChevronDown size={14} strokeWidth={1.5} style={{ transform: bedsOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+                </button>
+                {bedsOpen && (
+                  <div style={dropdownStyle}>
+                    {BEDS_OPTIONS.map(b => (
+                      <button key={b} onClick={() => { setSelectedBeds(b); setBedsOpen(false); }}
+                        style={dropItem(selectedBeds === b)}>
+                        {b}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Sort */}
+              <div ref={sortRef} style={{ position: 'relative' }}>
+                <button
+                  onClick={() => { setSortOpen(o => !o); setAreaOpen(false); setPriceOpen(false); setBedsOpen(false); }}
+                  style={filterBtnBase(sortOrder !== 'default')}
+                >
+                  <ArrowUpDown size={14} strokeWidth={1.5} />
+                  {sortOrder === 'default' ? 'Sort' : SORT_OPTIONS.find(s => s.value === sortOrder)!.label}
+                  <ChevronDown size={14} strokeWidth={1.5} style={{ transform: sortOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+                </button>
+                {sortOpen && (
+                  <div style={dropdownStyle}>
+                    {SORT_OPTIONS.map(s => (
+                      <button key={s.value} onClick={() => { setSortOrder(s.value); setSortOpen(false); }}
+                        style={dropItem(sortOrder === s.value)}>
+                        {s.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Clear */}
+              {hasActiveFilters && (
+                <button
+                  onClick={clearAll}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 4,
+                    padding: '9px 12px', border: 'none', background: 'transparent',
+                    fontFamily: 'var(--font)', fontSize: '0.8125rem',
+                    color: 'var(--muted)', cursor: 'pointer', whiteSpace: 'nowrap',
+                  }}
+                >
+                  <X size={14} strokeWidth={1.5} /> Clear all
+                </button>
               )}
             </div>
 
-            {/* Price dropdown */}
-            <div ref={priceRef} style={{ position: 'relative' }}>
-              <button
-                onClick={() => { setPriceOpen(o => !o); setAreaOpen(false); setBedsOpen(false); }}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 6,
-                  padding: '9px 14px',
-                  border: '1px solid var(--border)',
-                  borderRadius: 'var(--radius-btn)',
-                  background: priceRangeIdx !== 0 ? 'var(--white-section)' : '#fff',
-                  fontFamily: 'var(--font)',
-                  fontSize: '0.875rem',
-                  color: 'var(--heading)',
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {PRICE_RANGES[priceRangeIdx].label === 'Any Price' ? 'Price' : PRICE_RANGES[priceRangeIdx].label}
-                <ChevronDown size={14} strokeWidth={1.5} style={{ transform: priceOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
-              </button>
-              {priceOpen && (
-                <div style={dropdownStyle}>
-                  {PRICE_RANGES.map((r, i) => (
-                    <button key={r.label} onClick={() => { setPriceRangeIdx(i); setPriceOpen(false); }}
-                      style={dropItemStyle(priceRangeIdx === i)}>
-                      {r.label}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Beds dropdown */}
-            <div ref={bedsRef} style={{ position: 'relative' }}>
-              <button
-                onClick={() => { setBedsOpen(o => !o); setAreaOpen(false); setPriceOpen(false); }}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 6,
-                  padding: '9px 14px',
-                  border: '1px solid var(--border)',
-                  borderRadius: 'var(--radius-btn)',
-                  background: selectedBeds !== 'Any' ? 'var(--white-section)' : '#fff',
-                  fontFamily: 'var(--font)',
-                  fontSize: '0.875rem',
-                  color: 'var(--heading)',
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {selectedBeds === 'Any' ? 'Bedrooms' : selectedBeds}
-                <ChevronDown size={14} strokeWidth={1.5} style={{ transform: bedsOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
-              </button>
-              {bedsOpen && (
-                <div style={dropdownStyle}>
-                  {BEDS_OPTIONS.map(b => (
-                    <button key={b} onClick={() => { setSelectedBeds(b); setBedsOpen(false); }}
-                      style={dropItemStyle(selectedBeds === b)}>
-                      {b}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Clear filters */}
-            {hasActiveFilters && (
-              <button
-                onClick={() => { setActiveTab('All'); setSelectedArea(''); setPriceRangeIdx(0); setSelectedBeds('Any'); setSearchText(''); }}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 4,
-                  padding: '9px 12px',
-                  border: 'none',
-                  background: 'transparent',
-                  fontFamily: 'var(--font)',
-                  fontSize: '0.8125rem',
-                  color: 'var(--muted)',
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                <X size={14} strokeWidth={1.5} /> Clear
-              </button>
-            )}
-
-            {/* View toggle */}
-            <div style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
+            {/* View toggle — always right */}
+            <div style={{ marginLeft: 'auto', display: 'flex', gap: 4, flexShrink: 0 }}>
               {(['grid', 'map'] as const).map(mode => (
                 <button
                   key={mode}
@@ -405,31 +431,169 @@ function PropertiesInner({ listings }: Props) {
                   style={{
                     width: 38, height: 38,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    border: '1px solid var(--border)',
-                    borderRadius: 'var(--radius-btn)',
+                    border: '1px solid var(--border)', borderRadius: 'var(--radius-btn)',
                     background: viewMode === mode ? 'var(--heading)' : '#fff',
-                    cursor: 'pointer',
-                    transition: 'background 0.2s',
+                    cursor: 'pointer', transition: 'background 0.2s',
                   }}
                 >
                   {mode === 'grid'
                     ? <Grid3X3 size={16} strokeWidth={1.5} color={viewMode === 'grid' ? '#fff' : 'var(--heading)'} />
-                    : <Map size={16} strokeWidth={1.5} color={viewMode === 'map' ? '#fff' : 'var(--heading)'} />
+                    : <Map     size={16} strokeWidth={1.5} color={viewMode === 'map'  ? '#fff' : 'var(--heading)'} />
                   }
                 </button>
               ))}
             </div>
           </div>
+
+          {/* ── Mobile expanded filter panel ── */}
+          {mobileFiltersOpen && (
+            <div className="mobile-filter-panel" style={{
+              borderTop: '1px solid var(--border)',
+              paddingBlock: 14,
+              display: 'flex', flexDirection: 'column', gap: 10,
+            }}>
+              {/* Area */}
+              <div ref={areaRef} style={{ position: 'relative' }}>
+                <button
+                  onClick={() => { setAreaOpen(o => !o); setPriceOpen(false); setBedsOpen(false); setSortOpen(false); }}
+                  style={{ ...filterBtnBase(!!selectedArea && selectedArea !== 'All Areas'), width: '100%', justifyContent: 'space-between' }}
+                >
+                  <span>{selectedArea && selectedArea !== 'All Areas' ? selectedArea : 'Area'}</span>
+                  <ChevronDown size={14} strokeWidth={1.5} style={{ transform: areaOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+                </button>
+                {areaOpen && (
+                  <div style={{ ...dropdownStyle, maxHeight: 240, overflowY: 'auto', width: '100%' }}>
+                    {uniqueAreas.map(a => (
+                      <button key={a} onClick={() => { setSelectedArea(a === 'All Areas' ? '' : a); setAreaOpen(false); }}
+                        style={dropItem(selectedArea === a || (a === 'All Areas' && !selectedArea))}>
+                        {a}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Price */}
+              <div ref={priceRef} style={{ position: 'relative' }}>
+                <button
+                  onClick={() => { setPriceOpen(o => !o); setAreaOpen(false); setBedsOpen(false); setSortOpen(false); }}
+                  style={{ ...filterBtnBase(priceRangeIdx !== 0), width: '100%', justifyContent: 'space-between' }}
+                >
+                  <span>{priceRangeIdx === 0 ? 'Price' : PRICE_RANGES[priceRangeIdx].label}</span>
+                  <ChevronDown size={14} strokeWidth={1.5} style={{ transform: priceOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+                </button>
+                {priceOpen && (
+                  <div style={{ ...dropdownStyle, width: '100%' }}>
+                    {PRICE_RANGES.map((r, i) => (
+                      <button key={r.label} onClick={() => { setPriceRangeIdx(i); setPriceOpen(false); }}
+                        style={dropItem(priceRangeIdx === i)}>{r.label}</button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Beds */}
+              <div ref={bedsRef} style={{ position: 'relative' }}>
+                <button
+                  onClick={() => { setBedsOpen(o => !o); setAreaOpen(false); setPriceOpen(false); setSortOpen(false); }}
+                  style={{ ...filterBtnBase(selectedBeds !== 'Any'), width: '100%', justifyContent: 'space-between' }}
+                >
+                  <span>{selectedBeds === 'Any' ? 'Bedrooms' : selectedBeds}</span>
+                  <ChevronDown size={14} strokeWidth={1.5} style={{ transform: bedsOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+                </button>
+                {bedsOpen && (
+                  <div style={{ ...dropdownStyle, width: '100%' }}>
+                    {BEDS_OPTIONS.map(b => (
+                      <button key={b} onClick={() => { setSelectedBeds(b); setBedsOpen(false); }}
+                        style={dropItem(selectedBeds === b)}>{b}</button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Sort */}
+              <div ref={sortRef} style={{ position: 'relative' }}>
+                <button
+                  onClick={() => { setSortOpen(o => !o); setAreaOpen(false); setPriceOpen(false); setBedsOpen(false); }}
+                  style={{ ...filterBtnBase(sortOrder !== 'default'), width: '100%', justifyContent: 'space-between' }}
+                >
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <ArrowUpDown size={14} strokeWidth={1.5} />
+                    {sortOrder === 'default' ? 'Sort' : SORT_OPTIONS.find(s => s.value === sortOrder)!.label}
+                  </span>
+                  <ChevronDown size={14} strokeWidth={1.5} style={{ transform: sortOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+                </button>
+                {sortOpen && (
+                  <div style={{ ...dropdownStyle, width: '100%' }}>
+                    {SORT_OPTIONS.map(s => (
+                      <button key={s.value} onClick={() => { setSortOrder(s.value); setSortOpen(false); }}
+                        style={dropItem(sortOrder === s.value)}>{s.label}</button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {hasActiveFilters && (
+                <button
+                  onClick={() => { clearAll(); setMobileFiltersOpen(false); }}
+                  style={{
+                    padding: '10px 16px', border: '1px solid var(--border)',
+                    borderRadius: 'var(--radius-btn)', background: 'transparent',
+                    fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600,
+                    color: 'var(--muted)', cursor: 'pointer',
+                  }}
+                >
+                  Clear all filters
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Main content */}
-      <div className="container" style={{ paddingTop: 40, paddingBottom: 80 }}>
+      {/* ── Main content ── */}
+      <div className="container" style={{ paddingTop: 32, paddingBottom: 80 }}>
+
+        {/* Active filter chips */}
+        {chips.length > 0 && (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 20 }}>
+            {chips.map(chip => (
+              <button
+                key={chip.label}
+                onClick={chip.clear}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 5,
+                  padding: '4px 10px 4px 12px',
+                  background: 'var(--white)', border: '1px solid var(--border)',
+                  borderRadius: 'var(--radius-pill)',
+                  fontFamily: 'var(--font)', fontSize: '0.8125rem',
+                  color: 'var(--heading)', fontWeight: 500,
+                  cursor: 'pointer', transition: 'border-color 0.15s, background 0.15s',
+                }}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLElement).style.borderColor = 'var(--heading)';
+                  (e.currentTarget as HTMLElement).style.background = 'var(--white-section)';
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)';
+                  (e.currentTarget as HTMLElement).style.background = 'var(--white)';
+                }}
+              >
+                {chip.label}
+                <X size={12} strokeWidth={2} color="var(--muted)" />
+              </button>
+            ))}
+          </div>
+        )}
+
         <div className="results-layout">
           {/* Left — results */}
           <div>
-            <p style={{ fontSize: '0.875rem', color: 'var(--muted)', marginBottom: 24 }}>
-              Showing <strong style={{ color: 'var(--heading)' }}>{Math.min(visibleCount, filtered.length)}</strong> of <strong style={{ color: 'var(--heading)' }}>{filtered.length}</strong> properties
+            <p style={{ fontSize: '0.875rem', color: 'var(--muted)', marginBottom: 20 }}>
+              {filtered.length === 0
+                ? 'No properties match your filters'
+                : <>Showing <strong style={{ color: 'var(--heading)' }}>{Math.min(visibleCount, filtered.length)}</strong> of <strong style={{ color: 'var(--heading)' }}>{filtered.length}</strong> {filtered.length === 1 ? 'property' : 'properties'}</>
+              }
             </p>
 
             {viewMode === 'map' ? (
@@ -442,8 +606,22 @@ function PropertiesInner({ listings }: Props) {
                 background: '#fff', borderRadius: 'var(--radius-lg)',
                 border: '1px solid var(--border)',
               }}>
-                <p style={{ fontSize: '1.125rem', color: 'var(--heading)', fontWeight: 600, marginBottom: 8 }}>No properties found</p>
-                <p style={{ color: 'var(--muted)', fontSize: '0.9375rem' }}>Try adjusting your filters or clearing your search.</p>
+                <p style={{ fontSize: '1.125rem', color: 'var(--heading)', fontWeight: 600, marginBottom: 8 }}>
+                  No properties found
+                </p>
+                <p style={{ color: 'var(--muted)', fontSize: '0.9375rem', marginBottom: 20 }}>
+                  Try adjusting your filters or clearing your search.
+                </p>
+                <button
+                  onClick={clearAll}
+                  style={{
+                    padding: '10px 22px', background: 'var(--navy)', color: '#fff',
+                    fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600,
+                    border: 'none', borderRadius: 'var(--radius-btn)', cursor: 'pointer',
+                  }}
+                >
+                  Clear all filters
+                </button>
               </div>
             ) : (
               <>
@@ -455,12 +633,9 @@ function PropertiesInner({ listings }: Props) {
                         key={listing.id}
                         className="prop-card"
                         style={{
-                          borderRadius: 'var(--radius-md)',
-                          overflow: 'hidden',
-                          background: '#fff',
-                          boxShadow: 'var(--shadow-card)',
-                          display: 'flex',
-                          flexDirection: 'column',
+                          borderRadius: 'var(--radius-md)', overflow: 'hidden',
+                          background: '#fff', boxShadow: 'var(--shadow-card)',
+                          display: 'flex', flexDirection: 'column',
                           transition: 'box-shadow 0.32s ease, transform 0.32s cubic-bezier(0.34,1.56,0.64,1)',
                         }}
                         onMouseEnter={e => {
@@ -474,25 +649,43 @@ function PropertiesInner({ listings }: Props) {
                       >
                         <Link href={`/properties/${listing.id}`} style={{ textDecoration: 'none', color: 'inherit', display: 'block', flex: 1 }}>
                           <div style={{ position: 'relative', aspectRatio: '16/9', overflow: 'hidden' }}>
-                            <Image src={image} alt={listing.name} fill sizes="(max-width: 768px) 100vw, 33vw"
+                            <Image
+                              src={image} alt={listing.name} fill
+                              sizes="(max-width: 768px) 100vw, 33vw"
                               style={{ objectFit: 'cover', transition: 'transform 500ms ease' }}
                               onMouseEnter={e => ((e.target as HTMLElement).style.transform = 'scale(1.04)')}
                               onMouseLeave={e => ((e.target as HTMLElement).style.transform = 'scale(1)')}
                             />
-                            <span style={{ position: 'absolute', top: 12, left: 12, background: 'rgba(0,0,0,0.48)', color: '#fff', fontSize: '0.75rem', fontWeight: 600, padding: '4px 10px', borderRadius: 4, backdropFilter: 'blur(4px)' }}>
+                            <span style={{
+                              position: 'absolute', top: 12, left: 12,
+                              background: 'rgba(0,0,0,0.48)', color: '#fff',
+                              fontSize: '0.75rem', fontWeight: 600,
+                              padding: '4px 10px', borderRadius: 4, backdropFilter: 'blur(4px)',
+                            }}>
                               {listing.badge}
                             </span>
                             {listing.developer && (
-                              <span style={{ position: 'absolute', top: 12, right: 12, background: '#fff', padding: '4px 10px', borderRadius: 4, fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.04em', color: 'var(--heading)' }}>
+                              <span style={{
+                                position: 'absolute', top: 12, right: 12,
+                                background: '#fff', padding: '4px 10px', borderRadius: 4,
+                                fontSize: '0.6875rem', fontWeight: 700,
+                                letterSpacing: '0.04em', color: 'var(--heading)',
+                              }}>
                                 {listing.developer}
                               </span>
                             )}
                           </div>
                           <div style={{ padding: '20px 20px 0' }}>
-                            <h3 style={{ fontFamily: 'var(--font)', fontSize: '1.0625rem', fontWeight: 600, lineHeight: 1.35, color: 'var(--heading)', marginBottom: 4 }}>
+                            <h3 style={{
+                              fontFamily: 'var(--font)', fontSize: '1.0625rem',
+                              fontWeight: 600, lineHeight: 1.35,
+                              color: 'var(--heading)', marginBottom: 4,
+                            }}>
                               {listing.name}
                             </h3>
-                            <p style={{ fontSize: '0.8125rem', color: 'var(--muted)', marginBottom: 12 }}>by {listing.developer}</p>
+                            <p style={{ fontSize: '0.8125rem', color: 'var(--muted)', marginBottom: 12 }}>
+                              by {listing.developer}
+                            </p>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 14 }}>
                               <div>
                                 <div style={{ fontSize: '0.8125rem', color: 'var(--muted)' }}>Starting Price</div>
@@ -500,7 +693,11 @@ function PropertiesInner({ listings }: Props) {
                               </div>
                               <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--muted)' }}>View Details →</span>
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 16, paddingBottom: 16, borderTop: '1px solid var(--border)', paddingTop: 12, fontSize: '0.8125rem', color: 'var(--muted)' }}>
+                            <div style={{
+                              display: 'flex', alignItems: 'center', gap: 16,
+                              paddingBottom: 16, borderTop: '1px solid var(--border)',
+                              paddingTop: 12, fontSize: '0.8125rem', color: 'var(--muted)',
+                            }}>
                               <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}><BedIcon /> {listing.beds}</span>
                               <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}><PinIcon /> {listing.location}</span>
                             </div>
@@ -531,19 +728,14 @@ function PropertiesInner({ listings }: Props) {
                     <button
                       onClick={() => setVisibleCount(v => v + 9)}
                       style={{
-                        padding: '14px 40px',
-                        border: '1px solid var(--border)',
-                        borderRadius: 'var(--radius-btn)',
-                        background: '#fff',
-                        fontFamily: 'var(--font)',
-                        fontSize: '0.9375rem',
-                        fontWeight: 600,
-                        color: 'var(--heading)',
-                        cursor: 'pointer',
+                        padding: '14px 40px', border: '1px solid var(--border)',
+                        borderRadius: 'var(--radius-btn)', background: '#fff',
+                        fontFamily: 'var(--font)', fontSize: '0.9375rem',
+                        fontWeight: 600, color: 'var(--heading)', cursor: 'pointer',
                         transition: 'border-color 0.2s, background 0.2s',
                       }}
                       onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--heading)'; e.currentTarget.style.background = 'var(--white-section)'; }}
-                      onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = '#fff'; }}
+                      onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)';  e.currentTarget.style.background = '#fff'; }}
                     >
                       Load More Properties
                     </button>
@@ -558,15 +750,16 @@ function PropertiesInner({ listings }: Props) {
 
           {/* Right — sidebar */}
           <aside className="prop-sidebar">
-            {/* Can't find it? CTA */}
+            {/* Can't find it? */}
             <div style={{
-              background: '#111',
-              borderRadius: 'var(--radius-lg)',
-              padding: 28,
-              marginBottom: 20,
+              background: '#111', borderRadius: 'var(--radius-lg)',
+              padding: 28, marginBottom: 20,
             }}>
-              <h3 style={{ fontFamily: 'var(--font)', fontSize: '1.0625rem', fontWeight: 700, color: '#fff', marginBottom: 8 }}>
-                Can't find what you're looking for?
+              <h3 style={{
+                fontFamily: 'var(--font)', fontSize: '1.0625rem',
+                fontWeight: 700, color: '#fff', marginBottom: 8,
+              }}>
+                Can&apos;t find what you&apos;re looking for?
               </h3>
               <p style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.7)', marginBottom: 20, lineHeight: 1.65 }}>
                 Our advisors have access to exclusive off-market listings and can match you with properties that suit your exact requirements.
@@ -579,8 +772,7 @@ function PropertiesInner({ listings }: Props) {
                   width: '100%', padding: '12px 20px',
                   background: '#fff', color: '#111',
                   fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600,
-                  border: 'none', borderRadius: 'var(--radius-btn)',
-                  cursor: 'pointer',
+                  border: 'none', borderRadius: 'var(--radius-btn)', cursor: 'pointer',
                 }}
               >
                 <MessageCircle size={16} strokeWidth={1.5} />
@@ -590,12 +782,13 @@ function PropertiesInner({ listings }: Props) {
 
             {/* Schedule viewing form */}
             <div style={{
-              background: '#fff',
-              borderRadius: 'var(--radius-lg)',
-              border: '1px solid var(--border)',
-              padding: 24,
+              background: '#fff', borderRadius: 'var(--radius-lg)',
+              border: '1px solid var(--border)', padding: 24,
             }}>
-              <h3 style={{ fontFamily: 'var(--font)', fontSize: '1rem', fontWeight: 700, color: 'var(--heading)', marginBottom: 6 }}>
+              <h3 style={{
+                fontFamily: 'var(--font)', fontSize: '1rem',
+                fontWeight: 700, color: 'var(--heading)', marginBottom: 6,
+              }}>
                 Schedule a Viewing
               </h3>
               <p style={{ fontSize: '0.8125rem', color: 'var(--muted)', marginBottom: 18 }}>
@@ -604,7 +797,7 @@ function PropertiesInner({ listings }: Props) {
               {miniSent ? (
                 <div style={{ textAlign: 'center', padding: '16px 0' }}>
                   <p style={{ color: 'var(--heading)', fontWeight: 600 }}>Request received!</p>
-                  <p style={{ fontSize: '0.8125rem', color: 'var(--muted)', marginTop: 4 }}>We'll be in touch shortly.</p>
+                  <p style={{ fontSize: '0.8125rem', color: 'var(--muted)', marginTop: 4 }}>We&apos;ll be in touch shortly.</p>
                 </div>
               ) : (
                 <form onSubmit={handleMiniSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -622,11 +815,9 @@ function PropertiesInner({ listings }: Props) {
                     type="submit"
                     style={{
                       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                      padding: '11px 20px',
-                      background: 'var(--heading)', color: '#fff',
+                      padding: '11px 20px', background: 'var(--heading)', color: '#fff',
                       fontFamily: 'var(--font)', fontSize: '0.875rem', fontWeight: 600,
-                      border: 'none', borderRadius: 'var(--radius-btn)',
-                      cursor: 'pointer',
+                      border: 'none', borderRadius: 'var(--radius-btn)', cursor: 'pointer',
                     }}
                   >
                     <Phone size={15} strokeWidth={1.5} />
@@ -658,11 +849,12 @@ function PropertiesInner({ listings }: Props) {
         }
         @media (max-width: 900px) {
           .results-layout { grid-template-columns: 1fr; }
-          .prop-sidebar { order: -1; }
+          .prop-sidebar { order: 2; }
+          .desktop-filters { display: none !important; }
+          .mobile-filter-btn { display: flex !important; }
         }
         @media (max-width: 640px) {
           .prop-grid { grid-template-columns: 1fr; }
-          .filter-row { gap: 6px; }
         }
         .filter-bar ::-webkit-scrollbar { display: none; }
       `}</style>
