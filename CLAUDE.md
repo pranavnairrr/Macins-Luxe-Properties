@@ -1,5 +1,11 @@
 # Macins Luxe — Claude Code Standards
 
+## Git & Commit Rules
+- Commit author is always **Pranav Nair** — never add `Co-Authored-By` lines
+- After every meaningful commit, update this CLAUDE.md if anything architectural changed:
+  new tables, new components, new patterns, new env vars, new routes, new standards
+- Keep commits focused — one logical change per commit, clear imperative message
+
 ## Image Standards
 - NEVER use a bare `<img>` tag for content images
 - ALWAYS use `<CinemaImage>` from `@/components/CinemaImage` for all remote/uploaded images

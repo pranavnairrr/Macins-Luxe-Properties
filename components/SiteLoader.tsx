@@ -15,7 +15,7 @@ export default function SiteLoader() {
       return;
     }
 
-    const t = setTimeout(() => { el.style.display = 'none'; }, 900);
+    const t = setTimeout(() => { el.style.display = 'none'; }, 400);
     return () => clearTimeout(t);
   }, [pathname]);
 

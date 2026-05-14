@@ -1,12 +1,20 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
-import dynamic from 'next/dynamic';
+import { Poppins } from 'next/font/google';
+import { preconnect } from 'react-dom';
 import './globals.css';
 import SiteLoader from '@/components/SiteLoader';
 import WhatsAppFloat from '@/components/WhatsAppFloat';
 import BackToTop from '@/components/BackToTop';
+import LazyChat from '@/components/LazyChat';
 
-const ChatWidget = dynamic(() => import('@/components/ChatWidget'), { ssr: false });
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-poppins',
+  display: 'swap',
+  preload: true,
+});
 
 export const metadata: Metadata = {
   title: 'Macins Luxe — Premium Real Estate',
@@ -14,8 +22,9 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  preconnect('https://dqnrbbfiebnsjheznriy.supabase.co', { crossOrigin: 'anonymous' });
   return (
-    <html lang="en">
+    <html lang="en" className={poppins.variable}>
       <body>
         {/* Server-rendered loader — visible on first paint before JS hydrates */}
         <div id="site-loader" aria-hidden="true">
@@ -36,7 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {children}
         <WhatsAppFloat />
         <BackToTop />
-        <ChatWidget />
+        <LazyChat />
       </body>
     </html>
   );

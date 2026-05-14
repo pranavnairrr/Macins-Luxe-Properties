@@ -122,7 +122,7 @@ export default function PropertyCardsSection({ title, ctaText, cards, grey }: Pr
           className="cards-grid"
           style={{ display: 'flex', gap: 'var(--gap)', overflowX: 'auto', scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch' }}
         >
-          {cards.map(card => {
+          {cards.map((card, idx) => {
             const cardHref = card.id ? `/properties/${card.id}` : undefined;
             const Wrapper = cardHref ? Link : 'div';
             return (
@@ -155,6 +155,7 @@ export default function PropertyCardsSection({ title, ctaText, cards, grey }: Pr
                       alt={card.title}
                       fill
                       sizes="(max-width: 640px) 80vw, (max-width: 1024px) 50vw, 33vw"
+                      fetchPriority={idx === 0 ? 'high' : 'auto'}
                       style={{ objectFit: 'cover', transition: 'transform 500ms cubic-bezier(0.4,0,0.2,1)' }}
                       onMouseEnter={e => ((e.target as HTMLElement).style.transform = 'scale(1.04)')}
                       onMouseLeave={e => ((e.target as HTMLElement).style.transform = 'scale(1)')}

@@ -308,6 +308,16 @@ export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide
   }, []);
 
   const slide = slides[active];
+  const total = slides.length;
+
+  /* Virtual window — only mount slides that need to be visible or preloaded.
+     Rendering all 36 at inset:0 causes the browser to fetch every image on load. */
+  const windowSet = new Set([
+    active,
+    outgoing ?? -1,
+    (active + 1) % total,
+    (active - 1 + total) % total,
+  ]);
 
   return (
     <section
@@ -320,34 +330,40 @@ export default function HeroSection({ slides: propSlides }: { slides?: HeroSlide
         overflow: 'hidden',
       }}
     >
-      {/* ── Slide layers ── */}
-      {slides.map((s, i) => (
-        <div
-          key={s.image}
-          ref={el => { slideRefs.current[i] = el; }}
-          aria-hidden={i !== active}
-          className="hero-slide"
-          style={{
-            position: 'absolute',
-            inset: 0,
-            opacity: i === active ? 1 : 0,
-            transition: `opacity ${FADE_MS}ms cubic-bezier(0.4,0,0.2,1)`,
-            zIndex: i === active ? 1 : 0,
-            willChange: (i === active || i === outgoing) ? 'transform, opacity' : 'auto',
-          }}
-        >
-          <Image
-            src={s.image}
-            alt=""
-            fill
-            priority={i < 3}
-            quality={90}
-            sizes="(max-width: 640px) 100vw, 100vw"
-            className="hero-img"
-            style={{ objectFit: 'cover', objectPosition: 'center' }}
-          />
-        </div>
-      ))}
+      {/* ── Slide layers — only active window rendered in DOM ── */}
+      {slides.map((s, i) => {
+        const inWindow = windowSet.has(i);
+        return (
+          <div
+            key={s.image}
+            ref={el => { slideRefs.current[i] = el; }}
+            aria-hidden={i !== active}
+            className="hero-slide"
+            style={{
+              position: 'absolute',
+              inset: 0,
+              opacity: i === active ? 1 : 0,
+              transition: `opacity ${FADE_MS}ms cubic-bezier(0.4,0,0.2,1)`,
+              zIndex: i === active ? 1 : 0,
+              willChange: (i === active || i === outgoing) ? 'transform, opacity' : 'auto',
+              visibility: inWindow ? 'visible' : 'hidden',
+            }}
+          >
+            {inWindow && (
+              <Image
+                src={s.image}
+                alt=""
+                fill
+                priority={i === active || i === (active + 1) % total}
+                quality={90}
+                sizes="100vw"
+                className="hero-img"
+                style={{ objectFit: 'cover', objectPosition: 'center' }}
+              />
+            )}
+          </div>
+        );
+      })}
 
       {/* ── Cinematic vignette — deep left + bottom ── */}
       <div
