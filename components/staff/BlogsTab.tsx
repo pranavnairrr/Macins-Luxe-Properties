@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { PlusCircle, Edit2, Trash2, FileText, Search, Upload } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
+import { slugify } from '@/lib/slugify'
 
 type BlogPost = {
   id: string
@@ -29,14 +30,6 @@ const tdStyle: React.CSSProperties = {
   fontFamily: 'var(--font)',
   fontSize: '0.875rem',
   color: 'var(--body)',
-}
-
-function slugify(str: string) {
-  return str
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, '')
-    .trim()
-    .replace(/\s+/g, '-')
 }
 
 function BlogForm({ initial, onSave, onCancel }: {
