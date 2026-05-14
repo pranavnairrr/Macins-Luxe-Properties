@@ -5,14 +5,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Nav from './Nav';
 import Footer from './Footer';
-import { blogPosts, type BlogPost } from '@/lib/blog-data';
+import type { BlogPost } from '@/lib/blog-data';
 
 const CATEGORIES = ['All', 'Market Reports', 'Investment', 'Guides', 'Lifestyle', 'Legal'] as const;
 type Category = typeof CATEGORIES[number];
 
-const featured = blogPosts.find(p => p.featured) ?? blogPosts[0];
-
-export default function BlogListingPage() {
+export default function BlogListingPage({ posts }: { posts: BlogPost[] }) {
+  const featured = posts.find(p => p.featured) ?? posts[0];
   const [activeCategory, setActiveCategory] = useState<Category>('All');
 
   useEffect(() => {
@@ -23,9 +22,11 @@ export default function BlogListingPage() {
     return () => observer.disconnect();
   }, []);
 
+  if (!posts.length) return null;
+
   const filtered = activeCategory === 'All'
-    ? blogPosts.filter(p => p.slug !== featured.slug)
-    : blogPosts.filter(p => p.category === activeCategory && p.slug !== featured.slug);
+    ? posts.filter(p => p.slug !== featured.slug)
+    : posts.filter(p => p.category === activeCategory && p.slug !== featured.slug);
 
   return (
     <>
@@ -86,7 +87,7 @@ export default function BlogListingPage() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: '0.8125rem', color: 'var(--muted)' }}>
                   <span>{featured.date}</span>
                   <span>·</span>
-                  <span>{featured.readTime}</span>
+                  <span>{featured.readTime ?? ''}</span>
                   <span style={{ marginLeft: 'auto', fontWeight: 600, color: 'var(--heading)', display: 'flex', alignItems: 'center', gap: 4 }}>
                     Read Article →
                   </span>

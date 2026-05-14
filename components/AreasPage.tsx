@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Nav from './Nav';
 import Footer from './Footer';
-import { areas, type AreaData } from '@/lib/areas-data';
+import type { AreaData } from '@/lib/areas-data';
 
 const EMIRATE_FILTERS = ['All', 'Dubai', 'Abu Dhabi'] as const;
 type EmirateFilter = typeof EMIRATE_FILTERS[number];
@@ -17,7 +17,7 @@ const WHY_STATS = [
   { value: '0%', label: 'Property Tax', desc: 'No annual property or capital gains tax' },
 ];
 
-export default function AreasPage() {
+export default function AreasPage({ areas }: { areas: AreaData[] }) {
   const [activeFilter, setActiveFilter] = useState<EmirateFilter>('All');
 
   useEffect(() => {

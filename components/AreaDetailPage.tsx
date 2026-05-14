@@ -8,7 +8,6 @@ import CinemaImage from './CinemaImage';
 import Nav from './Nav';
 import Footer from './Footer';
 import type { AreaData } from '@/lib/areas-data';
-import { areas } from '@/lib/areas-data';
 
 const PropertyMap = dynamic(() => import('./MapView'), { ssr: false });
 
@@ -21,7 +20,7 @@ type Listing = {
   images?: string[];
 };
 
-export default function AreaDetailPage({ area, listings }: { area: AreaData; listings: Listing[] }) {
+export default function AreaDetailPage({ area, listings, nearbyAreaData }: { area: AreaData; listings: Listing[]; nearbyAreaData: AreaData[] }) {
   useEffect(() => {
     const obs = new IntersectionObserver(entries => {
       entries.forEach(e => { if (e.isIntersecting) (e.target as HTMLElement).classList.add('revealed'); });
@@ -29,8 +28,6 @@ export default function AreaDetailPage({ area, listings }: { area: AreaData; lis
     document.querySelectorAll('[data-reveal]').forEach(el => obs.observe(el));
     return () => obs.disconnect();
   }, []);
-
-  const nearbyAreaData = areas.filter(a => area.nearbyAreas.includes(a.name));
 
   return (
     <>

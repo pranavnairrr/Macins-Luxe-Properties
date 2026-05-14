@@ -6,12 +6,10 @@ import Link from 'next/link';
 import { CheckCircle2 } from 'lucide-react';
 import Nav from './Nav';
 import Footer from './Footer';
-import { reports, type Report } from '@/lib/reports-data';
+import type { Report } from '@/lib/reports-data';
 
 const FILTER_TABS = ['All', 'Annual Report', 'Quarterly Report', 'Area Report', 'Market Snapshot'] as const;
 type Filter = typeof FILTER_TABS[number];
-
-const featured = reports.find(r => r.featured) ?? reports[0];
 
 const STATS = [
   { value: 'AED 47.8B', label: 'Total Transactions', desc: '2025 annual market volume' },
@@ -20,7 +18,8 @@ const STATS = [
   { value: '42%', label: 'Off-Plan Share', desc: 'Of all units sold in 2025' },
 ];
 
-export default function ReportsPage() {
+export default function ReportsPage({ reports }: { reports: Report[] }) {
+  const featured = reports.find(r => r.featured) ?? reports[0];
   const [activeFilter, setActiveFilter] = useState<Filter>('All');
 
   useEffect(() => {
@@ -30,6 +29,8 @@ export default function ReportsPage() {
     document.querySelectorAll('[data-reveal]').forEach(el => obs.observe(el));
     return () => obs.disconnect();
   }, []);
+
+  if (!reports.length) return null;
 
   const filtered = activeFilter === 'All'
     ? reports.filter(r => r.slug !== featured.slug)
