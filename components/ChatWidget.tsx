@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
-import { X, Send, Loader2, Maximize2, Minimize2, Sparkles, Building2, PhoneCall, TrendingUp, Landmark } from 'lucide-react';
+import { X, Send, Loader2, Maximize2, Minimize2, Sparkles, Building2, PhoneCall, TrendingUp, Landmark, Calculator, MapPin, MessageCircle, CalendarCheck } from 'lucide-react';
 import ChatPropertyCard from '@/components/ChatPropertyCard';
 
 const ORACLE_QUESTIONS = [
@@ -34,6 +34,37 @@ interface SearchResult {
   noExactMatch?: boolean;
 }
 
+interface MortgageResult {
+  propertyPrice: number;
+  downPaymentPct: number;
+  downPayment: number;
+  loanAmount: number;
+  monthly: number;
+  totalInterest: number;
+  totalCost: number;
+  rate: number;
+  termYears: number;
+  ltv: number;
+}
+
+interface AreaResult {
+  found: boolean;
+  area?: string;
+  name?: string;
+  slug?: string;
+  tagline?: string;
+  avgPricePerSqft?: number;
+  rentalYield?: number;
+  propertyTypes?: unknown;
+  highlights?: unknown;
+}
+
+interface BudgetResult {
+  listings: ListingResult[];
+  noExactMatch: boolean;
+  mortgageEstimate?: { budget: number; downPayment: number; monthly: number; rate: number; termYears: number };
+}
+
 // In ai@6, static tool parts use type 'tool-{toolName}' (not 'tool-invocation').
 // Fields are flat on the part — no nested .toolInvocation wrapper.
 interface ToolPart {
@@ -42,6 +73,15 @@ interface ToolPart {
   state: string;
   input?: unknown;
   output?: unknown;
+}
+
+// Update to the actual WhatsApp number (digits only, country code prefix, no '+')
+const WHATSAPP_NUMBER = '971501234567';
+
+function fmtChatAED(n: number): string {
+  if (n >= 1_000_000) return `AED ${(n / 1_000_000).toFixed(2)}M`;
+  if (n >= 1_000) return `AED ${Math.round(n / 1_000)}K`;
+  return `AED ${Math.round(n).toLocaleString()}`;
 }
 
 function SkeletonLoader() {
@@ -424,7 +464,16 @@ export default function ChatWidget() {
             </div>
           )}
 
-          {messages.map((message, msgIdx) => {
+          {(() => {
+            const assistantMsgCount = messages.filter(m => m.role === 'assistant').length;
+            const hasContactEverSaved = messages.some(m =>
+              (m.parts as unknown[]).some((p): p is ToolPart =>
+                typeof p === 'object' && p !== null &&
+                (p as ToolPart).type === 'tool-saveContactInfo' &&
+                (p as ToolPart).state === 'output-available'
+              )
+            );
+            return messages.map((message, msgIdx) => {
             const isLastMsg = msgIdx === messages.length - 1;
 
             /* Extract text content from parts */
@@ -487,8 +536,187 @@ export default function ChatWidget() {
                 </div>
               )}
 
-              {/* Tool invocations — property carousel */}
+              {/* Tool invocations */}
               {toolParts.map((part) => {
+                const toolName = getToolName(part);
+
+                /* ── getMortgageEstimate card ── */
+                if (toolName === 'getMortgageEstimate') {
+                  if (part.state === 'input-available' || part.state === 'input-streaming') {
+                    return (
+                      <div key={part.toolCallId} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 'var(--radius-md)', padding: '10px 13px', width: '100%' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <Loader2 size={14} color="var(--gold)" strokeWidth={1.5} style={{ animation: 'spin 1s linear infinite' }} />
+                          <span style={{ fontFamily: 'var(--font)', fontSize: 12, color: 'var(--gold)' }}>Calculating…</span>
+                        </div>
+                        <SkeletonLoader />
+                      </div>
+                    );
+                  }
+                  if (part.state === 'output-available') {
+                    const r = part.output as MortgageResult;
+                    return (
+                      <div key={part.toolCallId} style={{ width: '100%', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(213,186,140,0.22)', borderRadius: 'var(--radius-md)', overflow: 'hidden' }}>
+                        <div style={{ padding: '12px 14px 10px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                          <div style={{ fontFamily: 'var(--font)', fontSize: 10, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 4 }}>Monthly Payment</div>
+                          <div style={{ fontFamily: 'var(--font)', fontSize: 22, fontWeight: 700, color: 'var(--gold)', lineHeight: 1 }}>
+                            {fmtChatAED(r.monthly)}<span style={{ fontSize: 12, fontWeight: 400, color: 'rgba(255,255,255,0.45)', marginLeft: 4 }}>/mo</span>
+                          </div>
+                          <div style={{ fontFamily: 'var(--font)', fontSize: 10, color: 'rgba(255,255,255,0.4)', marginTop: 5 }}>
+                            {r.downPaymentPct}% down · {r.termYears}yr · {r.rate}% p.a.
+                          </div>
+                        </div>
+                        <div style={{ padding: '10px 14px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '7px 16px' }}>
+                          {[
+                            { label: 'Down Payment',    val: fmtChatAED(r.downPayment) },
+                            { label: 'Loan Amount',     val: fmtChatAED(r.loanAmount) },
+                            { label: 'Total Interest',  val: fmtChatAED(r.totalInterest) },
+                            { label: 'Total Cost',      val: fmtChatAED(r.totalCost) },
+                            { label: 'LTV Ratio',       val: `${r.ltv}%` },
+                            { label: 'Property Price',  val: fmtChatAED(r.propertyPrice) },
+                          ].map(({ label, val }) => (
+                            <div key={label}>
+                              <div style={{ fontFamily: 'var(--font)', fontSize: 9, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>{label}</div>
+                              <div style={{ fontFamily: 'var(--font)', fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.85)', marginTop: 1 }}>{val}</div>
+                            </div>
+                          ))}
+                        </div>
+                        <a href="/mortgage" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '8px 0', borderTop: '1px solid rgba(255,255,255,0.06)', fontFamily: 'var(--font)', fontSize: 11, fontWeight: 600, color: 'rgba(213,186,140,0.7)', textDecoration: 'none', letterSpacing: '0.04em' }}
+                          onMouseEnter={e => (e.currentTarget.style.color = 'var(--gold)')}
+                          onMouseLeave={e => (e.currentTarget.style.color = 'rgba(213,186,140,0.7)')}
+                        >
+                          <Calculator size={11} strokeWidth={1.5} /> Full mortgage calculator →
+                        </a>
+                      </div>
+                    );
+                  }
+                  return null;
+                }
+
+                /* ── getAreaInsights card ── */
+                if (toolName === 'getAreaInsights') {
+                  if (part.state === 'input-available' || part.state === 'input-streaming') {
+                    return (
+                      <div key={part.toolCallId} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 'var(--radius-md)', padding: '10px 13px', width: '100%' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <Loader2 size={14} color="var(--gold)" strokeWidth={1.5} style={{ animation: 'spin 1s linear infinite' }} />
+                          <span style={{ fontFamily: 'var(--font)', fontSize: 12, color: 'var(--gold)' }}>Loading area data…</span>
+                        </div>
+                        <SkeletonLoader />
+                      </div>
+                    );
+                  }
+                  if (part.state === 'output-available') {
+                    const r = part.output as AreaResult;
+                    if (!r.found) {
+                      return (
+                        <div key={part.toolCallId} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 'var(--radius-md)', padding: '10px 13px', fontFamily: 'var(--font)', fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>
+                          No detailed data available for that area yet — ask me to search for properties there instead.
+                        </div>
+                      );
+                    }
+                    const types = Array.isArray(r.propertyTypes) ? (r.propertyTypes as string[]).join(' · ') : '';
+                    return (
+                      <div key={part.toolCallId} style={{ width: '100%', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(213,186,140,0.22)', borderRadius: 'var(--radius-md)', overflow: 'hidden' }}>
+                        <div style={{ padding: '12px 14px 10px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
+                            <MapPin size={12} color="var(--gold)" strokeWidth={1.5} />
+                            <span style={{ fontFamily: 'var(--font)', fontSize: 13, fontWeight: 700, color: '#fff' }}>{r.name}</span>
+                          </div>
+                          {r.tagline && <div style={{ fontFamily: 'var(--font)', fontSize: 11, color: 'rgba(255,255,255,0.5)', lineHeight: 1.5 }}>{r.tagline}</div>}
+                        </div>
+                        <div style={{ padding: '10px 14px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '7px 16px' }}>
+                          {r.avgPricePerSqft != null && (
+                            <div>
+                              <div style={{ fontFamily: 'var(--font)', fontSize: 9, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Avg Price/sqft</div>
+                              <div style={{ fontFamily: 'var(--font)', fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.85)', marginTop: 1 }}>AED {r.avgPricePerSqft?.toLocaleString()}</div>
+                            </div>
+                          )}
+                          {r.rentalYield != null && (
+                            <div>
+                              <div style={{ fontFamily: 'var(--font)', fontSize: 9, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Rental Yield</div>
+                              <div style={{ fontFamily: 'var(--font)', fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.85)', marginTop: 1 }}>{r.rentalYield}%</div>
+                            </div>
+                          )}
+                          {types && (
+                            <div style={{ gridColumn: '1 / -1' }}>
+                              <div style={{ fontFamily: 'var(--font)', fontSize: 9, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Property Types</div>
+                              <div style={{ fontFamily: 'var(--font)', fontSize: 11, color: 'rgba(255,255,255,0.7)', marginTop: 1 }}>{types}</div>
+                            </div>
+                          )}
+                        </div>
+                        {r.slug && (
+                          <a href={`/areas/${r.slug}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '8px 0', borderTop: '1px solid rgba(255,255,255,0.06)', fontFamily: 'var(--font)', fontSize: 11, fontWeight: 600, color: 'rgba(213,186,140,0.7)', textDecoration: 'none', letterSpacing: '0.04em' }}
+                            onMouseEnter={e => (e.currentTarget.style.color = 'var(--gold)')}
+                            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(213,186,140,0.7)')}
+                          >
+                            View area guide →
+                          </a>
+                        )}
+                      </div>
+                    );
+                  }
+                  return null;
+                }
+
+                /* ── searchByBudget — same carousel as searchListings + budget header ── */
+                if (toolName === 'searchByBudget') {
+                  if (part.state === 'input-available' || part.state === 'input-streaming') {
+                    return (
+                      <div key={part.toolCallId} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 'var(--radius-md)', padding: '10px 13px', width: '100%' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <Loader2 size={14} color="var(--gold)" strokeWidth={1.5} style={{ animation: 'spin 1s linear infinite' }} />
+                          <span style={{ fontFamily: 'var(--font)', fontSize: 12, color: 'var(--gold)' }}>Finding properties within budget…</span>
+                        </div>
+                        <SkeletonLoader />
+                      </div>
+                    );
+                  }
+                  if (part.state === 'output-available') {
+                    const r = part.output as BudgetResult;
+                    const listings = r?.listings ?? [];
+                    const me = r?.mortgageEstimate;
+                    const shown = listings.slice(0, 2);
+                    return (
+                      <div key={part.toolCallId} style={{ width: '100%' }}>
+                        {me && (
+                          <div style={{ background: 'rgba(213,186,140,0.07)', border: '1px solid rgba(213,186,140,0.22)', borderRadius: 'var(--radius-md)', padding: '9px 13px', marginBottom: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div>
+                              <div style={{ fontFamily: 'var(--font)', fontSize: 9, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Budget snapshot · {me.downPayment && `${fmtChatAED(me.downPayment)} down`}</div>
+                              <div style={{ fontFamily: 'var(--font)', fontSize: 13, fontWeight: 700, color: 'var(--gold)', marginTop: 2 }}>{fmtChatAED(me.monthly)}<span style={{ fontSize: 10, fontWeight: 400, color: 'rgba(255,255,255,0.4)', marginLeft: 3 }}>/mo</span></div>
+                            </div>
+                            <div style={{ fontFamily: 'var(--font)', fontSize: 10, color: 'rgba(255,255,255,0.35)', textAlign: 'right' }}>
+                              <div>{me.rate}% · {me.termYears}yr</div>
+                              <div>20% down</div>
+                            </div>
+                          </div>
+                        )}
+                        <div style={{ fontFamily: 'var(--font)', fontSize: 11, color: 'var(--gold)', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 8 }}>
+                          {listings.length === 0 ? 'No exact matches' : `${listings.length} ${listings.length === 1 ? 'property' : 'properties'} within budget`}
+                        </div>
+                        {shown.length > 0 && (
+                          <div className="chat-carousel" style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 6, scrollSnapType: 'x mandatory' }}>
+                            {shown.map(listing => (
+                              <div key={listing.id} style={{ scrollSnapAlign: 'start' }}>
+                                <ChatPropertyCard {...listing} />
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {listings.length > 2 && (
+                          <a href="/properties" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: 10, padding: '7px 0', borderRadius: 'var(--radius-btn)', border: '1px solid rgba(213,186,140,0.35)', background: 'rgba(213,186,140,0.07)', fontFamily: 'var(--font)', fontSize: 12, fontWeight: 600, color: 'var(--gold)', textDecoration: 'none', letterSpacing: '0.04em' }}
+                            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(213,186,140,0.15)')}
+                            onMouseLeave={e => (e.currentTarget.style.background = 'rgba(213,186,140,0.07)')}
+                          >
+                            View all {listings.length} properties →
+                          </a>
+                        )}
+                      </div>
+                    );
+                  }
+                  return null;
+                }
+
                 if (getToolName(part) !== 'searchListings') return null;
 
                 if (part.state === 'input-available' || part.state === 'input-streaming') {
@@ -647,9 +875,53 @@ export default function ChatWidget() {
                   ))}
                 </div>
               )}
+
+              {/* Proactive consultation chip — after 4th assistant message */}
+              {message.role === 'assistant' && isLastMsg && !isLoading &&
+               assistantMsgCount >= 4 && !hasContactEverSaved && !hadContactSave && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 7, width: '100%', marginTop: 4 }}>
+                  <div style={{ fontFamily: 'var(--font)', fontSize: 10, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 2 }}>
+                    Ready to take the next step?
+                  </div>
+                  <button
+                    onClick={() => sendMessage({ text: "I'd like to speak with a Macins Luxe specialist. Can you help me arrange that?" })}
+                    style={{
+                      background: 'rgba(213,186,140,0.10)',
+                      backdropFilter: 'blur(8px)',
+                      WebkitBackdropFilter: 'blur(8px)',
+                      border: '1px solid rgba(213,186,140,0.40)',
+                      borderRadius: 10,
+                      padding: '10px 14px',
+                      fontFamily: 'var(--font)',
+                      fontSize: 12,
+                      color: 'var(--gold)',
+                      fontWeight: 600,
+                      textAlign: 'left',
+                      cursor: 'pointer',
+                      transition: 'background 0.18s, border-color 0.18s',
+                      lineHeight: 1.4,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 9,
+                    }}
+                    onMouseEnter={e => {
+                      e.currentTarget.style.background = 'rgba(213,186,140,0.18)';
+                      e.currentTarget.style.borderColor = 'rgba(213,186,140,0.65)';
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.background = 'rgba(213,186,140,0.10)';
+                      e.currentTarget.style.borderColor = 'rgba(213,186,140,0.40)';
+                    }}
+                  >
+                    <CalendarCheck size={14} color="var(--gold)" strokeWidth={1.5} style={{ flexShrink: 0 }} />
+                    Book a consultation with a specialist
+                  </button>
+                </div>
+              )}
             </div>
             );
-          })}
+          });
+          })()}
 
           {/* API error */}
           {errorVisible && error && !isLoading && (
@@ -704,6 +976,43 @@ export default function ChatWidget() {
 
           <div ref={messagesEndRef} />
         </div>
+
+        {/* WhatsApp handoff — shown after first exchange */}
+        {messages.length > 0 && (
+          <div style={{ padding: '0 10px 6px', display: 'flex', justifyContent: 'center' }}>
+            <a
+              href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hi, I was browsing Macins Luxe and would like to speak with an agent.')}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                fontFamily: 'var(--font)',
+                fontSize: 10,
+                fontWeight: 600,
+                color: 'rgba(255,255,255,0.35)',
+                textDecoration: 'none',
+                letterSpacing: '0.05em',
+                padding: '4px 10px',
+                borderRadius: 20,
+                border: '1px solid rgba(255,255,255,0.08)',
+                transition: 'color 0.2s, border-color 0.2s',
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.color = '#25D366';
+                e.currentTarget.style.borderColor = 'rgba(37,211,102,0.35)';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.color = 'rgba(255,255,255,0.35)';
+                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
+              }}
+            >
+              <MessageCircle size={11} strokeWidth={1.5} />
+              Continue on WhatsApp
+            </a>
+          </div>
+        )}
 
         {/* Input area */}
         <div style={{

@@ -16,6 +16,20 @@ const google = createGoogleGenerativeAI({
   apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY ?? '',
 });
 
+/* ── Mortgage math ──────────────────────────────────────── */
+function calcEMI(loan: number, ratePct: number, termYears: number): number {
+  if (loan <= 0 || termYears <= 0) return 0;
+  const r = ratePct / 100 / 12;
+  const n = termYears * 12;
+  if (r === 0) return loan / n;
+  return (loan * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+}
+function fmtAED(n: number): string {
+  if (n >= 1_000_000) return `AED ${(n / 1_000_000).toFixed(2)}M`;
+  if (n >= 1_000) return `AED ${Math.round(n / 1_000)}K`;
+  return `AED ${Math.round(n).toLocaleString()}`;
+}
+
 const SYSTEM_PROMPT = `You are Layla, the AI Concierge for Macins Luxe — a premium real estate agency in Dubai, UAE.
 
 You are warm, confident, and knowledgeable. You are an advisor, not a salesperson. Your goal is to understand what the client truly wants, show them the right properties, and — when the moment is right — connect them with a Macins Luxe specialist.
@@ -63,6 +77,12 @@ Always call searchListings before answering any property query:
 - Comparisons ("Emaar vs Damac") → searchListings with the first name, then answer
 
 When noExactMatch is true → "We don't currently carry [X] listings, but here are strong alternatives from our portfolio:" — never say you found nothing if cards were returned.
+
+getMortgageEstimate — call when the user asks about monthly payments, EMI, mortgage, financing, or "how much per month" for any property price. Never recite the numbers in text — just say "Here's what that works out to at current UAE rates:" and let the card render.
+
+getAreaInsights — call when the user asks about a specific area or community (Business Bay, JVC, Dubai Hills, Palm Jumeirah, Marina, Downtown, Arabian Ranches, etc.). Say 1 sentence contextualising the area; the card renders the stats.
+
+searchByBudget — call when the user states a total budget ("I have AED 2M", "under 3 million", "what can I get for 5M"). Returns listings filtered by price plus a mortgage snapshot at 20% down. Present results exactly like searchListings.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 CONTACT CAPTURE
@@ -129,6 +149,23 @@ const saveContactSchema = z.object({
   name:  z.string().optional().describe('Full name of the user'),
   phone: z.string().optional().describe('Phone number'),
   email: z.string().optional().describe('Email address'),
+});
+
+const getMortgageEstimateSchema = z.object({
+  propertyPrice:   z.number().describe('Property price in AED'),
+  downPaymentPct:  z.number().optional().describe('Down payment % (default 20 for expats, 15 for UAE nationals)'),
+  termYears:       z.number().optional().describe('Loan term in years (default 25, max 25)'),
+  interestRatePct: z.number().optional().describe('Annual interest rate % (default 4.49)'),
+});
+
+const getAreaInsightsSchema = z.object({
+  area: z.string().describe('Area or community name, e.g. "Business Bay", "JVC", "Dubai Hills Estate"'),
+});
+
+const searchByBudgetSchema = z.object({
+  budgetAED:    z.number().describe('Total property budget in AED'),
+  beds:         z.string().optional().describe('Bedrooms filter, e.g. "2", "Studio", "3+"'),
+  propertyType: z.string().optional().describe('apartment, villa, penthouse, townhouse, office'),
 });
 
 export async function POST(req: Request) {
@@ -263,6 +300,110 @@ export async function POST(req: Request) {
         execute: async ({ name, phone, email }: z.infer<typeof saveContactSchema>) => {
           await updateContact(sessionId, { name, phone, email });
           return { saved: true };
+        },
+      }),
+
+      getMortgageEstimate: tool({
+        description: 'Calculate monthly mortgage payment, down payment, loan amount, and total cost for a given property price.',
+        inputSchema: getMortgageEstimateSchema,
+        execute: async ({ propertyPrice, downPaymentPct = 20, termYears = 25, interestRatePct = 4.49 }: z.infer<typeof getMortgageEstimateSchema>) => {
+          const dp = propertyPrice * (downPaymentPct / 100);
+          const loan = propertyPrice - dp;
+          const monthly = calcEMI(loan, interestRatePct, termYears);
+          const totalPaid = monthly * termYears * 12;
+          const totalInterest = totalPaid - loan;
+          return {
+            propertyPrice,
+            downPaymentPct,
+            downPayment:   Math.round(dp),
+            loanAmount:    Math.round(loan),
+            monthly:       Math.round(monthly),
+            totalInterest: Math.round(totalInterest),
+            totalCost:     Math.round(totalPaid + dp),
+            rate:          interestRatePct,
+            termYears,
+            ltv:           Math.round((loan / propertyPrice) * 100),
+          };
+        },
+      }),
+
+      getAreaInsights: tool({
+        description: 'Get area/community statistics: avg price per sqft, rental yield, property types. Query the areas table.',
+        inputSchema: getAreaInsightsSchema,
+        execute: async ({ area }: z.infer<typeof getAreaInsightsSchema>) => {
+          try {
+            const slug = area.toLowerCase().replace(/\s+/g, '-');
+            const { data: rows } = await db
+              .from('areas')
+              .select('slug, name, tagline, description, avg_price_per_sqft, rental_yield, property_types, highlights')
+              .or(`name.ilike.%${area}%,slug.ilike.%${slug}%`)
+              .limit(1);
+            const data = rows?.[0] ?? null;
+            if (!data) return { found: false, area };
+            return {
+              found: true,
+              name:            data.name,
+              slug:            data.slug,
+              tagline:         data.tagline,
+              avgPricePerSqft: data.avg_price_per_sqft,
+              rentalYield:     data.rental_yield,
+              propertyTypes:   data.property_types,
+              highlights:      data.highlights,
+            };
+          } catch {
+            return { found: false, area };
+          }
+        },
+      }),
+
+      searchByBudget: tool({
+        description: 'Search for properties within a total budget. Returns filtered listings plus a mortgage estimate at 20% down.',
+        inputSchema: searchByBudgetSchema,
+        execute: async ({ budgetAED, beds, propertyType }: z.infer<typeof searchByBudgetSchema>) => {
+          try {
+            let q = db
+              .from('listings')
+              .select('id, name, price, location, beds, badge, developer, images, category, status')
+              .eq('status', 'published')
+              .limit(12);
+            if (beds?.trim())         q = q.ilike('beds', `%${beds}%`);
+            if (propertyType?.trim()) q = q.or(`name.ilike.%${propertyType}%,beds.ilike.%${propertyType}%`);
+
+            const { data, error } = await q;
+            if (error) console.error('[searchByBudget]', error.message);
+
+            const parseStoredPrice = (s: string): number => {
+              if (!s) return NaN;
+              const num = parseFloat(s.replace(/[^0-9.]/g, ''));
+              if (isNaN(num)) return NaN;
+              const u = s.toUpperCase();
+              if (u.includes('M')) return num * 1_000_000;
+              if (u.includes('K')) return num * 1_000;
+              return num;
+            };
+
+            const filtered = (data ?? []).filter(l => {
+              const p = parseStoredPrice(l.price ?? '');
+              return isNaN(p) || p <= budgetAED;
+            });
+
+            const dp = budgetAED * 0.20;
+            const monthly = Math.round(calcEMI(budgetAED - dp, 4.49, 25));
+
+            return {
+              listings: filtered.map(l => ({
+                id: l.id, name: l.name, price: l.price, location: l.location,
+                beds: l.beds, badge: l.badge, developer: l.developer,
+                imageUrl: Array.isArray(l.images) ? l.images[0] : null,
+                category: l.category,
+              })),
+              noExactMatch: filtered.length === 0,
+              mortgageEstimate: { budget: budgetAED, downPayment: Math.round(dp), monthly, rate: 4.49, termYears: 25 },
+            };
+          } catch (err) {
+            console.error('[searchByBudget] unexpected:', err instanceof Error ? err.message : err);
+            return { listings: [], noExactMatch: true };
+          }
         },
       }),
     },
