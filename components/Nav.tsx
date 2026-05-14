@@ -10,8 +10,10 @@ const dropdownGroups = [
     id: 'properties',
     label: 'Properties',
     items: [
-      { label: 'Residential', href: '/properties?tab=Residential' },
-      { label: 'Commercial',  href: '/properties?tab=Commercial'  },
+      { label: 'All Properties', href: '/properties'              },
+      { label: 'Residential',   href: '/properties?tab=Residential' },
+      { label: 'Commercial',    href: '/properties?tab=Commercial'  },
+      { label: 'Map View',      href: '/map'                     },
     ],
   },
   {
